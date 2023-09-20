@@ -23,25 +23,37 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^8ve2qyvy3(&m7f(_n0mx7z6=@t)frp(*e2!cgqh+qlis%-ms6'
 
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS=(
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
+)
+THIRD_APP=(
+    'rest_framework',
+)
+LOCAL_APP=(
+    'applications.users',
+)
+
+INSTALLED_APPS =DJANGO_APPS+THIRD_APP+LOCAL_APP
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Variables Cors
+CORS_ORIGIN_ALLOW_ALL=True
+CORS_ALLOW_CREDENTIALS=True
 
 ROOT_URLCONF = 'control6.urls'
 
@@ -62,9 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'control6.wsgi.application'
-
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -101,3 +110,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Vadating user using user model
+
+AUTH_USER_MODEL='users.User'
