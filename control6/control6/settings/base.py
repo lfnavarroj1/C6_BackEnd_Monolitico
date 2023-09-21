@@ -33,6 +33,7 @@ DJANGO_APPS=(
 )
 THIRD_APP=(
     'rest_framework',
+    'corsheaders',
 )
 LOCAL_APP=(
     'applications.users',
@@ -51,9 +52,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Variables Cors
-CORS_ORIGIN_ALLOW_ALL=True
-CORS_ALLOW_CREDENTIALS=True
 
 ROOT_URLCONF = 'control6.urls'
 
@@ -114,3 +112,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Vadating user using user model
 
 AUTH_USER_MODEL='users.User'
+
+# Variables Cors
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
