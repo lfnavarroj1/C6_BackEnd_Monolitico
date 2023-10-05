@@ -7,22 +7,22 @@ upstream control6_app {
 server {
 
     listen   80;
-    server_name 146.190.132.127;
+    server_name 159.65.246.228;
 
-    access_log /webapps/venv2/logs/nginx-access.log;
-    error_log /webapps/venv2/logs/nginx-error.log;
+    access_log /webapps/back-c6/logs/nginx-access.log;
+    error_log /webapps/back-c6/logs/nginx-error.log;
 
     location /static/ {
-        alias   /webapps/venv2/control_seis/control6/staticfiles/;
+        alias   /webapps/back-c6/C6_BackEnd_Monolitico/control6/control6/staticfiles/;
     }
 
     location /media/ {
-        alias   /webapps/venv2/control_seis/control6/media/;
+        alias   /webapps/back-c6/C6_BackEnd_Monolitico/control6/media/;
     }
 
     location / {
 
-        root /path/to/your/angular/app/dist; # Ruta a la carpeta 'dist' de tu aplicación Angular
+        root /webapps/front-c6/c6-front-end; # Ruta a la carpeta 'dist' de tu aplicación Angular
         try_files $uri $uri/ /index.html;
 
         # Configuración del proxy inverso para el backen de Django
