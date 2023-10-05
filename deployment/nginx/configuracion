@@ -33,10 +33,13 @@ server {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        if (!-f $request_filename) {
-            proxy_pass http://control6_app;
-            break;
-        }
+        # if (!-f $request_filename) {
+        #     proxy_pass http://control6_app;
+        #     break;
+        # }
+
         client_max_body_size 10M;
+
+
     }
 }
