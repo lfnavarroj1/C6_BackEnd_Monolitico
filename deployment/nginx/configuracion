@@ -1,5 +1,5 @@
 upstream control6_app {
-  server unix:/webapps/venv/run/gunicorn.sock fail_timeout=0;
+  server unix:/webapps/back-c6/run/gunicorn.sock fail_timeout=0;
 }
 
 server {
