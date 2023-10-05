@@ -1,0 +1,44 @@
+GNU nano 6.4                                                                       
+                                                                                
+upstream control6_app {
+  server unix:/webapps/venv/run/gunicorn.sock fail_timeout=0;
+}
+
+server {
+
+    listen   80;
+    server_name 146.190.132.127;
+
+    access_log /webapps/venv2/logs/nginx-access.log;
+    error_log /webapps/venv2/logs/nginx-error.log;
+
+    location /static/ {
+        alias   /webapps/venv2/control_seis/control6/staticfiles/;
+    }
+
+    location /media/ {
+        alias   /webapps/venv2/control_seis/control6/media/;
+    }
+
+    location / {
+
+        root /path/to/your/angular/app/dist; # Ruta a la carpeta 'dist' de tu aplicación Angular
+        try_files $uri $uri/ /index.html;
+
+        # Configuración del proxy inverso para el backen de Django
+
+        location /api/{
+            proxy_pass http://control6_app;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        if (!-f $request_filename) {
+            proxy_pass http://control6_app;
+            break;
+        }
+        client_max_body_size 10M;
+    }
+}

@@ -34,9 +34,12 @@ DJANGO_APPS=(
 THIRD_APP=(
     'rest_framework',
     'corsheaders',
+    'import_export',
 )
 LOCAL_APP=(
-    'applications.users',
+    'applications.users',     
+    'applications.static_data',
+    'applications.work_management',
 )
 
 INSTALLED_APPS =DJANGO_APPS+THIRD_APP+LOCAL_APP
@@ -51,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 ROOT_URLCONF = 'control6.urls'
 
@@ -97,7 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
@@ -116,3 +118,5 @@ AUTH_USER_MODEL='users.User'
 # Variables Cors
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+# SESSION_COOKIE_SAMESITE = 'None'
+# SESSION_COOKIE_DOMAIN = 'http://localhost:4200'
