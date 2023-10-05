@@ -1,5 +1,3 @@
-GNU nano 6.4                                                                       
-                                                                                
 upstream control6_app {
   server unix:/webapps/venv/run/gunicorn.sock fail_timeout=0;
 }
