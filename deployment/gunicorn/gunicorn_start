@@ -1,12 +1,12 @@
 #!/bin/bash
 
 NAME="control6"                                  # Name of the application
-DJANGODIR=/webapps/venv2/control_seis/control6             # Django project directory
-SOCKFILE=/webapps/venv2/run/gunicorn.sock  # we will communicte using this unix socket
+DJANGODIR=/webapps/back-c6/C6_BackEnd_Monolitico/control6             # Django project directory
+SOCKFILE=/webapps/back-c6/run/gunicorn.sock  # we will communicte using this unix socket
 USER=root                                        # the user to run as
 GROUP=root                                     # the group to run as
 NUM_WORKERS=3                                     # how many worker processes should Gunicorn spawn
-DJANGO_SETTINGS_MODULE=control6.settings.prod             # which settings file should Django use
+DJANGO_SETTINGS_MODULE=control6.settings.local             # which settings file should Django use
 DJANGO_WSGI_MODULE=control6.wsgi                     # WSGI module name
 
 echo "Starting $NAME as `whoami`"
