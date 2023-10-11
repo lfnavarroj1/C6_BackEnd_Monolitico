@@ -29,7 +29,7 @@ class TrabajoResource(resources.ModelResource):
             'vereda',
             'subestacion',
             'circuito',
-            'estado_trabajo',
+            'ruta_proceso',
             'contrato',
         )
 
@@ -42,13 +42,13 @@ class TrabajoAdmin(ImportExportModelAdmin):
         'pms_need',
         'proceso',
         'caso_radicado',
-        'estado_trabajo',
+        'ruta_proceso',
     )
     search_fields=(
         'pms_quotation',
     )
     list_filter=(
-        'estado_trabajo', 'proceso',
+        'ruta_proceso', 'proceso',
     )
 
 
@@ -57,7 +57,7 @@ class TrazabilidadResource(resources.ModelResource):
     class Meta:
         model=Trazabilidad
         fields=(
-            'trabajo',
+            'trabajo__id_control',
             'usuario',
             'fecha_trazabilidad',
             'comentario_trazabilidad',

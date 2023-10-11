@@ -118,5 +118,10 @@ AUTH_USER_MODEL='users.User'
 # Variables Cors
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-# SESSION_COOKIE_SAMESITE = 'None'
-# SESSION_COOKIE_DOMAIN = 'http://localhost:4200'
+# SESSION_COOKIE_SAMESITE = None
+# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_DOMAIN = 'localhost'
+# CORS_ORIGIN_WHITELIST = [
+#     "http://localhost:4200",  # Dominio de tu aplicación Angular en desarrollo
+#     # Agrega otros dominios permitidos aquí si es necesario
+# ]

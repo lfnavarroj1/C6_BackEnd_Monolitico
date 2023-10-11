@@ -1,27 +1,37 @@
 from django.db import models
 from django.utils import timezone
 from ..managers.trabajo_manager import TrabajoManager
+from ...static_data.models.proceso import Proceso
+from ...static_data.models.ruta_proceso import RutaProceso
+from ...static_data.models.estructura_presupuestal import EstructuraPresupuestal
+from ...static_data.models.unidad_territorial import UnidadTerritorial
+from ...static_data.models.municipio import Municipio
+from ...static_data.models.vereda import Vereda
+from ...static_data.models.subestacion import Subestacion
+from ...static_data.models.circuito import Circuito
+from ...static_data.models.contrato import Contrato
 
 # Create your models here.
 class Trabajo(models.Model):
 
 
     id_control = models.CharField(primary_key=True, max_length=20, unique=True, default="N/A", editable=False)
-    pms_quotation = models.CharField(max_length=50)
-    pms_need = models.CharField(max_length=50)
-    proceso = models.CharField(max_length=8)
-    caso_radicado = models.CharField(max_length=50)
-    estado_trabajo = models.CharField(max_length=8)
+    pms_quotation = models.CharField(max_length=50, null=True, blank=True)
+    pms_need = models.CharField(max_length=50, null=True, blank=True)
+    proceso = models.ForeignKey(Proceso,on_delete=models.PROTECT) # R1
+    ruta_proceso = models.ForeignKey(RutaProceso, on_delete=models.PROTECT)
+    caso_radicado = models.CharField(max_length=50, null=True, blank=True)
     alcance = models.TextField()
-    estructura_presupuestal = models.CharField(max_length=25)
-    priorizacion = models.DateField(auto_now=False, auto_now_add=False)
-    unidad_territorial=models.CharField(max_length=2)
-    municipio = models.CharField(max_length=6)
-    vereda = models.CharField(max_length=10)
-    direccion = models.CharField(max_length=120)
-    subestacion = models.CharField(max_length=2)
-    circuito = models.CharField(max_length=8)
-    contrato = models.CharField(max_length=12)
+    estructura_presupuestal = models.ForeignKey(EstructuraPresupuestal, on_delete=models.PROTECT, null=True, blank=True)
+    priorizacion = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
+    unidad_territorial=models.ForeignKey(UnidadTerritorial, on_delete=models.PROTECT)
+    municipio = models.ForeignKey(Municipio, on_delete=models.PROTECT)
+    vereda = models.ForeignKey(Vereda, on_delete=models.PROTECT)
+    direccion = models.CharField(max_length=160)
+    subestacion = models.ForeignKey(Subestacion, on_delete=models.PROTECT)
+    circuito = models.ForeignKey(Circuito, on_delete=models.PROTECT)
+    contrato = models.ForeignKey(Contrato, on_delete=models.PROTECT)
+    ticket=models.CharField(max_length=50, null=True, blank=True)
 
     objects=TrabajoManager()
 
@@ -39,7 +49,7 @@ class Trabajo(models.Model):
             self.id_control = f'C6-{current_year}-{str(next_id).zfill(6)}'
 
         super(Trabajo, self).save(*args, **kwargs)
+        return self
     
-
     def __str__(self):
         return self.id_control

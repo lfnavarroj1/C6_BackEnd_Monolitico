@@ -13,6 +13,7 @@ from .models.estructura_presupuestal import EstructuraPresupuestal
 from .models.tipo_instalacion import TipoInstalacion
 from .models.cuadrilla import Cuadrilla
 from .models.contrato import Contrato
+from .models.ruta_proceso import RutaProceso, ModuloBandeja
 
 
 # Register your models here.
@@ -285,6 +286,48 @@ class ContratoAdmin(ImportExportModelAdmin):
             'numero_contrato',
             'nombre',
             'objeto',
+    )
+
+
+# RUTA PROCESO
+class RutaProcesoResource(resources.ModelResource):
+    class Meta:
+        import_id_fields = ('codigo_ruta',)
+        model=RutaProceso
+        fields=(
+            'codigo_ruta',
+            'proceso',
+            'modulos',
+            'paso',
+            'estado',
+        )
+
+@admin.register(RutaProceso)
+class RutaProcesoAdmin(ImportExportModelAdmin):
+    resource_class=RutaProcesoResource
+    list_display=(
+        'codigo_ruta',
+        'proceso',
+        'paso',
+        'estado',
+    )
+
+# MODULOS
+class ModuloBandejaResource(resources.ModelResource):
+    class Meta:
+        import_id_fields = ('id_modulo',)
+        model=ModuloBandeja
+        fields=(
+            'id_modulo',
+            'nombre',
+        )
+
+@admin.register(ModuloBandeja)
+class ModuloBandejaAdmin(ImportExportModelAdmin):
+    resource_class=ModuloBandejaResource
+    list_display=(
+            'id_modulo',
+            'nombre',
     )
 
 
