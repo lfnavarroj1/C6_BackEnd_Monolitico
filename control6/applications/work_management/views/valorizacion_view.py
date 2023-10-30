@@ -18,7 +18,7 @@ from ...users.models import User
 from django.http import FileResponse, HttpResponse
 from django.conf import settings
 
-import magic
+# import magic
 import mimetypes
 
 # 1. SUBIR SOPORTES INICIALES ASOCIADOS A UN TRABAJO ----------------------------------------------------------------------------

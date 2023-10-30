@@ -18,7 +18,7 @@ from ...users.models import User
 from django.http import FileResponse, HttpResponse
 from django.conf import settings
 
-import magic
+# import magic
 import mimetypes
 
 # 1. SUBIR SOPORTES INICIALES ASOCIADOS A UN TRABAJO
@@ -116,7 +116,7 @@ class DescargaArchivo(RetrieveAPIView):
             file_path = instance.archivo.path
 
             # Usando python-magyc
-            mime=magic.Magic()
+            # mime=magic.Magic()
             file_type, encoding = mimetypes.guess_type(file_path)
             print(file_type)
 
