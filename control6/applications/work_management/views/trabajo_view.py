@@ -16,7 +16,7 @@ from ..serializers.trabajo_serializer import TrabajoSerializer, CrearTrabajoSeri
 # from ..models.trazabilidad import Trazabilidad
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-import jwt #, datetime
+import jwt,json #, datetime
 from rest_framework import status
 
 from rest_framework.response import Response
@@ -38,7 +38,12 @@ class ListarTrabajos(ListAPIView):
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Unauthenticated!")
         
-        response=Trabajo.objects.lista_trabajos()
+        vp1=self.request.query_params.get('vp','')
+        ve1=self.request.query_params.get('ve','')
+        vect_procesos=vp1.split(',')
+        vect_estados=ve1.split(',')
+
+        response=Trabajo.objects.filtrar_trabajos(vect_procesos,vect_estados)
         return response
 # ---------------------------------------------------------------------
 
@@ -56,6 +61,9 @@ class CrearTrabajo(CreateAPIView):
             raise AuthenticationFailed("Unauthenticated!")
         
         usuario=User.objects.get(username=payload['username'])
+
+        print(request.data)
+        
         try:
             response=Trabajo.objects.crear_trabajo(request.data)
             datos={}

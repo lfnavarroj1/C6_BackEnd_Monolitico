@@ -42,6 +42,7 @@ class TrabajoSerializer(serializers.ModelSerializer):
             'subestacion',
             'circuito',
             'contrato',
+            'ticket',
         )
 
 

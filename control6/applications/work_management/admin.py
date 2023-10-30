@@ -8,7 +8,8 @@ from .models.odm import Odm
 from .models.lcl import Lcl
 from .models.programacion import Programacion
 from .models.maniobra import Maniobra
-from .models.ejecutado import Ejecutado
+from .models.soportes_iniciales import SoportesIniciales
+from .models.libreto import Libreto
 
 
 # TRABAJO
@@ -86,7 +87,6 @@ class ValorizacionResource(resources.ModelResource):
             'estado',
             'nivel_tension',
             'presupuesto',
-            'estado_trabajo',
         )
 
 @admin.register(Valorizacion)
@@ -100,7 +100,6 @@ class ValorizacionAdmin(ImportExportModelAdmin):
         'estado',
         'nivel_tension',
         'presupuesto',
-        'estado_trabajo',
     )
 
 
@@ -114,7 +113,6 @@ class OdmResource(resources.ModelResource):
             'agp',
             'protocolo',
             'solicitud',
-            'tiene_lcl',
         )
 
 @admin.register(Odm)
@@ -126,7 +124,6 @@ class OdmAdmin(ImportExportModelAdmin):
         'agp',
         'protocolo',
         'solicitud',
-        'tiene_lcl',
     )
 
 
@@ -135,7 +132,7 @@ class LclResource(resources.ModelResource):
     class Meta:
         model=Lcl
         fields=(
-            'numero_lcl',
+            'lcl',
             'estado_lcl',
             'indicador_impuesto',
             'valor_mano_obra',
@@ -150,7 +147,7 @@ class LclResource(resources.ModelResource):
 class LclAdmin(ImportExportModelAdmin):
     resource_class=LclResource
     list_display=(
-        'numero_lcl',
+        'lcl',
         'estado_lcl',
         'indicador_impuesto',
         'valor_mano_obra',
@@ -215,29 +212,61 @@ class ManiobraAdmin(ImportExportModelAdmin):
         'estado_maniobra',
     )
 
-
-# EJECUTADO
-class EjecutadoResource(resources.ModelResource):
+# SOPORTES INICIALES
+class SoportesInicialesResource(resources.ModelResource):
     class Meta:
-        model=Ejecutado
+        model=SoportesIniciales
         fields=(
-            'id_ejecucutado',
-            'maniobras',
-            'monto_mano_obra',
-            'monto_materiales',
-            'estado',
-            'soporte',
+            'id_soporte',
+            'trabajo',
+            'nombre',
+            'descripcion',
+            'archivo',
         )
 
-@admin.register(Ejecutado)
-class EjecutadoAdmin(ImportExportModelAdmin):
-    resource_class=EjecutadoResource
+@admin.register(SoportesIniciales)
+class SoportesInicialesAdmin(ImportExportModelAdmin):
+    resource_class=SoportesInicialesResource
     list_display=(
-        'id_ejecucutado',
-        'maniobras',
-        'monto_mano_obra',
-        'monto_materiales',
-        'estado',
-        'soporte',
+        'id_soporte',
+        'trabajo',
+        'nombre',
+        'descripcion',
+        'archivo',
     )
 
+
+# LIBRETOS
+class LibretoResource(resources.ModelResource):
+    class Meta:
+        model=Libreto
+        fields=(
+            "id_libreto",
+            "programacion",
+            "numero_libreto",
+            "valor_mod",
+            "valor_mat",
+            "observacion",
+            "planillas_conciliacion",
+            "planillas_firmadas",
+            "estado_libreto",
+            "es_ultimo_libreto",
+            "trabajo",
+        )
+
+@admin.register(Libreto)
+class LibretoAdmin(ImportExportModelAdmin):
+    resource_class=LibretoResource
+    list_display=(
+            "id_libreto",
+            "programacion",
+            "numero_libreto",
+            "valor_mod",
+            "valor_mat",
+            "observacion",
+            "planillas_conciliacion",
+            "planillas_firmadas",
+            "estado_libreto",
+            "es_ultimo_libreto",
+            "trabajo",
+    )

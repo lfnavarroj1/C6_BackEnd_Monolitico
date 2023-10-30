@@ -10,7 +10,7 @@ from ...static_data.models.circuito import Circuito
 from ...static_data.models.contrato import Contrato
 from ..errores import CampoRequeridoError
 
-# from django.db.models import Q
+from django.db.models import Q
 # from ...users.models import User
 
 
@@ -46,6 +46,8 @@ class TrabajoManager(models.Manager):
                     trabajo_data[campo]=""
             else:
                  trabajo_data[campo]=""
+
+        print("Llego aquí")
         
         # CAMPOS OBLIGATORIOS
         campos_obligatorios=["proceso", "alcance", "unidad_territorial", "municipio","direccion", "vereda", "subestacion", "circuito", "contrato"]
@@ -96,11 +98,14 @@ class TrabajoManager(models.Manager):
         # 2. FILTRAR EL TRABAJO A MODIFICAR
         trabajo_actualizado=self.get(pk=id_control)
 
+        print("Trabajo Data")
+        print(trabajo_data)
+
         campos_actualizables=[
             "pms_quotation",
             "pms_need",
-            "ruta_proceso",
             "caso_radicado",
+            "ruta_proceso",
             "alcance",
             "estructura_presupuestal",
             "priorizacion",
@@ -111,6 +116,7 @@ class TrabajoManager(models.Manager):
             "subestacion",
             "circuito",
             "contrato",
+            "ticket",
         ]
 
         # CAMPOS RELACIONADOS
@@ -120,22 +126,22 @@ class TrabajoManager(models.Manager):
                 if campo=="unidad_territorial":
                     setattr(trabajo_actualizado,"unidad_territorial",UnidadTerritorial.objects.get(pk=trabajo_data["unidad_territorial"]))
 
-                elif "municipio" in trabajo_data:
+                elif campo=="municipio":
                     setattr(trabajo_actualizado,"municipio", Municipio.objects.get(pk=trabajo_data["municipio"]))
 
-                elif "vereda" in trabajo_data:
+                elif campo=="vereda":
                     setattr(trabajo_actualizado,"vereda", Vereda.objects.get(pk=trabajo_data["vereda"]))
 
-                elif "subestacion" in trabajo_data:
+                elif campo=="subestacion":
                     setattr(trabajo_actualizado,"subestacion", Subestacion.objects.get(pk=trabajo_data["subestacion"]))
 
-                elif "circuito" in trabajo_data:
+                elif campo=="circuito":
                     setattr(trabajo_actualizado,"circuito",Circuito.objects.get(pk=trabajo_data["circuito"]))
 
-                elif "contrato" in trabajo_data:
+                elif campo=="contrato":
                     setattr(trabajo_actualizado,"contrato",Contrato.objects.get(pk=trabajo_data["contrato"]))
 
-                elif "estructura_presupuestal" in trabajo_data:
+                elif campo=="estructura_presupuestal":
                     setattr(trabajo_actualizado,"estructura_presupuestal",EstructuraPresupuestal.objects.get(pk=trabajo_data["estructura_presupuestal"]))
                 else:
                     setattr(trabajo_actualizado,campo,trabajo_data[campo])
@@ -145,26 +151,15 @@ class TrabajoManager(models.Manager):
 
 
 
-#  # Buscar Trabajos
-#     def lista_trabajos(self):
-#         # a . Procesos asociados al usuario
-#         if procesos:
-#             print("Algo")
-#         else:
-#             procesos=User.objects.get(id=user.id).process.all()
-
-#         # Estados asociado al usuario.
-
-#         if not(estados):
-#             estados=User.objects.get(id=user.id).state_works.all()
-
-#         # b. Filtro con las condiciones 
-#         result=self.filter(
-#             Q(proceso__in=procesos),
-#             Q(estado_trabajo__in=estados),
-#             Q(pms_quotation__icontains=kword) | Q(caso_radicado__icontains=kword),
-#             )
-#         return result
+    # Filtrar Trabajos
+    def filtrar_trabajos(self,vprocesos,vestados):
+  
+        result=self.filter(
+            Q(proceso__in=vprocesos),
+            Q(ruta_proceso__estado__id_estado__in=vestados)
+            # Q(pms_quotation__icontains=kword) | Q(caso_radicado__icontains=kword),
+            )
+        return result
     
 #     # Listar procesos de un usuario
 #     def lista_procesos_usuario(self,user):

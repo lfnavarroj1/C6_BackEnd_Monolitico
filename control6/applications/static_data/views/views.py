@@ -53,8 +53,9 @@ class ListarUnidadTerritorial(ListAPIView):
 class ListarMunicipio(ListAPIView):
     serializer_class=MunicipioSerializer
     def get_queryset(self):
-        trabajos=Municipio.objects.all()
-        return trabajos
+        numero_ut=self.kwargs.get('pk')
+        municipios=Municipio.objects.filter(unidad_territorial_id=numero_ut)
+        return municipios
     
 class ListarVereda(ListAPIView):
     serializer_class=VeredaSerializer
@@ -66,9 +67,10 @@ class ListarVereda(ListAPIView):
             payload=jwt.decode(token,'secret',algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Unauthenticated!")
-
-        trabajos=Vereda.objects.all()
-        return trabajos
+        
+        municipio_pk=self.kwargs.get('pk')
+        veredas=Vereda.objects.filter(municipio_id=municipio_pk)
+        return veredas
     
 class ListarSubestacion(ListAPIView):
     serializer_class=SubestacionSerializer
@@ -79,5 +81,6 @@ class ListarSubestacion(ListAPIView):
 class ListarCircuito(ListAPIView):
     serializer_class=CircuitoSerializer
     def get_queryset(self):
-        trabajos=Circuito.objects.all()
-        return trabajos
+        subestacion_pk=self.kwargs.get('pk')
+        circuitos=Circuito.objects.filter(subestacion_id=subestacion_pk)
+        return circuitos

@@ -15,7 +15,67 @@ from .views.trazabilidad_view import(
     ListarTrazabilidad
 )
 
+from .views.soportes_iniciales_view import(
+    SubirArchivoView,
+    EliminarSoporteInicial,
+    ListarSoportesIniciales,
+    DescargaArchivo
+)
+
+from .views.valorizacion_view import(
+    CargarValorizacionView,
+    ListarValorizacion,
+    ObtenerValorizacion,
+    ActualizarValorizacion,
+    EliminarValorizacion,
+)
+
+from .views.odm_view import(
+    CrearOdm,
+    ListarOdm,
+    ObtenerOdm,
+    ActualizarOdm,
+    EliminarOdm,
+)
+
+from .views.lcl_view import(
+    CrearLcl,
+    ListarLcl,
+    ObtenerLcl,
+    ActualizarLcl,
+    EliminarLcl,
+)
+
+from .views.programacion_view import(
+    CrearProgramacion,
+    ListarProgramacion,
+    ObtenerProgramacion,
+    ActualizarProgramacion,
+    EliminarProgramacion,
+)
+
+from .views.maniobra_view import(
+    CrearManiobra,
+    ListarManiobras,
+    ObtenerManiobra,
+    ActualizarManiobra,
+    EliminarManiobra,
+)
+
+from .views.libreto_view import(
+    CargarLibreto,
+    ListarLibreto,
+    ObtenerLibreto,
+    ActualizarLibreto,
+    EliminarLibreto,
+)
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
+    # Trabajos
     path('lista/', ListarTrabajos.as_view(), name="'work-list" ),
     path('crear/', CrearTrabajo.as_view(), name="'work-create" ),
     path('actualizar/<pk>', ActualizarTrabajo.as_view(), name="'work-update" ),
@@ -27,5 +87,47 @@ urlpatterns = [
     # Rutas trazabilidad
     path('crear_traza/', CrearTrazabilidad.as_view(), name="'crear-traza" ),
     path('trazabilidad/<pk>', ListarTrazabilidad.as_view(), name="trazabilidad-trabajo" ),
-]
+    # Cargue de archivos iniciales
+    path('cargar-soportes/', SubirArchivoView.as_view(), name="cargar-soportes" ),
+    path('eliminar-soportes/<pk>', EliminarSoporteInicial.as_view(), name="eliminar-soportes" ),
+    path('listar-soportes/<pk>', ListarSoportesIniciales.as_view(), name="listar-soportes" ),
+    path('descargar-soportes/<id>', DescargaArchivo.as_view(), name="descargar-soportes" ),
+    # 2. Presupuesto
+    path('cargar-presupuesto/', CargarValorizacionView.as_view(), name="cargar-presupuesto" ),
+    path('listar-presupuesto/<pk>', ListarValorizacion.as_view(), name="listar-presupuesto" ),
+    path('detalle-presupuesto/<pk>', ObtenerValorizacion.as_view(), name="'detalle-presupuesto" ),
+    path('actualizar-presupuesto/<pk>', ActualizarValorizacion.as_view(), name="'actualizar-presupuesto" ),
+    path('eliminar-presupuesto/<pk>', EliminarValorizacion.as_view(), name="eliminar-presupuesto" ),
+    # Odm
+    path('cargar-odm/', CrearOdm.as_view(), name="cargar-odm" ),
+    path('listar-odm/<pk>', ListarOdm.as_view(), name="listar-odm" ),
+    path('detalle-odm/<pk>', ObtenerOdm.as_view(), name="'detalle-odm" ),
+    path('actualizar-odm/<pk>', ActualizarOdm.as_view(), name="'actualizar-odm" ),
+    path('eliminar-odm/<pk>', EliminarOdm.as_view(), name="eliminar-odm" ),
+    # Lcl
+    path('cargar-lcl/', CrearLcl.as_view(), name="cargar-lcl" ),
+    path('listar-lcl/<pk>', ListarLcl.as_view(), name="listar-lcl" ),
+    path('detalle-lcl/<pk>', ObtenerLcl.as_view(), name="'detalle-lcl" ),
+    path('actualizar-lcl/<pk>', ActualizarLcl.as_view(), name="'actualizar-lcl" ),
+    path('eliminar-lcl/<pk>', EliminarLcl.as_view(), name="eliminar-lcl" ),
+    # # Programación
+    path('cargar-programacion/', CrearProgramacion.as_view(), name="cargar-programacion" ),
+    path('listar-programacion/<pk>', ListarProgramacion.as_view(), name="listar-programacion" ),
+    path('detalle-programacion/<pk>', ObtenerProgramacion.as_view(), name="'detalle-programacion" ),
+    path('actualizar-programacion/<pk>', ActualizarProgramacion.as_view(), name="'actualizar-programacion" ),
+    path('eliminar-programacion/<pk>', EliminarProgramacion.as_view(), name="eliminar-programacion" ),
+    # # Maniobras
+    path('cargar-maniobra/', CrearManiobra.as_view(), name="cargar-maniobra" ),
+    path('listar-maniobra/<pk>', ListarManiobras.as_view(), name="listar-maniobra" ),
+    path('detalle-maniobra/<pk>', ObtenerManiobra.as_view(), name="'detalle-maniobra" ),
+    path('actualizar-maniobra/<pk>', ActualizarManiobra.as_view(), name="'actualizar-maniobra" ),
+    path('eliminar-maniobra/<pk>', EliminarManiobra.as_view(), name="eliminar-maniobra" ),
+    # # Libretos
+    path('cargar-libreto/', CargarLibreto.as_view(), name="cargar-libreto" ),
+    path('listar-libreto/<pk>', ListarLibreto.as_view(), name="listar-libreto" ),
+    path('detalle-libreto/<pk>', ObtenerLibreto.as_view(), name="'detalle-libreto" ),
+    path('actualizar-libreto/<pk>', ActualizarLibreto.as_view(), name="'actualizar-libreto" ),
+    path('eliminar-libreto/<pk>', EliminarLibreto.as_view(), name="eliminar-libreto" ),
+
+]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 

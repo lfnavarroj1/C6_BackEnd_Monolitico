@@ -1,5 +1,8 @@
 from django.db import models
 from django.utils import timezone
+from ...work_management.models.trabajo import Trabajo
+from ...static_data.models.nivel_tension import NivelTension
+from ..managers.valorizacion_manager import ValorizacionManager
 # Create your models here.
 
 class Valorizacion(models.Model):
@@ -8,18 +11,20 @@ class Valorizacion(models.Model):
         ('0','Revisión'),
         ('1','Rechazado'),
         ('2','Aprobado'),
-        ('3','Anulado'),
+        ('3','Aprobado con modificación'),
+        ('4','Anulado'),
     )
 
     id_valorizacion=models.CharField(primary_key=True, max_length=23, unique=True, default="N/A", editable=False)
-    trabajo = models.CharField(max_length=20)
+    trabajo = models.ForeignKey(Trabajo, on_delete=models.PROTECT)
     monto_mano_obra=models.FloatField()
     monto_materiales=models.FloatField()
     estado = models.CharField(max_length=1,choices=ESTADO_CHOICES)
-    nivel_tension=models.CharField(max_length=8)
+    nivel_tension=models.ForeignKey(NivelTension, on_delete=models.PROTECT)
     presupuesto=models.FileField(upload_to='presupuesto',blank=True, null=True)
-    estado_trabajo=models.CharField(max_length=20)
 
+    objects=ValorizacionManager()
+    
     def save(self, *args, **kwargs):
         if self.id_valorizacion == "N/A":
             current_year = timezone.now().year
@@ -29,7 +34,14 @@ class Valorizacion(models.Model):
                 next_id = last_id + 1
             else:
                 next_id = 1
-            self.id_valorizacion = f'PR-{current_year}-{str(next_id).zfill(2)}'
+            self.id_valorizacion = f'VL-{current_year}-{str(next_id).zfill(8)}'
+
+        # Generar la ruta de subida del archivo
+        if bool(self.presupuesto):
+            ruta_archivo = f'{self.trabajo}/{self.id_valorizacion}/{self.presupuesto.name}'
+            self.presupuesto.name = ruta_archivo
+        
+        
         super(Valorizacion, self).save(*args, **kwargs)
 
     def __str__(self):
