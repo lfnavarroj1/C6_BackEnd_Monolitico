@@ -1,2 +1,9 @@
 # Entorno de trabajo
 env_c6/
+control6/control6/media/*
+
+# Ignorar las migraciones de Django
+control6/applications/external_system/migrations/*
+control6/applications/users/migrations/*
+control6/applications/static_data/migrations/*
+control6/applications/work_management/migrations/*
