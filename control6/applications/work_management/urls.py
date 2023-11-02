@@ -52,6 +52,7 @@ from .views.programacion_view import(
     ObtenerProgramacion,
     ActualizarProgramacion,
     EliminarProgramacion,
+    ListarCuadrillasDisponibles,
 )
 
 from .views.maniobra_view import(
@@ -114,6 +115,7 @@ urlpatterns = [
     path('cargar-programacion/', CrearProgramacion.as_view(), name="cargar-programacion" ),
     path('listar-programacion/<pk>', ListarProgramacion.as_view(), name="listar-programacion" ),
     path('detalle-programacion/<pk>', ObtenerProgramacion.as_view(), name="'detalle-programacion" ),
+    path('lista-cuadrillas/<date>', ListarCuadrillasDisponibles.as_view(), name="'lista-cuadrillas" ),
     path('actualizar-programacion/<pk>', ActualizarProgramacion.as_view(), name="'actualizar-programacion" ),
     path('eliminar-programacion/<pk>', EliminarProgramacion.as_view(), name="eliminar-programacion" ),
     # # Maniobras

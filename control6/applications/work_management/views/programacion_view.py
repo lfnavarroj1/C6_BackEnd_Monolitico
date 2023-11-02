@@ -9,6 +9,9 @@ from rest_framework.views import APIView
 from ..models.programacion import Programacion
 from ..serializers.programacion_serializer import ProgramacionSerializer,CrearProgramacionSerializer
 from ...users.models import User
+from ...static_data.serializers.cuadrilla_serializer import CuadrillaSerializer
+from ...static_data.models.cuadrilla import Cuadrilla
+
 
 # from django.db.models import F
 # from django.urls import reverse_lazy
@@ -50,9 +53,46 @@ class ListarProgramacion(ListAPIView):
             payload=jwt.decode(token,'secret',algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Unauthenticated!")
+        
 
         pk = self.kwargs.get('pk')
         queryset=Programacion.objects.obtener_programacion(pk)
+        return queryset
+# ---------------------------------------------------------------------
+
+# 2.1 LISTAR CUADRILLAS DISPONIBLES EN UNA FECHA ----------------------
+class ListarCuadrillasDisponibles(ListAPIView):
+    serializer_class=CuadrillaSerializer
+    # serializer_class=ProgramacionSerializer
+    def get_queryset(self):
+        token=self.request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated!")
+        try:
+            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Unauthenticated!")
+        
+        lista_cuadrillas=set(list(Cuadrilla.objects.all()))
+        # print(lista_cuadrillas)
+        date = self.kwargs.get('date')
+        programacion_fecha=Programacion.objects.filter(fecha_ejecucion=date)
+        # cuadrillas=programacion_fecha.cuadrillas
+        cuadrillas_programadas_fecha=[]
+
+
+        for programacion in programacion_fecha:
+            cuadrillas=programacion.cuadrillas.all()
+            cuadrillas_programadas_fecha.append(list(cuadrillas))
+
+        lista_programada=set([cuadrilla for list in cuadrillas_programadas_fecha for cuadrilla in list])
+        lista_disponible=list(lista_cuadrillas.difference(lista_programada))
+
+        # print(lista_disponible)
+
+        # print(cudrillas_programadas_fecha)
+        # queryset=Programacion.objects.filter(fecha_ejecucion=date)
+        queryset=list(lista_cuadrillas.difference(lista_programada))
         return queryset
 # ---------------------------------------------------------------------
 
@@ -107,7 +147,7 @@ class ActualizarProgramacion(UpdateAPIView):
         except Exception as e:
             mensaje = str(e)
             status_code = e.status_code
-            return Response({'error': mensaje}, status=status_code)
+            return Response({'error': mensaje}, status=401)
 # ---------------------------------------------------------------------
 
 

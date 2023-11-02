@@ -18,10 +18,7 @@ class LclManager(models.Manager):
         datos["alcance"]=req["alcance"]
 
         lcl=self.create(**datos) # Falta implementar manejo de excepciones
-        print(req["odms"])
-
         lista_odm=list(map(int,req["odms"].split(',')))
-        print(lista_odm)
         
  
 

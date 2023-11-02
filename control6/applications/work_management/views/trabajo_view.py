@@ -40,10 +40,11 @@ class ListarTrabajos(ListAPIView):
         
         vp1=self.request.query_params.get('vp','')
         ve1=self.request.query_params.get('ve','')
+        kword=self.request.query_params.get('kw','')
         vect_procesos=vp1.split(',')
         vect_estados=ve1.split(',')
 
-        response=Trabajo.objects.filtrar_trabajos(vect_procesos,vect_estados)
+        response=Trabajo.objects.filtrar_trabajos(vect_procesos,vect_estados,kword)
         return response
 # ---------------------------------------------------------------------
 

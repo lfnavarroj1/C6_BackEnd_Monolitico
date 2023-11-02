@@ -152,12 +152,12 @@ class TrabajoManager(models.Manager):
 
 
     # Filtrar Trabajos
-    def filtrar_trabajos(self,vprocesos,vestados):
-  
+    def filtrar_trabajos(self,vprocesos,vestados,kword):
+
         result=self.filter(
             Q(proceso__in=vprocesos),
-            Q(ruta_proceso__estado__id_estado__in=vestados)
-            # Q(pms_quotation__icontains=kword) | Q(caso_radicado__icontains=kword),
+            Q(ruta_proceso__estado__id_estado__in=vestados),
+            Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword),
             )
         return result
     

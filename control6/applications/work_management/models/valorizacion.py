@@ -4,6 +4,7 @@ from ...work_management.models.trabajo import Trabajo
 from ...static_data.models.nivel_tension import NivelTension
 from ..managers.valorizacion_manager import ValorizacionManager
 # Create your models here.
+import os
 
 class Valorizacion(models.Model):
 
@@ -37,7 +38,9 @@ class Valorizacion(models.Model):
             self.id_valorizacion = f'VL-{current_year}-{str(next_id).zfill(8)}'
 
         # Generar la ruta de subida del archivo
-        if bool(self.presupuesto):
+        # print(self.presupuesto.field.has_changed(self.presupuesto, self.presupuesto.name))
+
+        if bool(self.presupuesto) and not os.path.exists(self.presupuesto.path):
             ruta_archivo = f'{self.trabajo}/{self.id_valorizacion}/{self.presupuesto.name}'
             self.presupuesto.name = ruta_archivo
         

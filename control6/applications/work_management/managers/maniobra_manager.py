@@ -23,7 +23,7 @@ class ManiobraManager(models.Manager):
         return Response({'message': f'La {maniobra} fue agregada con éxito'}, status=201)
     
     def obtener_maniobras(self,id_control):
-        result=self.filter(programacion__lcl__odms__valorizacion__trabajo__id_control=id_control).distinct()
+        result=self.filter(programacion__lcls__odms__valorizacion__trabajo__id_control=id_control).distinct()
         return result
     
 

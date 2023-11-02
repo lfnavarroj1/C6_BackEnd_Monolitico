@@ -178,8 +178,8 @@ class ProgramacionAdmin(ImportExportModelAdmin):
     list_display=(
         'id_programcion',
         'fecha_ejecucion',
-        'cuadrilla',
-        'lcl',
+        # 'cuadrilla',
+        # 'lcl',
         'alcance',
         'estado',
     )

@@ -16,8 +16,8 @@ class Programacion(models.Model):
     )
     id_programcion = models.CharField(primary_key=True, max_length=25, unique=True, default="N/A", editable=False)
     fecha_ejecucion = models.DateField(auto_now=False, auto_now_add=False)
-    cuadrilla= models.ForeignKey(Cuadrilla, on_delete=models.PROTECT)
-    lcl = models.ForeignKey(Lcl, on_delete=models.PROTECT)
+    cuadrillas= models.ManyToManyField(Cuadrilla)
+    lcls = models.ManyToManyField(Lcl)
     alcance = models.TextField()
     estado=models.CharField(max_length=1,choices=ESTADO_PROGRA)
 

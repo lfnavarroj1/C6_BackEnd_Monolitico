@@ -5,6 +5,8 @@ from ..models.trabajo import Trabajo
 from ...users.models import User
 from ..managers.libreto_manager import LibretoManager
 
+import os
+
 # Create your models here.
 
 class Libreto(models.Model):
@@ -44,12 +46,12 @@ class Libreto(models.Model):
             self.id_libreto = f'LB-{current_year}-{str(next_id).zfill(8)}'
 
         # Generar la ruta de subida del archivo
-        if bool(self.planillas_conciliacion):
+        if bool(self.planillas_conciliacion) and not os.path.exists(self.planillas_conciliacion.path):
             ruta_archivo1 = f'{self.trabajo}/{self.id_libreto}/{self.planillas_conciliacion.name}'
             self.planillas_conciliacion.name = ruta_archivo1
 
 
-        if bool(self.planillas_firmadas):
+        if bool(self.planillas_firmadas) and not os.path.exists(self.planillas_firmadas.path):
             ruta_archivo2 = f'{self.trabajo}/{self.id_libreto}/{self.planillas_firmadas.name}'
             self.planillas_firmadas.name = ruta_archivo2
 

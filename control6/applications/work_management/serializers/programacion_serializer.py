@@ -7,8 +7,8 @@ class ProgramacionSerializer(serializers.ModelSerializer):
         fields=(
             "id_programcion",
             "fecha_ejecucion",
-            "cuadrilla",
-            "lcl",
+            "cuadrillas",
+            "lcls",
             "alcance",
             "estado",
         )
@@ -18,8 +18,8 @@ class CrearProgramacionSerializer(serializers.ModelSerializer):
         model=Programacion
         fields=(
             "fecha_ejecucion",
-            "cuadrilla",
-            "lcl",
+            "cuadrillas",
+            "lcls",
             "alcance",
             "estado",
         )
