@@ -54,7 +54,7 @@ class ListarMunicipio(ListAPIView):
     serializer_class=MunicipioSerializer
     def get_queryset(self):
         numero_ut=self.kwargs.get('pk')
-        municipios=Municipio.objects.filter(unidad_territorial_id=numero_ut)
+        municipios=Municipio.objects.filter(unidad_territorial__numero=numero_ut)
         return municipios
     
 class ListarVereda(ListAPIView):
