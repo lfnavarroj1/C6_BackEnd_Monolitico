@@ -129,7 +129,7 @@ class MunicipioAdmin(ImportExportModelAdmin):
     list_display=(
         'codigo_municipio',
         'nombre',
-        'unidad_territorial',
+        # 'unidad_territorial',
     )
 
 
