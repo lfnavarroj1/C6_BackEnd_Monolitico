@@ -42,7 +42,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model=User
         fields=(
             'username',
-            'password'
+            'password',
+            'assigned'
             )
         extra_kwargs={'password':{'write_only':True}}
     
