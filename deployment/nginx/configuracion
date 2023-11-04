@@ -15,7 +15,7 @@ server {
     }
 
     location /media/ {
-        alias   /webapps/back-c6/C6_BackEnd_Monolitico/control6/media/;
+        alias   /webapps/back-c6/C6_BackEnd_Monolitico/control6/control6/media/;
     }
 
     location / {
