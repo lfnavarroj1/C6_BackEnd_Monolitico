@@ -23,6 +23,7 @@ class ValorizacionManager(models.Manager):
         #     if os.path.exists(file_path):
         #         os.remove(file_path)
 
+        print(valorizacion_data)
 
         campos_actualizables=[
             "monto_mano_obra",

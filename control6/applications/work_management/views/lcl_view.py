@@ -109,8 +109,8 @@ class ActualizarLcl(UpdateAPIView):
             return Response({'message': f"La {response} fue actualizada"}, status=201)
         except Exception as e:
             mensaje = str(e)
-            status_code = e.status_code
-            return Response({'error': mensaje}, status=status_code)
+            status_code = 400
+            return Response({'error': mensaje}, status=400)
 # ---------------------------------------------------------------------
 
 

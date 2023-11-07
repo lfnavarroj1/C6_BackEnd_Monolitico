@@ -34,12 +34,13 @@ class LclManager(models.Manager):
     def actualizar_lcl(self, lcl_data,lcl):
         lcl_actual=self.get(pk=lcl)
 
+        print(lcl_data)
+
         campos_actualizables=[
             "estado_lcl",
             "indicador_impuesto",
             "valor_mano_obra",
             "valor_materiales",
-            "responsable_scm",
             "texto_scm",
             "alcance",
             "odms",
@@ -47,9 +48,11 @@ class LclManager(models.Manager):
 
         # CAMPOS RELACIONADOS
         for campo in campos_actualizables:
+            print(campo)
             if campo in lcl_data:
                 if campo=="odms":
-                    lcl_actual.odms.set(Odm.objects.filter(pk__in=lcl_data["odms"]))
+                    lista_odm=list(map(int,lcl_data["odms"].split(',')))
+                    lcl_actual.odms.set(Odm.objects.filter(pk__in=lista_odm))
                 elif campo=="responsable_scm":
                     setattr(lcl_actual,campo,User.objects.get(pk=lcl_data["responsable_scm"]))
                 else:
