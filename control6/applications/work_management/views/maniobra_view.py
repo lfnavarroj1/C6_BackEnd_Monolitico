@@ -73,7 +73,7 @@ class ObtenerManiobra(RetrieveAPIView):
 
         # Obtiene el parámetro de la URL 'pk' para buscar el trabajo específico
         pk = self.kwargs.get('pk')
-        queryset = Maniobra.objects.filter(mabiobra=pk)
+        queryset = Maniobra.objects.filter(maniobra=pk)
         return queryset
 # ---------------------------------------------------------------------
 
@@ -94,19 +94,10 @@ class ActualizarManiobra(UpdateAPIView):
 
         try:
             response=Maniobra.objects.actualizar_maniobra(request.data, pk)
-            # dic=request.data
-            # campos_actualizados=""
-            # for campo in dic.keys():
-            #     campos_actualizados=campos_actualizados +", "+campo
-            
-            # datos={}
-            # datos["trabajo"]=response.id_control
-            # datos["comentario_trazabilidad"]=f"Se actualizaron los campos {campos_actualizados} del trabajo {response.id_control}"
-            # Odm.objects.registrar_trazabilidad(datos, usuario)
             return Response({'message': f"La {response} fue actualizada"}, status=201)
         except Exception as e:
             mensaje = str(e)
-            status_code = e.status_code
+            status_code = 400
             return Response({'error': mensaje}, status=status_code)
 # ---------------------------------------------------------------------
 

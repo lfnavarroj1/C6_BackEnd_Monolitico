@@ -9,8 +9,7 @@ from ..models.programacion import Programacion
 class ManiobraManager(models.Manager):
     def registrar_maniobra(self,req):
         datos={}
-        datos["mabiobra"]=req["mabiobra"]
-        datos["programacion"]=Programacion.objects.get(pk=req["programacion"])
+        datos["maniobra"]=req["maniobra"]
         datos["tipo_maniobra"]=req["tipo_maniobra"]
         datos["alcance"]=req["alcance"]
         datos["fecha_inicio"]=req["fecha_inicio"]
@@ -18,12 +17,12 @@ class ManiobraManager(models.Manager):
         datos["estado_maniobra"]=req["estado_maniobra"]
 
         maniobra=self.create(**datos) # Falta implementar manejo de excepciones
-        # lcl.odms.set(Odm.objects.filter(pk__in=req["odms"]))
-
+        lista_programaciones=list(map(str,req["programaciones"].split(',')))
+        maniobra.programaciones.set(Programacion.objects.filter(pk__in=lista_programaciones))
         return Response({'message': f'La {maniobra} fue agregada con éxito'}, status=201)
     
     def obtener_maniobras(self,id_control):
-        result=self.filter(programacion__lcls__odms__valorizacion__trabajo__id_control=id_control).distinct()
+        result=self.filter(programaciones__lcls__odms__valorizacion__trabajo__id_control=id_control).distinct()
         return result
     
 
@@ -31,7 +30,7 @@ class ManiobraManager(models.Manager):
         maniobra_actual=self.get(pk=maniobra)
 
         campos_actualizables=[
-            "programacion",
+            "programaciones",
             "tipo_maniobra",
             "alcance",
             "fecha_inicio",
@@ -42,8 +41,10 @@ class ManiobraManager(models.Manager):
         # CAMPOS RELACIONADOS
         for campo in campos_actualizables:
             if campo in maniobra_data:
-                if campo=="programacion":
-                    setattr(maniobra_actual,campo,Programacion.objects.get(pk=maniobra_data["programacion"]))
+
+                if campo=="programaciones":
+                    lista_programaciones=list(map(str,maniobra_data["programaciones"].split(',')))
+                    maniobra_actual.programaciones.set(Programacion.objects.filter(pk__in=lista_programaciones))
                 else:
                     setattr(maniobra_actual,campo,maniobra_data[campo])
         

@@ -34,8 +34,6 @@ class LclManager(models.Manager):
     def actualizar_lcl(self, lcl_data,lcl):
         lcl_actual=self.get(pk=lcl)
 
-        print(lcl_data)
-
         campos_actualizables=[
             "estado_lcl",
             "indicador_impuesto",

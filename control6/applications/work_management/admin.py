@@ -190,8 +190,8 @@ class ManiobraResource(resources.ModelResource):
     class Meta:
         model=Maniobra
         fields=(
-            'mabiobra',
-            'programacion',
+            'maniobra',
+            'programaciones',
             'tipo_maniobra',
             'alcance',
             'fecha_inicio',
@@ -203,8 +203,8 @@ class ManiobraResource(resources.ModelResource):
 class ManiobraAdmin(ImportExportModelAdmin):
     resource_class=ManiobraResource
     list_display=(
-        'mabiobra',
-        'programacion',
+        'maniobra',
+        # 'programacion',
         'tipo_maniobra',
         'alcance',
         'fecha_inicio',

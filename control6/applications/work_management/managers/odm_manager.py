@@ -7,6 +7,7 @@ from ..models.valorizacion import Valorizacion
 
 class OdmManager(models.Manager):
     def registrar_odm(self,req):
+
         datos={}
         datos["odm"]=req["odm"]
         datos["valorizacion"]=Valorizacion.objects.get(pk=req["valorizacion"])

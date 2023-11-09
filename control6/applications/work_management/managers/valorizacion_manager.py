@@ -23,7 +23,6 @@ class ValorizacionManager(models.Manager):
         #     if os.path.exists(file_path):
         #         os.remove(file_path)
 
-        print(valorizacion_data)
 
         campos_actualizables=[
             "monto_mano_obra",
@@ -40,7 +39,6 @@ class ValorizacionManager(models.Manager):
                 if campo=="nivel_tension":
                     setattr(valorizacion_actual,"nivel_tension",NivelTension.objects.get(pk=valorizacion_data["nivel_tension"]))
                 elif campo=="presupuesto":
-                    print("Entró a cambiar el archivo")
                     if valorizacion_actual.presupuesto:
                         file_path=valorizacion_actual.presupuesto.path
                     if os.path.exists(file_path):

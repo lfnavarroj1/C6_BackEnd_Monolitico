@@ -12,9 +12,10 @@ class Maniobra(models.Model):
         ('0','PENDIENTE POR APROBAR'),
         ('1', 'APROBADO'),
         ('2', 'PARA CORREGIR'),
+        ('3', 'EJECUTADO'),
     )
-    mabiobra=models.CharField(max_length=15, primary_key=True)
-    programacion = models.ForeignKey(Programacion, on_delete=models.PROTECT)
+    maniobra=models.CharField(max_length=15, primary_key=True)
+    programaciones = models.ManyToManyField(Programacion)
     tipo_maniobra=models.CharField(max_length=1,choices=TIPO_MANIOBRAS)
     alcance=models.TextField()
     fecha_inicio = models.DateField(auto_now=False, auto_now_add=False)

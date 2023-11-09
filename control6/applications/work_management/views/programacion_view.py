@@ -92,7 +92,29 @@ class ListarCuadrillasDisponibles(ListAPIView):
 
         # print(cudrillas_programadas_fecha)
         # queryset=Programacion.objects.filter(fecha_ejecucion=date)
-        queryset=list(lista_cuadrillas.difference(lista_programada))
+        queryset=lista_disponible
+        return queryset
+# ---------------------------------------------------------------------
+
+
+# 2.2 LISTAR CUADRILLAS DEL TRABAJO ----------------------
+class ListarCuadrillasTrabajo(ListAPIView):
+    serializer_class=CuadrillaSerializer
+    # serializer_class=ProgramacionSerializer
+    def get_queryset(self):
+        token=self.request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated!")
+        try:
+            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Unauthenticated!")
+        
+        cuadrillas = self.request.query_params.get('q','')
+        cuadrillas=cuadrillas.split(',')
+        lista_cuadrillas=Cuadrilla.objects.filter(codigo_cuadrilla__in=cuadrillas).all()
+        # print(lista_cuadrillas)
+        queryset=lista_cuadrillas
         return queryset
 # ---------------------------------------------------------------------
 

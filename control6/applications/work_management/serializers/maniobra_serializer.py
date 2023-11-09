@@ -6,8 +6,8 @@ class ManiobraSerializer(serializers.ModelSerializer):
     class Meta:
         model=Maniobra
         fields=(
-            "mabiobra",
-            "programacion",
+            "maniobra",
+            "programaciones",
             "tipo_maniobra",
             "alcance",
             "fecha_inicio",

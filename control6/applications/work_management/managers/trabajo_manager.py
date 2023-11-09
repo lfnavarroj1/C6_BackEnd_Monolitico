@@ -47,7 +47,6 @@ class TrabajoManager(models.Manager):
             else:
                  trabajo_data[campo]=""
 
-        print("Llego aquí")
         
         # CAMPOS OBLIGATORIOS
         campos_obligatorios=["proceso", "alcance", "unidad_territorial", "municipio","direccion", "vereda", "subestacion", "circuito", "contrato"]
@@ -97,9 +96,6 @@ class TrabajoManager(models.Manager):
 
         # 2. FILTRAR EL TRABAJO A MODIFICAR
         trabajo_actualizado=self.get(pk=id_control)
-
-        print("Trabajo Data")
-        print(trabajo_data)
 
         campos_actualizables=[
             "pms_quotation",

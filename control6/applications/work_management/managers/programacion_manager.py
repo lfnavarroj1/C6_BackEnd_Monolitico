@@ -50,10 +50,10 @@ class ProgramacionManager(models.Manager):
             if campo in programacion_data:
                 if campo=="cuadrillas":
                     # setattr(programacion_actual,campo,Cuadrilla.objects.get(pk=programacion_data["cuadrilla"]))
-                    lista_cuadrillas=list(map(str,programacion_data["cuadrillas"]))
+                    lista_cuadrillas=list(map(str,programacion_data["cuadrillas"].split(',')))
                     programacion_actual.cuadrillas.set(Cuadrilla.objects.filter(pk__in=lista_cuadrillas))
                 elif campo=="lcls":
-                    lista_lcls=list(map(int,programacion_data["lcls"]))
+                    lista_lcls=list(map(int,programacion_data["lcls"].split(',')))
                     programacion_actual.lcls.set(Lcl.objects.filter(pk__in=lista_lcls))
                     # setattr(programacion_actual,campo,Lcl.objects.get(pk=programacion_data["lcl"]))
                 else:
