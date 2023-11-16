@@ -30,6 +30,8 @@ class Trabajo(models.Model):
     direccion = models.CharField(max_length=160)
     subestacion = models.ForeignKey(Subestacion, on_delete=models.PROTECT)
     circuito = models.ForeignKey(Circuito, on_delete=models.PROTECT)
+    equipo_referencia = models.CharField(max_length=25, null=True, blank=True)
+    carga_solicitada = models.CharField(max_length=25, null=True, blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.PROTECT)
     ticket=models.CharField(max_length=50, null=True, blank=True)
 

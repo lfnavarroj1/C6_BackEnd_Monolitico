@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from ..models.libreto import Libreto
 from ..serializers.libreto_serializer import CrearLibretoSerializer, LibretoSerializer
 from ..models.trabajo import Trabajo
+from ..models.lcl import Lcl
 from ..models.programacion import Programacion
 from rest_framework.exceptions import AuthenticationFailed
 import jwt,json, os #, datetime
@@ -19,6 +20,7 @@ from ...users.models import User
 from django.http import FileResponse, HttpResponse
 from django.conf import settings
 
+from ..exceptions.libreto_exceptions import LibretoNoEncontrado
 # import magic
 import mimetypes
 
@@ -27,22 +29,24 @@ class CargarLibreto(APIView):
     def post(self, request, *args, **kwargs):
         token=request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         try:
             payload=jwt.decode(token,'secret',algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         
         # usuario=User.objects.get(username=payload['username'])
         # presupuesto = request.data.get('presupuesto') 
 
         # Crear una instancia del modelo SoportesIniciales con el archivo
-        data=request.data
-        prog=data['programacion']
-        tra=data['trabajo']
-
-        data['programacion']=Programacion.objects.get(pk=prog)
-        data['trabajo']=Trabajo.objects.get(pk=tra)
+        # data=request.data.copy() # Para que el diccionario no sea inmutable
+        # prog=data['programacion']
+        # tra=data['trabajo']
+        # lcl=data['lcl']
+        print(request.data)
+        # data['programacion']=Programacion.objects.get(pk=prog)
+        # data['trabajo']=Trabajo.objects.get(pk=tra)
+        # data['lcl']=Lcl.objects.get(pk=lcl)
 
         # Este es un ejemplo de como accedder o navegar entre tablas relacionadas habilitar para acceder.
         # print(data['programacion'].lcl.odms.all()[0].valorizacion.trabajo)
@@ -67,11 +71,11 @@ class ListarLibreto(ListAPIView):
     def get_queryset(self):
         token=self.request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         try:
             payload=jwt.decode(token,'secret',algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         
         id_control=self.kwargs.get('pk')
         response=Libreto.objects.filter(trabajo__id_control=id_control).all()
@@ -86,16 +90,17 @@ class ObtenerLibreto(RetrieveAPIView):
     def get_queryset(self):
         token = self.request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
 
         try:
             payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
 
         # Obtiene el parámetro de la URL 'pk' para buscar el trabajo específico
         pk = self.kwargs.get('pk')
         queryset = Libreto.objects.filter(id_libreto=pk)
+
         return queryset
 # -------------------------------------------------------------------------------
 
@@ -105,14 +110,16 @@ class ActualizarLibreto(UpdateAPIView):
     def put(self, request, pk):
         token=request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         try:
             payload=jwt.decode(token,'secret',algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
 
         # usuario=User.objects.get(username=payload['username'])
         pk = self.kwargs.get('pk')
+
+        print(request.data)
 
         try:
             response=Libreto.objects.actualizar_libreto(request.data, pk)
@@ -129,11 +136,11 @@ class EliminarLibreto(DestroyAPIView):
     def put(self, request):
         token=request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         try:
             payload=jwt.decode(token,'secret',algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         
     queryset=Libreto.objects.all()
     serializer_class=LibretoSerializer

@@ -13,6 +13,8 @@ class C6Modules(models.Model):
     id_module=models.CharField(unique=True, primary_key=True)
     name=models.CharField(max_length=120)
     description=models.CharField(max_length=255)
+    url_modulo=models.CharField(max_length=200, blank=True,null=True)
+
 
 # Create your models here.
 

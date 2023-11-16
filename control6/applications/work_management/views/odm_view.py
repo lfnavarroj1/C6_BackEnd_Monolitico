@@ -34,6 +34,7 @@ class CrearOdm(CreateAPIView):
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Unauthenticated!")
         
+        
         response=Odm.objects.registrar_odm(request.data)
         return response
 # ---------------------------------------------------------------------

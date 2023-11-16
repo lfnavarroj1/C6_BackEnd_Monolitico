@@ -8,6 +8,7 @@ class LibretoSerializer(serializers.ModelSerializer):
         fields=(
             "id_libreto",
             "programacion",
+            "lcl",
             "numero_libreto",
             "valor_mod",
             "valor_mat",
@@ -24,6 +25,7 @@ class CrearLibretoSerializer(serializers.ModelSerializer):
         model=Libreto
         fields=(
             "programacion",
+            "lcl",
             "numero_libreto",
             "valor_mod",
             "valor_mat",

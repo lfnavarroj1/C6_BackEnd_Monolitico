@@ -17,12 +17,7 @@ import os
 class LibretoManager(models.Manager):  
     def actualizar_libreto(self, libreto_data,id_libreto):
         libreto_actual=self.get(pk=id_libreto)
-
-        # if libreto_actual.planillas_firmadas:
-        #     file_path=libreto_actual.planillas_firmadas.path
-        #     if os.path.exists(file_path):
-        #         os.remove(file_path)
-
+    
         campos_actualizables=[
             "numero_libreto",
             "valor_mod",
@@ -31,12 +26,12 @@ class LibretoManager(models.Manager):
             "planillas_conciliacion",
             "planillas_firmadas",
             "estado_libreto",
+            "es_ultimo_libreto",
         ]
 
         # CAMPOS RELACIONADOS
         for campo in campos_actualizables:
             if campo in libreto_data:
-
                 if campo=="planillas_conciliacion":
                     if libreto_actual.planillas_conciliacion:
                         file_path=libreto_actual.planillas_conciliacion.path
@@ -50,8 +45,14 @@ class LibretoManager(models.Manager):
                         if os.path.exists(file_path):
                             os.remove(file_path)
                     setattr(libreto_actual,"planillas_firmadas",libreto_data["planillas_firmadas"])
+                elif campo=="es_ultimo_libreto":
+                    if libreto_data["es_ultimo_libreto"].lower()=="true":
+                        setattr(libreto_actual,"es_ultimo_libreto",True)
+                    else:
+                        setattr(libreto_actual,"es_ultimo_libreto",False)
                 else:
                     setattr(libreto_actual,campo,libreto_data[campo])
+
 
         libreto_actual.save()
         return libreto_actual

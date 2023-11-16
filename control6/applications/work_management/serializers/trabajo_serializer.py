@@ -41,8 +41,11 @@ class TrabajoSerializer(serializers.ModelSerializer):
             'direccion',
             'subestacion',
             'circuito',
+            'equipo_referencia',
+            'carga_solicitada',
             'contrato',
             'ticket',
+
         )
 
 

@@ -20,6 +20,7 @@ class Programacion(models.Model):
     lcls = models.ManyToManyField(Lcl)
     alcance = models.TextField()
     estado=models.CharField(max_length=1,choices=ESTADO_PROGRA)
+    observacion=models.TextField(blank=True, null=True)
 
     objects=ProgramacionManager()
 

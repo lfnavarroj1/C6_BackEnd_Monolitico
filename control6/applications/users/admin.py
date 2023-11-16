@@ -5,8 +5,27 @@ from .models import User, C6Modules
 
 # Register your models here.
 
-# admin.site.register(User)
-admin.site.register(C6Modules)
+# C6Modules
+class C6ModulesResource(resources.ModelResource):
+    class Meta:
+        import_id_fields = ('id_module',)
+        model=C6Modules
+        fields=(
+            'id_module',
+            'name',
+            'description',
+            'url_modulo',
+        )
+
+@admin.register(C6Modules)
+class C6ModulesAdmin(ImportExportModelAdmin):
+    resource_class=C6ModulesResource
+    list_display=(
+            'id_module',
+            'name',
+            'description',
+            'url_modulo',
+    )
 
 # Users
 class UserResource(resources.ModelResource):

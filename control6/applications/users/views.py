@@ -21,9 +21,9 @@ class LoginUser(APIView):
         password=request.data['password']
         user=User.objects.filter(username=username).first()
         if user is None:
-            raise AuthenticationFailed("User no found!")
+            raise AuthenticationFailed("Usuario no encontrado")
         if not user.check_password(password):
-            raise AuthenticationFailed("Incorrect password")
+            raise AuthenticationFailed("Contraseña incorrecta")
         
         payload={
             "username":user.username,
@@ -40,12 +40,12 @@ class GetUser(APIView):
     def get(self, request):
         token=request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         try:
             payload=jwt.decode(token,'secret',algorithms=['HS256'])
 
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+            raise AuthenticationFailed("Usuario no autenticado")
         
         user=User.objects.get(username=payload['username'])
         serializar=UserSerializer(user)

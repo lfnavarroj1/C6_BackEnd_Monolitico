@@ -24,6 +24,7 @@ class TrabajoManager(models.Manager):
         # CREAR UN NUEVO TRABAJO
         # 1. Recibir y validar los datos de la petición
         campos=[
+
             "pms_quotation", # No requerido
             "pms_need", # No requerido
             "proceso", # requerido
@@ -113,6 +114,9 @@ class TrabajoManager(models.Manager):
             "circuito",
             "contrato",
             "ticket",
+            "equipo_referencia",
+            "carga_solicitada",
+
         ]
 
         # CAMPOS RELACIONADOS
@@ -144,7 +148,6 @@ class TrabajoManager(models.Manager):
 
         trabajo_actualizado.save()
         return trabajo_actualizado
-
 
 
     # Filtrar Trabajos

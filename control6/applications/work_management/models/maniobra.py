@@ -9,7 +9,7 @@ class Maniobra(models.Model):
         ('2','PSTL'),
     )
     ESTADO_MANIOBRA=(
-        ('0','PENDIENTE POR APROBAR'),
+        ('0', 'PENDIENTE POR APROBAR'),
         ('1', 'APROBADO'),
         ('2', 'PARA CORREGIR'),
         ('3', 'EJECUTADO'),
@@ -21,5 +21,8 @@ class Maniobra(models.Model):
     fecha_inicio = models.DateField(auto_now=False, auto_now_add=False)
     fecha_fin = models.DateField(auto_now=False, auto_now_add=False)
     estado_maniobra=models.CharField(max_length=1,choices=ESTADO_MANIOBRA)
+    observacion=models.TextField(blank=True, null=True)
 
     objects=ManiobraManager()
+
+

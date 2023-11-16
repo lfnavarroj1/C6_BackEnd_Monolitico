@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from ...work_management.models.programacion import Programacion
+from ...work_management.models.lcl import Lcl
 from ..models.trabajo import Trabajo
 from ...users.models import User
 from ..managers.libreto_manager import LibretoManager
@@ -14,7 +15,7 @@ class Libreto(models.Model):
         ('0','PLANILLAS - CONCILIACIÓN'),
         ('1','PLANILLAS - RECHAZADAS'),
         ('2','PLANILLAS - FIRMADAS'),
-        ('3','LIBRETO CARGADO A SCM'),
+        ('3','LIBRETO CARGADO EN SCM'),
         ('4','LIBRETO DEVULETO'),
         ('5','LIBRETO LIBERADO TECNICAMENTE'),
         ('6','LIBRETO LIBERADO CONTABLEMENTE'),
@@ -22,6 +23,7 @@ class Libreto(models.Model):
     )
     id_libreto=models.CharField(primary_key=True, max_length=23, unique=True, default="N/A", editable=False)
     programacion=models.ForeignKey(Programacion, on_delete=models.PROTECT)
+    lcl=models.ForeignKey(Lcl, on_delete=models.PROTECT)
     numero_libreto = models.CharField(max_length=3)
     valor_mod = models.FloatField()
     valor_mat = models.FloatField()
@@ -30,7 +32,7 @@ class Libreto(models.Model):
     planillas_firmadas=models.FileField(upload_to='planillas-firmadas',blank=True, null=True)
     estado_libreto = models.CharField(max_length=1, choices=ESTADO_LIBRETO)
     es_ultimo_libreto=models.BooleanField()
-    trabajo=models.ForeignKey(Trabajo, on_delete=models.PROTECT) # Este campo ese generado internamente y no se requirer de su paso pero si en el proceso de creación
+    trabajo=models.ForeignKey(Trabajo, on_delete=models.PROTECT) 
 
     objects=LibretoManager()
 
@@ -44,6 +46,7 @@ class Libreto(models.Model):
             else:
                 next_id = 1
             self.id_libreto = f'LB-{current_year}-{str(next_id).zfill(8)}'
+
 
         # Generar la ruta de subida del archivo
         if bool(self.planillas_conciliacion) and not os.path.exists(self.planillas_conciliacion.path):
