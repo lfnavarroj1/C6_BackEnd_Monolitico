@@ -12,6 +12,9 @@ from ..errores import CampoRequeridoError
 
 from django.db.models import Q
 # from ...users.models import User
+# from ..serializers.trabajo_serializer import TrabajoSerializer
+
+
 
 
 class TrabajoManager(models.Manager):  
@@ -175,6 +178,22 @@ class TrabajoManager(models.Manager):
 #         traza=self()
 #         traza.save()
         
+    # Contar trabajos por procesos
 
+    def contar_trabajos_procesos(self,vprocesos,vestados,kword):
+
+        # filtro = Q(proceso__in=vprocesos) & Q(ruta_proceso__estado__id_estado__in=vestados)
+        # if kword:
+        #     filtro &= (Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword))
+
+        # arreglo = self.filter(filtro)
+
+        # Obtener la lista de los nombres de los procesos
+        result=self.filter(
+        Q(proceso__in=vprocesos),
+        Q(ruta_proceso__estado__id_estado__in=vestados),
+        Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword),
+        )
+        return result 
     
     

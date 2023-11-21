@@ -10,7 +10,9 @@ from ..models.trabajo import Trabajo
 from ..models.trazabilidad import Trazabilidad
 from ...users.models import User
 from ..serializers.trabajo_serializer import TrabajoSerializer, CrearTrabajoSerializer
+from ...static_data.serializers.proceso_serializer import ProcesoSerializer,ConteoProcesoSerializer
 
+from collections import Counter
 # from django.db.models import F
 # from django.urls import reverse_lazy
 # from ..models.trazabilidad import Trazabilidad
@@ -63,7 +65,7 @@ class CrearTrabajo(CreateAPIView):
         
         usuario=User.objects.get(username=payload['username'])
 
-        print(request.data)
+        # print(request.data)
         
         try:
             response=Trabajo.objects.crear_trabajo(request.data)
@@ -289,3 +291,59 @@ class ObtenerTra(APIView):
         serializer=TrabajoSerializer(trabajo)
         return Response(serializer.data)
 # ----------------------------------------------------------------------------
+
+
+# 8. CONTAR TRABAJOS POR PROCESO ------------------------------------
+class ContarTrabajosPorProcesos(APIView):
+    # serializer_class=ProcesoSerializer
+    def get(self,request):
+        token=request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated!")
+        try:
+            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Unauthenticated!")
+        
+        vp1=self.request.query_params.get('vp','')
+        ve1=self.request.query_params.get('ve','')
+        kword=self.request.query_params.get('kw','')
+        vect_procesos=vp1.split(',')
+        vect_estados=ve1.split(',')
+        
+        response=Trabajo.objects.contar_trabajos_procesos(vect_procesos,vect_estados,kword)
+        serializer=TrabajoSerializer(response,many=True)
+        procesos=[proceso['proceso'] for proceso in serializer.data]
+        nombre_procesos=[proc['nombre'] for proc in procesos]
+        conteo_nombre_procesos=Counter(nombre_procesos)
+        return Response(conteo_nombre_procesos, status=200)
+# ---------------------------------------------------------------------
+
+
+# 9. CONTAR TRABAJOS POR ESTADOS ------------------------------------------
+class ContarTrabajosPorEstado(APIView):
+     def get(self,request):
+        token=request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated!")
+        try:
+            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Unauthenticated!")
+        
+        vp1=self.request.query_params.get('vp','')
+        ve1=self.request.query_params.get('ve','')
+        kword=self.request.query_params.get('kw','')
+        vect_procesos=vp1.split(',')
+        vect_estados=ve1.split(',')
+        
+        response=Trabajo.objects.contar_trabajos_procesos(vect_procesos,vect_estados,kword)
+        serializer=TrabajoSerializer(response,many=True)
+        ruta=[rut['ruta_proceso'] for rut in serializer.data]
+        estados=[est['estado'] for est in ruta]
+        id_estados=[est['id_estado'] for est in estados]
+        conteo_id_estado=Counter(id_estados)
+
+        return Response(conteo_id_estado, status=200)
+
+# # ---------------------------------------------------------------------

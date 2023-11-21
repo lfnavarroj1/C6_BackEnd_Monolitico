@@ -6,6 +6,7 @@ from ..models.municipio import Municipio
 from ..models.vereda import Vereda
 from ..models.subestacion import Subestacion 
 from ..models.circuito import Circuito
+from ..models.estado_trabajo import EstadoTrabajo
 
 # proceso (Deuda técnica, optimizar los campos que requiero por vista)
 
@@ -46,4 +47,10 @@ class SubestacionSerializer(serializers.ModelSerializer):
 class CircuitoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Circuito
+        fields=('__all__')
+
+
+class EstadoTrabajoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=EstadoTrabajo
         fields=('__all__')

@@ -11,6 +11,7 @@ from ..models.municipio import Municipio
 from ..models.vereda import Vereda
 from ..models.subestacion import Subestacion 
 from ..models.circuito import Circuito
+from ..models.estado_trabajo import EstadoTrabajo
 
 
 from ..serializers.serializers import ( 
@@ -20,7 +21,8 @@ from ..serializers.serializers import (
     MunicipioSerializer,
     VeredaSerializer,
     SubestacionSerializer,
-    CircuitoSerializer
+    CircuitoSerializer,
+    EstadoTrabajoSerializer
 )
 # ------------------------------------------
 
@@ -84,3 +86,10 @@ class ListarCircuito(ListAPIView):
         subestacion_pk=self.kwargs.get('pk')
         circuitos=Circuito.objects.filter(subestacion_id=subestacion_pk)
         return circuitos
+    
+
+class ListarEstados(ListAPIView):
+    serializer_class=EstadoTrabajoSerializer
+    def get_queryset(self):
+        etsados=EstadoTrabajo.objects.all().order_by('id_estado')
+        return etsados

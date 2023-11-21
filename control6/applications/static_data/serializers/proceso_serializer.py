@@ -7,3 +7,8 @@ class ProcesoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Proceso
         fields=('__all__')
+
+    
+class ConteoProcesoSerializer(serializers.Serializer):
+    proceso=serializers.CharField()
+    cantidad=serializers.IntegerField()

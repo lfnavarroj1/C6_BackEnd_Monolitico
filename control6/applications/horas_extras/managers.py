@@ -12,7 +12,7 @@ class HorasExtrasManager(models.Manager):
         datos["hora_entrada"]=req["hora_entrada"]
         datos["hora_salida"]=req["hora_salida"]
         datos["observacion"]=req["observacion"]
-        datos["estado"]=req["estado"]
+        datos["estado"]="0"
 
         hora_extra=self.create(**datos)
 

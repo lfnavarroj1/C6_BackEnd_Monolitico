@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views.trabajo_view import (
 ListarTrabajos, 
 CrearTrabajo, 
@@ -8,6 +9,8 @@ AnteriorEstado,
 # ActualizarParcialTrabajo,
 EliminarTrabajo,
 ObtenerTrabajo,
+ContarTrabajosPorProcesos,
+ContarTrabajosPorEstado
 
 )
 from .views.trazabilidad_view import(
@@ -86,6 +89,9 @@ urlpatterns = [
     path('detalle/<pk>', ObtenerTrabajo.as_view(), name="'work-detail" ),
     path('siguiente/<pk>', SiguienteEstado.as_view(), name="'siguiente" ),
     path('anterior/<pk>', AnteriorEstado.as_view(), name="'anterior" ),
+    path('contar/', ContarTrabajosPorProcesos.as_view(), name="'work-count" ),
+    path('contar-estado/', ContarTrabajosPorEstado.as_view(), name="'work-count-state" ),
+
     # Rutas trazabilidad
     path('crear_traza/', CrearTrazabilidad.as_view(), name="'crear-traza" ),
     path('trazabilidad/<pk>', ListarTrazabilidad.as_view(), name="trazabilidad-trabajo" ),
