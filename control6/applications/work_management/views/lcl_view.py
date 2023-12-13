@@ -5,9 +5,9 @@ from rest_framework.generics import (
     DestroyAPIView,
     RetrieveAPIView
     )
-
+from rest_framework.views import APIView
 from ..models.lcl import Lcl
-from ..serializers.lcl_serializer import LclSerializer
+from ..serializers.lcl_serializer import LclSerializer, LclListaSerializer
 from ...users.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -15,6 +15,7 @@ import jwt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
+from collections import Counter
 
 # from rest_framework.views import APIView
 #, datetime
@@ -127,4 +128,77 @@ class EliminarLcl(DestroyAPIView):
     queryset=Lcl.objects.all()
     serializer_class=LclSerializer
     lookup_field='pk'
+# ---------------------------------------------------------------------
+
+
+# 6. LISTAR LCL ----------------------------------------
+class ListarTodasLcl(ListAPIView):
+    serializer_class=LclListaSerializer
+    def get_queryset(self):
+        token=self.request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated!")
+        try:
+            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Unauthenticated!")
+        
+        vp1=self.request.query_params.get('vp','')
+        ve1=self.request.query_params.get('ve','')
+        kword=self.request.query_params.get('kw','')
+        vect_procesos=vp1.split(',')
+        vect_estados=ve1.split(',')
+        
+        response=Lcl.objects.filtrar_lcl(vect_procesos,vect_estados,kword)
+        return response
+# ---------------------------------------------------------------------
+
+# 7. CONTAR TRABAJOS POR PROCESO ------------------------------------
+class ContarLclPorProcesos(APIView):
+    # serializer_class=ProcesoSerializer
+    def get(self,request):
+        token=request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated!")
+        try:
+            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Unauthenticated!")
+        
+        vp1=self.request.query_params.get('vp','')
+        ve1=self.request.query_params.get('ve','')
+        kword=self.request.query_params.get('kw','')
+        vect_procesos=vp1.split(',')
+        vect_estados=ve1.split(',')
+        
+        response=Lcl.objects.filtrar_lcl(vect_procesos,vect_estados,kword)
+        serializer=LclListaSerializer(response,many=True)
+        procesos=[item for proceso in serializer.data for item in list(proceso['proceso'])]
+        conteo_nombre_procesos=Counter(procesos)
+        return Response(conteo_nombre_procesos, status=200)
+# ---------------------------------------------------------------------
+
+# 7. CONTAR LCL POR ESTADO ------------------------------------
+class ContarLclPorEstado(APIView):
+    # serializer_class=ProcesoSerializer
+    def get(self,request):
+        token=request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated!")
+        try:
+            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Unauthenticated!")
+        
+        vp1=self.request.query_params.get('vp','')
+        ve1=self.request.query_params.get('ve','')
+        kword=self.request.query_params.get('kw','')
+        vect_procesos=vp1.split(',')
+        vect_estados=ve1.split(',')
+        
+        response=Lcl.objects.filtrar_lcl(vect_procesos,vect_estados,kword)
+        serializer=LclListaSerializer(response,many=True)
+        estado=[item['estado_lcl'] for item in serializer.data]
+        conteo_estado_lcl=Counter(estado)
+        return Response(conteo_estado_lcl, status=200)
 # ---------------------------------------------------------------------

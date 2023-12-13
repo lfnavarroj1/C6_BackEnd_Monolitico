@@ -13,6 +13,18 @@ class HorasExtrasManager(models.Manager):
         datos["hora_salida"]=req["hora_salida"]
         datos["observacion"]=req["observacion"]
         datos["estado"]="0"
+        datos["cod_4185"]=req["cod_4185"]
+        datos["cod_4215"]=req["cod_4215"]
+        datos["cod_4225"]=req["cod_4225"]
+        datos["cod_4230"]=req["cod_4230"]
+        datos["cod_4235"]=req["cod_4235"]
+        datos["cod_4240"]=req["cod_4240"]
+        datos["cod_4245"]=req["cod_4245"]
+        datos["cod_4270"]=req["cod_4270"]
+        datos["cod_4275"]=req["cod_4275"]
+        datos["cod_4280"]=req["cod_4280"]
+        datos["cod_9050"]=req["cod_9050"]
+        datos["cod_9054"]=req["cod_9054"]
 
         hora_extra=self.create(**datos)
 

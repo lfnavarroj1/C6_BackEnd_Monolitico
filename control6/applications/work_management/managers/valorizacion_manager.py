@@ -1,13 +1,5 @@
 from django.db import models
 from ...static_data.models.nivel_tension import NivelTension
-from ...static_data.models.proceso import Proceso
-from ...static_data.models.estructura_presupuestal import EstructuraPresupuestal
-from ...static_data.models.unidad_territorial import UnidadTerritorial
-from ...static_data.models.municipio import Municipio
-from ...static_data.models.vereda import Vereda
-from ...static_data.models.subestacion import Subestacion
-from ...static_data.models.circuito import Circuito
-from ...static_data.models.contrato import Contrato
 
 from django.db.models import Q
 # from ...users.models import User
@@ -49,3 +41,4 @@ class ValorizacionManager(models.Manager):
 
         valorizacion_actual.save()
         return valorizacion_actual
+

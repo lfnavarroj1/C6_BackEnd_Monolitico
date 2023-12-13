@@ -31,6 +31,7 @@ from .views.valorizacion_view import(
     ObtenerValorizacion,
     ActualizarValorizacion,
     EliminarValorizacion,
+    CalcularValorizacion
 )
 
 from .views.odm_view import(
@@ -47,6 +48,9 @@ from .views.lcl_view import(
     ObtenerLcl,
     ActualizarLcl,
     EliminarLcl,
+    ListarTodasLcl,
+    ContarLclPorProcesos,
+    ContarLclPorEstado,
 )
 
 from .views.programacion_view import(
@@ -106,6 +110,7 @@ urlpatterns = [
     path('detalle-presupuesto/<pk>', ObtenerValorizacion.as_view(), name="'detalle-presupuesto" ),
     path('actualizar-presupuesto/<pk>', ActualizarValorizacion.as_view(), name="'actualizar-presupuesto" ),
     path('eliminar-presupuesto/<pk>', EliminarValorizacion.as_view(), name="eliminar-presupuesto" ),
+    path('calcular-presupuesto/<pk>', CalcularValorizacion.as_view(), name="calcular-presupuesto" ),
     # Odm
     path('cargar-odm/', CrearOdm.as_view(), name="cargar-odm" ),
     path('listar-odm/<pk>', ListarOdm.as_view(), name="listar-odm" ),
@@ -118,6 +123,9 @@ urlpatterns = [
     path('detalle-lcl/<pk>', ObtenerLcl.as_view(), name="'detalle-lcl" ),
     path('actualizar-lcl/<pk>', ActualizarLcl.as_view(), name="'actualizar-lcl" ),
     path('eliminar-lcl/<pk>', EliminarLcl.as_view(), name="eliminar-lcl" ),
+    path('listartodolcl/', ListarTodasLcl.as_view(), name="listartodo-lcl" ),
+    path('contartodolcl/', ContarLclPorProcesos.as_view(), name="contartodo-lcl" ),
+    path('contarestadolcl/', ContarLclPorEstado.as_view(), name="contarestado-lcl" ),
     # # Programación
     path('cargar-programacion/', CrearProgramacion.as_view(), name="cargar-programacion" ),
     path('listar-programacion/<pk>', ListarProgramacion.as_view(), name="listar-programacion" ),

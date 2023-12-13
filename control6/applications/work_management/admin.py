@@ -2,7 +2,7 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from .models.trabajo import Trabajo
-from .models.valorizacion import Valorizacion
+from .models.valorizacion import Valorizacion, Nodo, NodoMDO, NodoMAT
 from .models.trazabilidad import Trazabilidad
 from .models.odm import Odm 
 from .models.lcl import Lcl
@@ -100,6 +100,83 @@ class ValorizacionAdmin(ImportExportModelAdmin):
         'estado',
         'nivel_tension',
         'presupuesto',
+    )
+
+
+# NODO
+class NodoResource(resources.ModelResource):
+    class Meta:
+        model=Nodo
+        fields=(
+            "id_nodo",
+            "valorizacion",
+            "nodo",
+            "latitud_inicial",
+            "longitud_inicial",
+            "latitud_final",
+            "longitud_final",
+            "punto_fisico_inicial",
+            "punto_fisico_final",
+            "norma_codensa_punto_inicial",
+            "norma_codensa_punto_final",
+            "tipo_nodo",
+            "tipo_instalacion",
+            "nivel_tesion",
+        )
+
+@admin.register(Nodo)
+class NodoAdmin(ImportExportModelAdmin):
+    resource_class=NodoResource
+    list_display=(
+            "id_nodo",
+            "valorizacion",
+            "nodo",
+            "tipo_nodo",
+            "tipo_instalacion",
+            "nivel_tesion",
+    )
+
+
+# NodoMDO
+class NodoMDOResource(resources.ModelResource):
+    class Meta:
+        model=NodoMDO
+        fields=(
+            "nodo",
+            "tipo_trabajo_mdo",
+            "codigo_mdo",
+            "cantidad",
+        )
+
+@admin.register(NodoMDO)
+class NodoMDOAdmin(ImportExportModelAdmin):
+    resource_class=NodoMDOResource
+    list_display=(
+            "nodo",
+            "tipo_trabajo_mdo",
+            "codigo_mdo",
+            "cantidad",
+    )
+
+# NodoMAT
+class NodoMATResource(resources.ModelResource):
+    class Meta:
+        model=NodoMAT
+        fields=(
+            "nodo",
+            "tipo_trabajo_mat",
+            "codigo_mat",
+            "cantidad",
+        )
+
+@admin.register(NodoMAT)
+class NodoMATAdmin(ImportExportModelAdmin):
+    resource_class=NodoMATResource
+    list_display=(
+            "nodo",
+            "tipo_trabajo_mat",
+            "codigo_mat",
+            "cantidad",
     )
 
 

@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from ..static_data.models.proceso import Proceso
 from ..static_data.models.estado_trabajo import EstadoTrabajo
 from ..static_data.models.contrato import Contrato
-
+from ..static_data.models.unidad_territorial import UnidadTerritorial
 
 # from .managers import UserManager
 
@@ -27,6 +27,8 @@ class User(AbstractUser):
     estado_trabajo=models.ManyToManyField(EstadoTrabajo,blank=True)
     user_modules=models.ManyToManyField(C6Modules,blank=True)
     contrato= models.ForeignKey(Contrato, on_delete=models.PROTECT, blank=True,null=True)
+    unidad_territorial=models.ForeignKey(UnidadTerritorial, on_delete=models.PROTECT, blank=True, null=True)
+    cargo=models.CharField(max_length=150, blank=True, null=True)
 
     USERNAME_FIELD='username'
     REQUIRED_FIELDS=[]

@@ -11,6 +11,8 @@ from ..models.trazabilidad import Trazabilidad
 from ...users.models import User
 from ..serializers.trabajo_serializer import TrabajoSerializer, CrearTrabajoSerializer
 from ...static_data.serializers.proceso_serializer import ProcesoSerializer,ConteoProcesoSerializer
+from ..serializers.valorizacion_serializer import ValorizacionSerializer
+from ...static_data.serializers.ruta_proceso_serializer import RutaProcesoSerializer
 
 from collections import Counter
 # from django.db.models import F
@@ -20,6 +22,10 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt,json #, datetime
 from rest_framework import status
+
+from ..models.lcl import Lcl
+from ..models.valorizacion import Valorizacion
+from ..models.odm import Odm
 
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
@@ -179,15 +185,151 @@ class SiguienteEstado(UpdateAPIView):
         # Cambio de estado
         
         trabajo=Trabajo.objects.get(id_control=pk)
-        numero_maximo=RutaProceso.objects.filter(proceso=trabajo.proceso).count()
-        estado_actual=trabajo.ruta_proceso.paso
-        estado_siguiente=int(estado_actual)+1
+        ruta=RutaProceso.objects.filter(proceso=trabajo.proceso)
+        ruta_arreglo=[
+            {
+                'paso':r.paso,
+                'estado':r.estado.id_estado,
+            }
+            for r in ruta]
+
+        paso_maximo=ruta.count()
+        paso_actual=trabajo.ruta_proceso.paso
+        estado_actual=trabajo.ruta_proceso.estado
+        paso_siguiente=int(paso_actual)+1
+
+        # Validar que el paso máximo no supere
+        if paso_siguiente>paso_maximo:
+            return Response({'message':  "El trabajo se encuentra en su estado máximo"}, status=205)
+
+        arreglo_siguiente_paso=[item for item in ruta_arreglo if item["paso"]==str(paso_siguiente)]
+        estado_siguiente=arreglo_siguiente_paso[0]["estado"]
         
+        # Estados E01 a E02
+
+        # Estados E02 a E03
+        if estado_actual.id_estado=="E02" and estado_siguiente=="E03":
+            valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+            if not valorizaciones.exists():
+                return Response({'message':  "El trabajo no tiene valorizaciones cargadas"}, status=205)
+            
+        # Estados E03 a E04
+        if estado_actual.id_estado=="E03" and estado_siguiente=="E04":
+            valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+            ser_val=[val.estado for val in valorizaciones]
+            if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+                return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+
+        # Estados E04 a E05
+        if estado_actual.id_estado=="E04" and estado_siguiente=="E05":
+            odms=Odm.objects.obtener_odms(pk)
+            if not odms.exists():
+                return Response({'message':  "El trabajo no tiene odms activas"}, status=205)
+
+        # Estados E05 a E06 --> Para pasar de E5 a E6 requiere almenos una LCL asignada en estado LIBERACION OPERATIVA.
+        if estado_actual.id_estado=="E05" and estado_siguiente=="E06":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            arr_lcl=[lcl.estado_lcl for lcl in lcls]
+            if not lcls.exists() or any(valor!="0" for valor in arr_lcl):
+                return Response({'message':  "El trabajo no tiene lcls activas en liberación operativa"}, status=205)
+
+        # Estados E06 a E07
+        if estado_actual.id_estado=="E06" and estado_siguiente=="E07":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            arr_lcl=[lcl.estado_lcl for lcl in lcls]
+            if not lcls.exists() or not any(valor=="1" for valor in arr_lcl):####
+                return Response({'message':  "El trabajo debe tener almenos una LCL liberada"}, status=205)
+            
+        # # Estados E07 a E08
+        # if estado_actual.id_estado=="E07" and estado_siguiente=="E08":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+        # # Estados E08 a E09
+        # if estado_actual.id_estado=="E08" and estado_siguiente=="E09":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+        # # Estados E09 a E10
+        # if estado_actual.id_estado=="E09" and estado_siguiente=="E10":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E10 a E11
+        # if estado_actual.id_estado=="E10" and estado_siguiente=="E11":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E11 a E12
+        # if estado_actual.id_estado=="E11" and estado_siguiente=="E12":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E12 a E13
+        # if estado_actual.id_estado=="E12" and estado_siguiente=="E13":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E13 a E14
+        # if estado_actual.id_estado=="E13" and estado_siguiente=="E14":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E14 a E15
+        # if estado_actual.id_estado=="E14" and estado_siguiente=="E15":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E15 a E16
+        # if estado_actual.id_estado=="E15" and estado_siguiente=="E16":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E16 a E17
+        # if estado_actual.id_estado=="E16" and estado_siguiente=="E17":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E17 a E18
+        # if estado_actual.id_estado=="E17" and estado_siguiente=="E18":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+
 
         try:
-            if numero_maximo < estado_siguiente:
+            if paso_maximo < paso_siguiente:
                 raise NoTienSiguienteEstado
-            datos_actualizacion={"ruta_proceso":RutaProceso.objects.get(proceso=trabajo.proceso, paso=estado_siguiente)}
+            datos_actualizacion={"ruta_proceso":RutaProceso.objects.get(proceso=trabajo.proceso, paso=paso_siguiente)}
             response=Trabajo.objects.actualizar_trabajo(datos_actualizacion, pk)
             campos_actualizados=datos_actualizacion['ruta_proceso']
             
@@ -222,11 +364,157 @@ class AnteriorEstado(UpdateAPIView):
         pk = self.kwargs.get('pk')
 
         # Cambio de estado
-        
+
         trabajo=Trabajo.objects.get(id_control=pk)
-        estado_actual=trabajo.ruta_proceso.paso
-        estado_siguiente=int(estado_actual)-1
+        ruta=RutaProceso.objects.filter(proceso=trabajo.proceso)
+        ruta_arreglo=[
+            {
+                'paso':r.paso,
+                'estado':r.estado.id_estado,
+            }
+            for r in ruta]
+
+        paso_maximo=ruta.count()
+        paso_actual=trabajo.ruta_proceso.paso
+        estado_actual=trabajo.ruta_proceso.estado
+        paso_siguiente=int(paso_actual)-1
+
+        # Validar que el paso mínimo no supere
+        if 1 > paso_siguiente:
+            return Response({'message':  "El trabajo se encuentra en su estado mínimo"}, status=205)
+
+        arreglo_siguiente_paso=[item for item in ruta_arreglo if item["paso"]==str(paso_siguiente)]
+        estado_siguiente=arreglo_siguiente_paso[0]["estado"]
         
+        # Estados E02 a E01
+
+        # Estados E03 a E02
+        if estado_actual.id_estado=="E03" and estado_siguiente=="E02":
+            valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+            if valorizaciones.exists():
+                return Response({'message':  "El trabajo tiene valorizaciones cargadas"}, status=205)
+            
+        # Estados E04 a E03
+        if estado_actual.id_estado=="E04" and estado_siguiente=="E03":
+            valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+            ser_val=[val.estado for val in valorizaciones]
+            if any(valor !="1" for valor in ser_val):
+                return Response({'message':  "El trabajo no tiene valorizaciones rechazada"}, status=205)
+
+        # Estados E05 a E04
+        if estado_actual.id_estado=="E05" and estado_siguiente=="E04":
+            odms=Odm.objects.obtener_odms(pk)
+            if odms.exists():
+                return Response({'message':  "El trabajo tiene odms activas"}, status=205)
+
+        # Estados E06 a E05 --> Para pasar de E5 a E6 requiere almenos una LCL asignada en estado LIBERACION OPERATIVA.
+        if estado_actual.id_estado=="E06" and estado_siguiente=="E05":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            if lcls.exists() :
+                return Response({'message':  "El trabajo tiene lcls activas"}, status=205)
+
+        # Estados E07 a E06
+        if estado_actual.id_estado=="E06" and estado_siguiente=="E07":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            if lcls.exists():
+                return Response({'message':  "El trabajo tiene lcls activas"}, status=205)
+            
+        # # Estados E08 a E07
+        # if estado_actual.id_estado=="E07" and estado_siguiente=="E08":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+        # # Estados E09 a E08
+        # if estado_actual.id_estado=="E08" and estado_siguiente=="E09":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+        # # Estados E10 a E09
+        # if estado_actual.id_estado=="E09" and estado_siguiente=="E10":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E11 a E10
+        # if estado_actual.id_estado=="E10" and estado_siguiente=="E11":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E12 a E11
+        # if estado_actual.id_estado=="E11" and estado_siguiente=="E12":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E13 a E12
+        # if estado_actual.id_estado=="E12" and estado_siguiente=="E13":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E14 a E13
+        # if estado_actual.id_estado=="E13" and estado_siguiente=="E14":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E15 a E14
+        # if estado_actual.id_estado=="E14" and estado_siguiente=="E15":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E16 a E15
+        # if estado_actual.id_estado=="E15" and estado_siguiente=="E16":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E17 a E16
+        # if estado_actual.id_estado=="E16" and estado_siguiente=="E17":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+
+        # # Estados E18 a E17
+        # if estado_actual.id_estado=="E17" and estado_siguiente=="E18":
+        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        #     ser_val=[val.estado for val in valorizaciones]
+        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+
+
+
+        # Estado (E6)
+        # Validar si se tiene una lcl 
+        lcls=Lcl.objects.obtener_lcls(pk)
+
+        if lcls:
+            return Response({'message':  "El trabajo actual tiene LCL's activas"}, status=205)
+
+
+
 
         try:
             if 1 > estado_siguiente:

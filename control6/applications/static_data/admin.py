@@ -99,7 +99,6 @@ class UnidadTerritorialResource(resources.ModelResource):
         fields=(
             'numero',
             'nombre',
-            'jefe',
         )
 
 @admin.register(UnidadTerritorial)
@@ -108,7 +107,6 @@ class UnidadTerritorialAdmin(ImportExportModelAdmin):
     list_display=(
         'numero',
         'nombre',
-        'jefe',
     )
 
 

@@ -41,6 +41,9 @@ LOCAL_APP=(
     'applications.static_data',
     'applications.work_management',
     'applications.horas_extras',
+    'applications.prestaciones',
+    'applications.materiales',
+
 )
 
 INSTALLED_APPS =DJANGO_APPS+THIRD_APP+LOCAL_APP

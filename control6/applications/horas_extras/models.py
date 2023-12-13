@@ -15,6 +15,7 @@ class HoraExtra(models.Model):
     ESTADO_HE=( # Independizar una tabla con los estados.
         ('0','Pendientes por aprobación'),
         ('1','Aprobadas'),
+        ('2','Rechazadas'),
 
     )
     id_hora_extra = models.CharField(primary_key=True, max_length=25, unique=True, default="N/A", editable=False)
@@ -24,7 +25,18 @@ class HoraExtra(models.Model):
     hora_salida=models.TimeField()
     observacion=models.TextField()
     estado=models.CharField(max_length=1,choices=ESTADO_HE)
-
+    cod_4185=models.FloatField(default=0.0)
+    cod_4215=models.FloatField(default=0.0)
+    cod_4225=models.FloatField(default=0.0)
+    cod_4230=models.FloatField(default=0.0)
+    cod_4235=models.FloatField(default=0.0)
+    cod_4240=models.FloatField(default=0.0)
+    cod_4245=models.FloatField(default=0.0)
+    cod_4270=models.FloatField(default=0.0)
+    cod_4275=models.FloatField(default=0.0)
+    cod_4280=models.FloatField(default=0.0)
+    cod_9050=models.FloatField(default=0.0)
+    cod_9054=models.FloatField(default=0.0)
 
     objects=HorasExtrasManager()
 
@@ -45,3 +57,9 @@ class HoraExtra(models.Model):
 
     def __str__(self):
         return self.id_hora_extra
+
+class CodigoConcepto(models.Model):
+    codigo_concepto=models.CharField(max_length=4, primary_key=True)
+    descripcion=models.CharField(max_length=150)
+    recargo=models.CharField(max_length=150)
+    observacion=models.CharField(max_length=250)
