@@ -374,7 +374,6 @@ class AnteriorEstado(UpdateAPIView):
             }
             for r in ruta]
 
-        paso_maximo=ruta.count()
         paso_actual=trabajo.ruta_proceso.paso
         estado_actual=trabajo.ruta_proceso.estado
         paso_siguiente=int(paso_actual)-1
@@ -514,12 +513,10 @@ class AnteriorEstado(UpdateAPIView):
             return Response({'message':  "El trabajo actual tiene LCL's activas"}, status=205)
 
 
-
-
         try:
-            if 1 > estado_siguiente:
+            if 1 > paso_siguiente:
                 raise NoTienSiguienteEstado
-            datos_actualizacion={"ruta_proceso":RutaProceso.objects.get(proceso=trabajo.proceso, paso=estado_siguiente)}
+            datos_actualizacion={"ruta_proceso":RutaProceso.objects.get(proceso=trabajo.proceso, paso=paso_siguiente)}
             response=Trabajo.objects.actualizar_trabajo(datos_actualizacion, pk)
             campos_actualizados=datos_actualizacion['ruta_proceso']
             
