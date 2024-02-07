@@ -23,7 +23,7 @@ class Libreto(models.Model):
     )
     id_libreto=models.CharField(primary_key=True, max_length=23, unique=True, default="N/A", editable=False)
     programacion=models.ForeignKey(Programacion, on_delete=models.PROTECT)
-    lcl=models.ForeignKey(Lcl, on_delete=models.PROTECT)
+    lcl=models.ForeignKey(Lcl, on_delete=models.PROTECT, blank=True, null=True)
     numero_libreto = models.CharField(max_length=3)
     valor_mod = models.FloatField()
     valor_mat = models.FloatField()

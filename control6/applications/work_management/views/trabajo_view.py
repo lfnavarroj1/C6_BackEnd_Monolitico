@@ -1,3 +1,4 @@
+from rest_framework import generics
 from rest_framework.generics import (
     ListAPIView, 
     CreateAPIView, 
@@ -10,9 +11,9 @@ from ..models.trabajo import Trabajo
 from ..models.trazabilidad import Trazabilidad
 from ...users.models import User
 from ..serializers.trabajo_serializer import TrabajoSerializer, CrearTrabajoSerializer
-from ...static_data.serializers.proceso_serializer import ProcesoSerializer,ConteoProcesoSerializer
-from ..serializers.valorizacion_serializer import ValorizacionSerializer
-from ...static_data.serializers.ruta_proceso_serializer import RutaProcesoSerializer
+# from ...static_data.serializers.proceso_serializer import ProcesoSerializer,ConteoProcesoSerializer
+# from ..serializers.valorizacion_serializer import ValorizacionSerializer
+# from ...static_data.serializers.ruta_proceso_serializer import RutaProcesoSerializer
 
 from collections import Counter
 # from django.db.models import F
@@ -21,7 +22,7 @@ from collections import Counter
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt,json #, datetime
-from rest_framework import status
+# from rest_framework import status
 
 from ..models.lcl import Lcl
 from ..models.valorizacion import Valorizacion
@@ -34,47 +35,49 @@ from ...static_data.models.ruta_proceso import RutaProceso
 
 from ..errores import CampoRequeridoError, NoTienSiguienteEstado
 
+from ...users.views import ValidateUser
+
 # 1. LISTAR TRABAJOS ----------------------------------------
-class ListarTrabajos(ListAPIView):
-    serializer_class=TrabajoSerializer
+class ListarTrabajos(generics.ListAPIView):
+    serializer_class = TrabajoSerializer
     def get_queryset(self):
-        token=self.request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        user = ValidateUser(self.request)
+        # token = self.request.COOKIES.get('jwt')
+        # if not token:
+        #     raise AuthenticationFailed( "Unauthenticated!" )
+        # try:
+        #     payload = jwt.decode( token, 'secret', algorithms = ['HS256'] )
+        # except jwt.ExpiredSignatureError:
+        #     raise AuthenticationFailed( "Unauthenticated!" )
         
-        vp1=self.request.query_params.get('vp','')
-        ve1=self.request.query_params.get('ve','')
-        kword=self.request.query_params.get('kw','')
-        vect_procesos=vp1.split(',')
-        vect_estados=ve1.split(',')
+        vp1           = self.request.query_params.get( 'vp' , '' )
+        ve1           = self.request.query_params.get( 've' , '' )
+        kword         = self.request.query_params.get( 'kw' , '' )
+        vect_procesos = vp1.split( ',' )
+        vect_estados  = ve1.split( ',' )
         
-        response=Trabajo.objects.filtrar_trabajos(vect_procesos,vect_estados,kword)
+        response = Trabajo.objects.filtrar_trabajos( vect_procesos, vect_estados, kword )
         return response
 # ---------------------------------------------------------------------
 
 
 # 2. CREAR UN NUEVO TRABAJO ------------------------------------------------
 class CrearTrabajo(CreateAPIView):
-    serializer_class=CrearTrabajoSerializer
+    serializer_class = CrearTrabajoSerializer
     def post(self, request):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-        
-        usuario=User.objects.get(username=payload['username'])
 
-        # print(request.data)
+        # token=request.COOKIES.get( 'jwt' )
+        # if not token:
+        #     raise AuthenticationFailed("Unauthenticated!")
+        # try:
+        #     payload=jwt.decode(token,'secret',algorithms=['HS256'])
+        # except jwt.ExpiredSignatureError:
+        #     raise AuthenticationFailed("Unauthenticated!")
+        
+        usuario = ValidateUser(request)
         
         try:
-            response=Trabajo.objects.crear_trabajo(request.data)
+            response = Trabajo.objects.crear_trabajo(request.data)
             datos={}
             datos["trabajo"]=response.id_control
             datos["comentario_trazabilidad"]=f"Trabajo {response.id_control} creado en estado {response.ruta_proceso.estado.nombre}"
@@ -119,106 +122,76 @@ class ActualizarTrabajo(UpdateAPIView):
             return Response({'error': mensaje}, status=status_code)
 # ---------------------------------------------------------------------
 
-
-# # 3.1 ACTUAIZAR ALGUNOS CAMPOS DEL TRABAJO
-# class ActualizarParcialTrabajo(UpdateAPIView):
-#     def post(self, request):
-#         token=request.COOKIES.get('jwt')
-#         if not token:
-#             raise AuthenticationFailed("Unauthenticated!")
-#         try:
-#             payload=jwt.decode(token,'secret',algorithms=['HS256'])
-#         except jwt.ExpiredSignatureError:
-#             raise AuthenticationFailed("Unauthenticated!")
-        
-#     class Meta:
-#         model=Trabajo
-#         fields=(
-#             'pms_quotation',
-#             'pms_need',
-#             'proceso',
-#             'caso_radicado',
-#             'estado_trabajo',
-#             'alcance',
-#             'estructura_presupuestal',
-#             'priorizacion',
-#             'unidad_territorial',
-#             'municipio',
-#             'vereda',
-#             'direccion',
-#             'subestacion',
-#             'circuito',
-#             'contrato',
-#         )
-#     queryset=Trabajo.objects.all()
-#     serializer_class=CrearTrabajoSerializer
-#     lookup_field='pk'
-
 # 4. ELIMINAR EL TRABAJO
 class EliminarTrabajo(DestroyAPIView):
     def post(self, request):
-        token=request.COOKIES.get('jwt')
+        token = request.COOKIES.get('jwt')
         if not token:
             raise AuthenticationFailed("Unauthenticated!")
         try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
+            payload = jwt.decode(token,'secret', algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Unauthenticated!")
-    queryset=Trabajo.objects.all()
-    serializer_class=TrabajoSerializer
-    lookup_field='pk'
+        
+    queryset = Trabajo.objects.all()
+    serializer_class = TrabajoSerializer
+    lookup_field = 'pk'
 
 # 5. ESTADO SIGUIENTE
 class SiguienteEstado(UpdateAPIView):
     def put(self, request, pk):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        # token = request.COOKIES.get('jwt')
+        # if not token:
+        #     raise AuthenticationFailed("Unauthenticated!")
+        # try:
+        #     payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        # except jwt.ExpiredSignatureError:
+        #     raise AuthenticationFailed("Unauthenticated!")
 
-        usuario=User.objects.get(username=payload['username'])
+        usuario = ValidateUser(request)
         pk = self.kwargs.get('pk')
 
         # Cambio de estado
-        
-        trabajo=Trabajo.objects.get(id_control=pk)
-        ruta=RutaProceso.objects.filter(proceso=trabajo.proceso)
-        ruta_arreglo=[
+        trabajo = Trabajo.objects.get(id_control=pk)
+        ruta = RutaProceso.objects.filter(proceso=trabajo.proceso)
+        ruta_arreglo = [
             {
                 'paso':r.paso,
                 'estado':r.estado.id_estado,
             }
             for r in ruta]
 
-        paso_maximo=ruta.count()
-        paso_actual=trabajo.ruta_proceso.paso
-        estado_actual=trabajo.ruta_proceso.estado
-        paso_siguiente=int(paso_actual)+1
+        paso_maximo = ruta.count()
+        paso_actual = trabajo.ruta_proceso.paso
+        estado_actual = trabajo.ruta_proceso.estado
+        paso_siguiente = int(paso_actual) + 1
 
         # Validar que el paso máximo no supere
         if paso_siguiente>paso_maximo:
             return Response({'message':  "El trabajo se encuentra en su estado máximo"}, status=205)
 
-        arreglo_siguiente_paso=[item for item in ruta_arreglo if item["paso"]==str(paso_siguiente)]
-        estado_siguiente=arreglo_siguiente_paso[0]["estado"]
+        arreglo_siguiente_paso = [item for item in ruta_arreglo if item["paso"]==str(paso_siguiente)]
+        estado_siguiente = arreglo_siguiente_paso[0]["estado"]
         
         # Estados E01 a E02
 
         # Estados E02 a E03
-        if estado_actual.id_estado=="E02" and estado_siguiente=="E03":
-            valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
+        if estado_actual.id_estado == "E02" and estado_siguiente == "E03":
+            valorizaciones = Valorizacion.objects.filter(trabajo__id_control=pk).all()
             if not valorizaciones.exists():
                 return Response({'message':  "El trabajo no tiene valorizaciones cargadas"}, status=205)
             
         # Estados E03 a E04
-        if estado_actual.id_estado=="E03" and estado_siguiente=="E04":
-            valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
-            ser_val=[val.estado for val in valorizaciones]
-            if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
+        if estado_actual.id_estado == "E03" and estado_siguiente == "E04":
+            valorizaciones = Valorizacion.objects.filter(trabajo__id_control=pk).all()
+            estado_valorizaciones = [val.estado for val in valorizaciones]
+            print(estado_valorizaciones)
+
+            if not valorizaciones.exists() or all(valor =="0" for valor in estado_valorizaciones):
                 return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+            
+        # Estado de E03 a E09
+        
 
         # Estados E04 a E05
         if estado_actual.id_estado=="E04" and estado_siguiente=="E05":
@@ -240,20 +213,20 @@ class SiguienteEstado(UpdateAPIView):
             if not lcls.exists() or not any(valor=="1" for valor in arr_lcl):####
                 return Response({'message':  "El trabajo debe tener almenos una LCL liberada"}, status=205)
             
-        # # Estados E07 a E08
-        # if estado_actual.id_estado=="E07" and estado_siguiente=="E08":
-        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
-        #     ser_val=[val.estado for val in valorizaciones]
-        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
-        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
+        # Estados E07 a E08
+        if estado_actual.id_estado=="E07" and estado_siguiente=="E08":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            arr_lcl=[lcl.estado_lcl for lcl in lcls]
+            if not lcls.exists() or not any(valor=="2" for valor in arr_lcl):####
+                return Response({'message':  "El trabajo debe tener almenos una LCL en SCM"}, status=205)
             
-        # # Estados E08 a E09
-        # if estado_actual.id_estado=="E08" and estado_siguiente=="E09":
-        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
-        #     ser_val=[val.estado for val in valorizaciones]
-        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
-        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
-            
+        # Estados E08 a E09
+        if estado_actual.id_estado=="E08" and estado_siguiente=="E09":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            arr_lcl=[lcl.estado_lcl for lcl in lcls]
+            if not lcls.exists() or not any(valor=="2" for valor in arr_lcl):####
+                return Response({'message':  "El trabajo debe tener almenos una LCL en SCM"}, status=205)
+              
         # # Estados E09 a E10
         # if estado_actual.id_estado=="E09" and estado_siguiente=="E10":
         #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
@@ -363,10 +336,16 @@ class AnteriorEstado(UpdateAPIView):
         usuario=User.objects.get(username=payload['username'])
         pk = self.kwargs.get('pk')
 
+        comentario_devolucion=request.data["comentario_devolucion"]
+        print(request.data)
+        print(comentario_devolucion)
+
         # Cambio de estado
 
         trabajo=Trabajo.objects.get(id_control=pk)
         ruta=RutaProceso.objects.filter(proceso=trabajo.proceso)
+
+        # Crear un arreglo con los ID y lo pasos dentro de la ruta
         ruta_arreglo=[
             {
                 'paso':r.paso,
@@ -390,8 +369,9 @@ class AnteriorEstado(UpdateAPIView):
         # Estados E03 a E02
         if estado_actual.id_estado=="E03" and estado_siguiente=="E02":
             valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
-            if valorizaciones.exists():
-                return Response({'message':  "El trabajo tiene valorizaciones cargadas"}, status=205)
+            ser_val=[val.estado for val in valorizaciones]
+            if all(valor !="1" for valor in ser_val):
+                return Response({'message':  "El trabajo no tiene valorizaciones rechazadas"}, status=205)
             
         # Estados E04 a E03
         if estado_actual.id_estado=="E04" and estado_siguiente=="E03":
@@ -413,25 +393,25 @@ class AnteriorEstado(UpdateAPIView):
                 return Response({'message':  "El trabajo tiene lcls activas"}, status=205)
 
         # Estados E07 a E06
-        if estado_actual.id_estado=="E06" and estado_siguiente=="E07":
+        if estado_actual.id_estado=="E07" and estado_siguiente=="E06":
             lcls=Lcl.objects.obtener_lcls(pk)
             if lcls.exists():
                 return Response({'message':  "El trabajo tiene lcls activas"}, status=205)
             
-        # # Estados E08 a E07
-        # if estado_actual.id_estado=="E07" and estado_siguiente=="E08":
-        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
-        #     ser_val=[val.estado for val in valorizaciones]
-        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
-        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
-            
-        # # Estados E09 a E08
-        # if estado_actual.id_estado=="E08" and estado_siguiente=="E09":
-        #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
-        #     ser_val=[val.estado for val in valorizaciones]
-        #     if not valorizaciones.exists() or all(valor =="0" for valor in ser_val):
-        #         return Response({'message':  "El trabajo no tiene valorizaciones aprobada"}, status=205)
-            
+        # Estados E08 a E07
+        if estado_actual.id_estado=="E08" and estado_siguiente=="E07":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            arr_lcl=[lcl.estado_lcl for lcl in lcls]
+            if any(valor=="2" for valor in arr_lcl):####
+                return Response({'message':  "El trabajo tiene una LCL en SCM"}, status=205)
+        
+        # Estados E09 a E08
+        if estado_actual.id_estado=="E09" and estado_siguiente=="E08":
+            lcls=Lcl.objects.obtener_lcls(pk)
+            arr_lcl=[lcl.estado_lcl for lcl in lcls]
+            if any(valor=="2" for valor in arr_lcl):####
+                return Response({'message':  "El trabajo tiene una LCL en SCM"}, status=205)
+         
         # # Estados E10 a E09
         # if estado_actual.id_estado=="E09" and estado_siguiente=="E10":
         #     valorizaciones=Valorizacion.objects.filter(trabajo__id_control=pk).all()
@@ -506,7 +486,7 @@ class AnteriorEstado(UpdateAPIView):
 
 
         # Estado (E6)
-        # Validar si se tiene una lcl 
+        # Validar si el trabajo actual tiene una lcl 
         lcls=Lcl.objects.obtener_lcls(pk)
 
         if lcls:
@@ -522,7 +502,9 @@ class AnteriorEstado(UpdateAPIView):
             
             datos={}
             datos["trabajo"]=response.id_control
-            datos["comentario_trazabilidad"]=f"Se cambiado al estado del trabajo {response.id_control} a {campos_actualizados.estado.nombre}"
+            datos["comentario_trazabilidad"]=f"Se cambiado al estado del trabajo {response.id_control} a {campos_actualizados.estado.nombre}, con el comentario { comentario_devolucion }"
+            # Agregar el comentario de la devolucion siempre.
+
             Trazabilidad.objects.registrar_trazabilidad(datos, usuario)
             return Response({'message':  datos["comentario_trazabilidad"]}, status=201)
         except CampoRequeridoError as e:

@@ -2,7 +2,13 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from .models.trabajo import Trabajo
-from .models.valorizacion import Valorizacion, Nodo, NodoMDO, NodoMAT
+from .models.valorizacion import (
+    Valorizacion, 
+    Nodo,
+    EtlBudget,
+    NodoMDO, 
+    NodoMAT
+    )
 from .models.trazabilidad import Trazabilidad
 from .models.odm import Odm 
 from .models.lcl import Lcl
@@ -10,6 +16,7 @@ from .models.programacion import Programacion
 from .models.maniobra import Maniobra
 from .models.soportes_iniciales import SoportesIniciales
 from .models.libreto import Libreto
+from .models.nodo_seguimiento import NodoSeguimiento
 
 
 # TRABAJO
@@ -104,10 +111,10 @@ class ValorizacionAdmin(ImportExportModelAdmin):
 
 
 # NODO
-class NodoResource(resources.ModelResource):
+class NodoResource( resources.ModelResource ):
     class Meta:
-        model=Nodo
-        fields=(
+        model = Nodo
+        fields = (
             "id_nodo",
             "valorizacion",
             "nodo",
@@ -121,19 +128,57 @@ class NodoResource(resources.ModelResource):
             "norma_codensa_punto_final",
             "tipo_nodo",
             "tipo_instalacion",
-            "nivel_tesion",
+            "nivel_tension",
+            "tramo",
+            "cod_seccion",
+            "cod_defecto",
+            "valor_mano_obra",
+            "valor_materiales",
+            "id_mare",
         )
 
-@admin.register(Nodo)
-class NodoAdmin(ImportExportModelAdmin):
-    resource_class=NodoResource
-    list_display=(
-            "id_nodo",
-            "valorizacion",
+@admin.register( Nodo )
+class NodoAdmin( ImportExportModelAdmin ):
+    resource_class = NodoResource
+    list_display = (
+        "id_nodo",
+        "valorizacion",
+        "nodo",
+        "tipo_nodo",
+        "tipo_instalacion",
+        "nivel_tension",
+    )
+
+# EtlBuget
+class EtlBudgetResource( resources.ModelResource ):
+    class Meta:
+        model = EtlBudget
+        fields = (
             "nodo",
-            "tipo_nodo",
-            "tipo_instalacion",
-            "nivel_tesion",
+            "instalacion_retiro",
+            "codigo",
+            "cantidad",
+            "mat_mdo",
+            "aportacion",
+        )
+
+@admin.register( EtlBudget )
+class EtlBudgetAdmin( ImportExportModelAdmin ):
+    resource_class = EtlBudgetResource
+    list_display = (
+        "nodo",
+        "instalacion_retiro",
+        "codigo",
+        "cantidad",
+        "mat_mdo",
+        "aportacion",
+    )
+
+    search_fields=(
+        'codigo',
+    )
+    list_filter=(
+        'nodo', 'codigo',
     )
 
 
@@ -145,7 +190,7 @@ class NodoMDOResource(resources.ModelResource):
             "nodo",
             "tipo_trabajo_mdo",
             "codigo_mdo",
-            "cantidad",
+            "cantidad_replanteada",
         )
 
 @admin.register(NodoMDO)
@@ -155,7 +200,7 @@ class NodoMDOAdmin(ImportExportModelAdmin):
             "nodo",
             "tipo_trabajo_mdo",
             "codigo_mdo",
-            "cantidad",
+            "cantidad_replanteada",
     )
 
 # NodoMAT
@@ -166,7 +211,7 @@ class NodoMATResource(resources.ModelResource):
             "nodo",
             "tipo_trabajo_mat",
             "codigo_mat",
-            "cantidad",
+            "cantidad_replanteada",
         )
 
 @admin.register(NodoMAT)
@@ -176,7 +221,7 @@ class NodoMATAdmin(ImportExportModelAdmin):
             "nodo",
             "tipo_trabajo_mat",
             "codigo_mat",
-            "cantidad",
+            "cantidad_replanteada",
     )
 
 
@@ -252,7 +297,7 @@ class ProgramacionResource(resources.ModelResource):
 @admin.register(Programacion)
 class ProgramacionAdmin(ImportExportModelAdmin):
     resource_class=ProgramacionResource
-    list_display=(
+    list_display = (
         'id_programcion',
         'fecha_ejecucion',
         # 'cuadrilla',
@@ -260,6 +305,30 @@ class ProgramacionAdmin(ImportExportModelAdmin):
         'alcance',
         'estado',
     )
+
+# NODOS SEGUIMIENTO
+class NodoSeguimientoResource(resources.ModelResource):
+    class Meta:
+        model=Programacion
+        fields=(
+            'nodo',
+            'programacion',
+            'programado',
+            'ejecutado',
+            'facturado',
+        )
+
+@admin.register(NodoSeguimiento)
+class NodoSeguimientoAdmin(ImportExportModelAdmin):
+    resource_class=NodoSeguimientoResource
+    list_display=(
+            'nodo',
+            'programacion',
+            'programado',
+            'ejecutado',
+            'facturado',
+    )
+
 
 
 # MANIOBRA

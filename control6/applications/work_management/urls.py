@@ -31,7 +31,9 @@ from .views.valorizacion_view import(
     ObtenerValorizacion,
     ActualizarValorizacion,
     EliminarValorizacion,
-    CalcularValorizacion
+    CalcularValorizacion,
+    ListarNodosTrabajo,
+    ListarNodosLcl
 )
 
 from .views.odm_view import(
@@ -79,6 +81,13 @@ from .views.libreto_view import(
     EliminarLibreto,
 )
 
+from .views.nodo_seguimiento_view import(
+    ListarNodosSeguimiento,
+    ListarNodosProgramados,
+    ListarNodosDisponiblesLcl,
+    ListarNodosDisponiblesTrabajo,
+)
+
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -111,6 +120,8 @@ urlpatterns = [
     path('actualizar-presupuesto/<pk>', ActualizarValorizacion.as_view(), name="'actualizar-presupuesto" ),
     path('eliminar-presupuesto/<pk>', EliminarValorizacion.as_view(), name="eliminar-presupuesto" ),
     path('calcular-presupuesto/<pk>', CalcularValorizacion.as_view(), name="calcular-presupuesto" ),
+    path('listar-nodos-trabajo/<pk>', ListarNodosTrabajo.as_view(), name="listar-nodos-trabajo" ),
+    path('listar-nodos-lcl/', ListarNodosLcl.as_view(), name="listar-nodos-lcl" ),
     # Odm
     path('cargar-odm/', CrearOdm.as_view(), name="cargar-odm" ),
     path('listar-odm/<pk>', ListarOdm.as_view(), name="listar-odm" ),
@@ -141,11 +152,19 @@ urlpatterns = [
     path('actualizar-maniobra/<pk>', ActualizarManiobra.as_view(), name="'actualizar-maniobra" ),
     path('eliminar-maniobra/<pk>', EliminarManiobra.as_view(), name="eliminar-maniobra" ),
     # # Libretos
-    path('cargar-libreto/', CargarLibreto.as_view(), name="cargar-libreto" ),
+    path('cargar-libreto/', CargarLibreto.as_view(), name="cargar-libreto" ),# Revisar el proceso para eliminar.
     path('listar-libreto/<pk>', ListarLibreto.as_view(), name="listar-libreto" ),
     path('detalle-libreto/<pk>', ObtenerLibreto.as_view(), name="'detalle-libreto" ),
     path('actualizar-libreto/<pk>', ActualizarLibreto.as_view(), name="'actualizar-libreto" ),
     path('eliminar-libreto/<pk>', EliminarLibreto.as_view(), name="eliminar-libreto" ),
+
+    # # Nodos Seguimiento
+    path('listar-nodos-seguimiento/<pk>', ListarNodosSeguimiento.as_view(), name="listar-nodos-programacion" ),
+    path('listar-nodos-programados/<pk>', ListarNodosProgramados.as_view(), name="listar-nodos-programados" ),
+    path('listar-nodos-disponibles-lcl/', ListarNodosDisponiblesLcl.as_view(), name="listar-nodos-disponibles-lcl" ),
+    path('listar-nodos-disponibles-trabajo/<pk>', ListarNodosDisponiblesTrabajo.as_view(), name="listar-nodos-disponibles-trabajo" ),
+    
+
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 

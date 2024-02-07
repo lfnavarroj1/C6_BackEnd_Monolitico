@@ -43,7 +43,7 @@ class CargarLibreto(APIView):
         # prog=data['programacion']
         # tra=data['trabajo']
         # lcl=data['lcl']
-        print(request.data)
+        # print(request.data)
         # data['programacion']=Programacion.objects.get(pk=prog)
         # data['trabajo']=Trabajo.objects.get(pk=tra)
         # data['lcl']=Lcl.objects.get(pk=lcl)
@@ -51,9 +51,18 @@ class CargarLibreto(APIView):
         # Este es un ejemplo de como accedder o navegar entre tablas relacionadas habilitar para acceder.
         # print(data['programacion'].lcl.odms.all()[0].valorizacion.trabajo)
 
-        serializer = CrearLibretoSerializer(data=request.data)
+        print("Voy por aquí")
+        print(request.data)
+        serializer = CrearLibretoSerializer(data = request.data)
+
+
+
+        # print("QQQQQQQQQQQQQQQQQQ")
+        # print(serializer)
 
         if serializer.is_valid():
+
+            # print("Voy por aquí dos")
             # Guardar el archivo en el modelo SoportesIniciales
             serializer.save()
 

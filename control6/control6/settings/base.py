@@ -43,6 +43,9 @@ LOCAL_APP=(
     'applications.horas_extras',
     'applications.prestaciones',
     'applications.materiales',
+    'applications.inspecciones_tqi',
+    'applications.seguimiento_metas',
+
 
 )
 

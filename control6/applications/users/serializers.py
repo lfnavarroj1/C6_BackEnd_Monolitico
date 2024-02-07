@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from .models import User,C6Modules
-
+from .models import User, C6Modules
 from ..static_data.models.proceso import Proceso
 from ..static_data.models.estado_trabajo import EstadoTrabajo
+from ..static_data.serializers.unidad_territorial_serializer import UnidadTerritorialSerializer
+from ..static_data.serializers.contrato_serializer import ContratoSerializer
 
 class C6ModulesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,6 +24,9 @@ class UserSerializer(serializers.ModelSerializer):
     procesos=ProcesoUserSerializer(many=True)
     user_modules=C6ModulesSerializer(many=True)
     estado_trabajo=EstadoUserSerializer(many=True)
+    unidades_territoriales = UnidadTerritorialSerializer(many=True)
+    contratos = ContratoSerializer(many=True)
+
     class Meta:
         model=User
         fields=('__all__')

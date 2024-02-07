@@ -45,6 +45,7 @@ class TrabajoSerializer(serializers.ModelSerializer):
             'carga_solicitada',
             'contrato',
             'ticket',
+            'cantidad',
 
         )
 

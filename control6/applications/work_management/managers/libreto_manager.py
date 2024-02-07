@@ -9,6 +9,8 @@ from ...static_data.models.subestacion import Subestacion
 from ...static_data.models.circuito import Circuito
 from ...static_data.models.contrato import Contrato
 
+from ...work_management.models.lcl import Lcl
+
 from django.db.models import Q
 # from ...users.models import User
 import os
@@ -20,6 +22,7 @@ class LibretoManager(models.Manager):
     
         campos_actualizables=[
             "numero_libreto",
+            "lcl",
             "valor_mod",
             "valor_mat",
             "observacion",
@@ -50,8 +53,12 @@ class LibretoManager(models.Manager):
                         setattr(libreto_actual,"es_ultimo_libreto",True)
                     else:
                         setattr(libreto_actual,"es_ultimo_libreto",False)
+                elif campo=="lcl" and libreto_data[campo] != "":
+                    setattr(libreto_actual, campo, Lcl.objects.filter(lcl=libreto_data[campo]).first())
+
                 else:
-                    setattr(libreto_actual,campo,libreto_data[campo])
+                    print(campo)
+                    setattr(libreto_actual, campo, libreto_data[campo])
 
 
         libreto_actual.save()

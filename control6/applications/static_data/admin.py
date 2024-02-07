@@ -164,6 +164,7 @@ class ProcesoResource(resources.ModelResource):
             'codigo_proceso',
             'nombre',
             'descripcion',
+            'ejecucion_ticket'
         )
 
 @admin.register(Proceso)
@@ -173,6 +174,7 @@ class ProcessAdmin(ImportExportModelAdmin):
         'codigo_proceso',
         'nombre',
         'descripcion',
+        'ejecucion_ticket'
     )
 
 
@@ -254,6 +256,8 @@ class CuadrillaResource(resources.ModelResource):
             'codigo_cuadrilla',
             'nombre',
             'tipo_cuadrilla',
+            'grupo_proceso',
+            'contrato'
         )
 
 @admin.register(Cuadrilla)
@@ -263,6 +267,8 @@ class CuadrillaAdmin(ImportExportModelAdmin):
             'codigo_cuadrilla',
             'nombre',
             'tipo_cuadrilla',
+            'grupo_proceso',
+            'contrato'
     )
 
 
@@ -275,6 +281,7 @@ class ContratoResource(resources.ModelResource):
             'numero_contrato',
             'nombre',
             'objeto',
+            'unidades_territoriales',
         )
 
 @admin.register(Contrato)

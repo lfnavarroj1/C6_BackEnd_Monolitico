@@ -12,16 +12,9 @@ from ...users.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt 
-from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
 from collections import Counter
 
-# from rest_framework.views import APIView
-#, datetime
-# from django.db.models import F
-# from django.urls import reverse_lazy
-# from ..models.trazabilidad import Trazabilidad
 
 # 1. CREAR LCL ----------------------------------------
 class CrearLcl(CreateAPIView):
@@ -38,13 +31,11 @@ class CrearLcl(CreateAPIView):
         usuario=User.objects.get(username=payload['username'])
         
         response=Lcl.objects.registrar_lcl(request.data,usuario)
-        return response
-    
+        return response    
 # ---------------------------------------------------------------------
 
-
-# 2. LISTAR ODM ASOCIADAS A UN TRABAJO --------------------------------
-class ListarLcl(ListAPIView):
+# 2. LISTAR LCL ASOCIADAS A UN TRABAJO --------------------------------
+class ListarLcl(ListAPIView): 
     serializer_class=LclSerializer
     def get_queryset(self):
         token=self.request.COOKIES.get('jwt')
@@ -59,7 +50,6 @@ class ListarLcl(ListAPIView):
         queryset=Lcl.objects.obtener_lcls(pk)
         return queryset
 # ---------------------------------------------------------------------
-
 
 # 3. OBTENER DETALLES DE UNA ODM ASOCIADAS A UN TRABAJO ---------------
 class ObtenerLcl(RetrieveAPIView):
@@ -80,7 +70,6 @@ class ObtenerLcl(RetrieveAPIView):
         queryset = Lcl.objects.filter(lcl=pk)
         return queryset
 # ---------------------------------------------------------------------
-
 
 # 4. ACTUALIZAR ODM ASOCIADAS A UN TRABAJO ----------------------------
 class ActualizarLcl(UpdateAPIView):
@@ -114,7 +103,6 @@ class ActualizarLcl(UpdateAPIView):
             return Response({'error': mensaje}, status=400)
 # ---------------------------------------------------------------------
 
-
 # 5. ELIMINAR ODM ASOCIADAS A UN TRABAJO ------------------------------
 class EliminarLcl(DestroyAPIView):
     def post(self, request):
@@ -129,7 +117,6 @@ class EliminarLcl(DestroyAPIView):
     serializer_class=LclSerializer
     lookup_field='pk'
 # ---------------------------------------------------------------------
-
 
 # 6. LISTAR LCL ----------------------------------------
 class ListarTodasLcl(ListAPIView):

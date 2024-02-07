@@ -1,63 +1,95 @@
 from django.db import models
-# from django.db.models import Q
-from ...users.models import User
+
 from ...static_data.models.cuadrilla import Cuadrilla
 from ..models.lcl import Lcl
-from rest_framework.response import Response
 
 
-class ProgramacionManager(models.Manager):
-    def registrar_programacion(self,req):
-        datos={}
-        datos["fecha_ejecucion"]=req["fecha_ejecucion"]
-        datos["alcance"]=req["alcance"]
-        datos["estado"]=req["estado"]
+class ProgramacionManager( models.Manager ) :
+    def registrar_programacion(self, req) :
+        datos = {}
+        campos_creacion = [
+            "trabajo",
+            "fecha_ejecucion",
+            "alcance",
+            "estado",
+            "observacion",
+            "planeacion_segura"
+        ]
 
+        for campo in campos_creacion:
+            if campo in req:
+                if req[campo] == "" or req[campo] is None:
+                    datos[campo] = ""
+                else:
+                    datos[campo] = req[campo]
+            else:
+                datos[campo] = ""
 
-        programacion=self.create(**datos)
+        datos["pdl"] = True if req["pdl"] == "true" else False
+        datos["pi"] = True if req["pi"] == "true" else False
+        datos["pstl"] = True if req["pstl"] == "true" else False
+        datos["vyp"] = True if req["vyp"] == "true" else False
+        datos["ticket"] = True if req["ticket"] == "true" else False
 
-        print(req["lcls"])
+        # Validar con que se realiza la programación
+        programacion = self.create( **datos )
 
-        lista_lcls=list(map(int,req["lcls"].split(',')))
-        lista_cuadrillas=list(map(str,req["cuadrillas"].split(',')))
+        if req[ "lcls" ] != "":
+            lista_lcls = list( map( int, req[ "lcls" ].split( ',' ) ) )
+            programacion.lcls.set( Lcl.objects.filter( pk__in = lista_lcls ) )
+        
+        if req[ "cuadrillas" ] != "":
+            lista_cuadrillas = list( map( str, req[ "cuadrillas" ].split( ',' ) ) )
+            programacion.cuadrillas.set( Cuadrilla.objects.filter( pk__in = lista_cuadrillas ) )
 
-        programacion.lcls.set(Lcl.objects.filter(pk__in=lista_lcls))
-        programacion.cuadrillas.set(Cuadrilla.objects.filter(pk__in=lista_cuadrillas))
-
-        # datos["cuadrilla"]=Cuadrilla.objects.get(pk=req["cuadrilla"])
-        # datos["lcl"]=Lcl.objects.get(pk=req["lcl"])
-
-        return Response({'message': f'La {programacion} fue agregada con éxito'}, status=201)
+        return programacion
     
-    def obtener_programacion(self,id_control):
-        result=self.filter(lcls__odms__valorizacion__trabajo__id_control=id_control).distinct()
+
+    def obtener_programacion( self, id_control ):
+        result = self.filter( lcls__odms__valorizacion__trabajo__id_control = id_control ).distinct(  )
         return result
     
 
-    def actualizar_programacion(self, programacion_data,programacion):
-        programacion_actual=self.get(pk=programacion)
+    def actualizar_programacion( self, programacion_data, programacion ) :
+        programacion_actual = self.get( pk = programacion )
 
-        campos_actualizables=[
+        print("El problema viene por aquí")
+        print(programacion_data)
+
+        campos_actualizables = [
             "fecha_ejecucion",
             "cuadrillas",
             "lcls",
             "alcance",
+            "observacion",
             "estado",
         ]
 
+        # Actualizando las maniobras necesarias
+        maniobras = [
+            "pdl",
+            "pi",
+            "pstl",
+            "vyp",
+            "ticket"
+        ]
+
+        for maniobra_necesaria in maniobras:
+            setattr (programacion_actual, maniobra_necesaria, True if programacion_data[ maniobra_necesaria ] == "true" else False)
+        
         # CAMPOS RELACIONADOS
         for campo in campos_actualizables:
             if campo in programacion_data:
-                if campo=="cuadrillas":
-                    # setattr(programacion_actual,campo,Cuadrilla.objects.get(pk=programacion_data["cuadrilla"]))
-                    lista_cuadrillas=list(map(str,programacion_data["cuadrillas"].split(',')))
-                    programacion_actual.cuadrillas.set(Cuadrilla.objects.filter(pk__in=lista_cuadrillas))
-                elif campo=="lcls":
-                    lista_lcls=list(map(int,programacion_data["lcls"].split(',')))
-                    programacion_actual.lcls.set(Lcl.objects.filter(pk__in=lista_lcls))
-                    # setattr(programacion_actual,campo,Lcl.objects.get(pk=programacion_data["lcl"]))
+                if campo == "cuadrillas" :
+                    lista_cuadrillas = list( map( str, programacion_data[ "cuadrillas" ].split( ',' ) ) )
+                    programacion_actual.cuadrillas.set( Cuadrilla.objects.filter( pk__in = lista_cuadrillas ) )
+                elif campo == "lcls":
+                    if programacion_data[ "lcls" ] != "":
+                        lista_lcls = list( map( int, programacion_data[ "lcls" ].split( ',' ) ) )
+                        programacion_actual.lcls.set( Lcl.objects.filter( pk__in = lista_lcls ) )
                 else:
-                    setattr(programacion_actual,campo,programacion_data[campo])
+                    print(campo)
+                    setattr (programacion_actual, campo, programacion_data[campo])
         
         programacion_actual.save()
         return programacion_actual

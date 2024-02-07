@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from ..models.maniobra import Maniobra
 from ..serializers.maniobra_serializer import ManiobraSerializer
 from ...users.models import User
+from ..models.trabajo import Trabajo
 
 # from django.db.models import F
 # from django.urls import reverse_lazy
@@ -39,7 +40,7 @@ class CrearManiobra(CreateAPIView):
 # ----------------------------------------------------------------------
 
 
-# 2. LISTAR PROGRAMACIONES ASOCIADAS A UN TRABAJO --------------------------------
+# 2. LISTAR MANIOBRAS ASOCIADAS A UN TRABAJO --------------------------------
 class ListarManiobras(ListAPIView):
     serializer_class=ManiobraSerializer
     def get_queryset(self):
@@ -52,8 +53,17 @@ class ListarManiobras(ListAPIView):
             raise AuthenticationFailed("Unauthenticated!")
 
         pk = self.kwargs.get('pk')
-        queryset=Maniobra.objects.obtener_maniobras(pk)
-        return queryset
+        trabajo=Trabajo.objects.get(id_control=pk)
+
+
+        # Validar si el proceso se ejecuta por ticket
+        if trabajo.proceso.ejecucion_ticket:
+            queryset=Maniobra.objects.filter(programaciones__trabajo=trabajo).all()
+            return queryset
+        else:
+            queryset=Maniobra.objects.obtener_maniobras(pk)
+            return queryset
+
 # ---------------------------------------------------------------------
 
 

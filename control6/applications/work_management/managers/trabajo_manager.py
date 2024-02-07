@@ -19,15 +19,12 @@ from django.db.models import Q
 
 class TrabajoManager(models.Manager):  
     # 1. LISTAR TRABAJOS
-    def lista_trabajos(self):
-        result=self.all()
+    def lista_trabajos( self ):
+        result = self.all()
         return result
     
     def crear_trabajo(self, trabajo_data):
-        # CREAR UN NUEVO TRABAJO
-        # 1. Recibir y validar los datos de la petición
-        campos=[
-
+        campos = [
             "pms_quotation", # No requerido
             "pms_need", # No requerido
             "proceso", # requerido
@@ -43,10 +40,11 @@ class TrabajoManager(models.Manager):
             "subestacion",
             "circuito",
             "contrato",
-            ]
+        ]
+        
         for campo in campos:
             if campo in trabajo_data:
-                if trabajo_data[campo]=="" or trabajo_data[campo] is None:
+                if trabajo_data[campo]== "" or trabajo_data[campo] is None:
                     trabajo_data[campo]=""
             else:
                  trabajo_data[campo]=""
@@ -55,7 +53,7 @@ class TrabajoManager(models.Manager):
         # CAMPOS OBLIGATORIOS
         campos_obligatorios=["proceso", "alcance", "unidad_territorial", "municipio","direccion", "vereda", "subestacion", "circuito", "contrato"]
         for campo in campos_obligatorios:
-            if trabajo_data[campo]=="":
+            if trabajo_data[campo] == "":
                 raise CampoRequeridoError(campo)
         
         proceso_id=trabajo_data["proceso"]
@@ -154,32 +152,15 @@ class TrabajoManager(models.Manager):
 
 
     # Filtrar Trabajos
-    def filtrar_trabajos(self,vprocesos,vestados,kword):
-
-        result=self.filter(
-            Q(proceso__in=vprocesos),
-            Q(ruta_proceso__estado__id_estado__in=vestados),
-            Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword),
-            )
+    def filtrar_trabajos( self, vprocesos, vestados, kword ):
+        result = self.filter(
+            Q( proceso__in = vprocesos ),
+            Q( ruta_proceso__estado__id_estado__in = vestados ),
+            Q( id_control__icontains = kword ) | Q( caso_radicado__icontains = kword ) | Q( ticket__icontains = kword ),
+        )
         return result
-    
-#     # Listar procesos de un usuario
-#     def lista_procesos_usuario(self,user):
-#         procesos=User.objects.get(id=user.id).process.all()
-#         return procesos
-    
-#     def lista_estado_usuario(self,user):
-#         estados=User.objects.get(id=user.id).state_works.all()
-#         return estados
-
-# class TrazabilidadManager(models.Manager):
-
-#     def agregar_trazabilidad(self,mensaje):
-#         traza=self()
-#         traza.save()
         
     # Contar trabajos por procesos
-
     def contar_trabajos_procesos(self,vprocesos,vestados,kword):
 
         # filtro = Q(proceso__in=vprocesos) & Q(ruta_proceso__estado__id_estado__in=vestados)

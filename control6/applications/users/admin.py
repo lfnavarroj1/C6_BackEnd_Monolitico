@@ -9,8 +9,8 @@ from .models import User, C6Modules
 class C6ModulesResource(resources.ModelResource):
     class Meta:
         import_id_fields = ('id_module',)
-        model=C6Modules
-        fields=(
+        model = C6Modules
+        fields = (
             'id_module',
             'name',
             'description',
@@ -31,10 +31,21 @@ class C6ModulesAdmin(ImportExportModelAdmin):
 class UserResource(resources.ModelResource):
     class Meta:
         model=User
-        fields=(
+        fields = (
             'username',
+            'first_name',
+            'last_name',
+            'email_address',
             'assigned',
             'phone_number',
+            'procesos',
+            'estado_trabajo',
+            'user_modules',
+            'unidades_territoriales',
+            'contratos',
+            'cargo',
+            'es_enel',
+            'lider_hse',
         )
 
 @admin.register(User)
@@ -42,6 +53,14 @@ class UserAdmin(ImportExportModelAdmin):
     resource_class=UserResource
     list_display=(
             'username',
+            'first_name',
+            'last_name',
             'assigned',
-            'phone_number',
+            # 'phone_number',
+            # 'procesos',
+            # 'estado_trabajo',
+            # 'user_modules',
+            # 'unidades_territoriales',
+            # 'contratos',
+            # 'cargo',
     )

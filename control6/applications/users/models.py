@@ -7,6 +7,7 @@ from ..static_data.models.estado_trabajo import EstadoTrabajo
 from ..static_data.models.contrato import Contrato
 from ..static_data.models.unidad_territorial import UnidadTerritorial
 
+
 # from .managers import UserManager
 
 class C6Modules(models.Model):
@@ -26,9 +27,11 @@ class User(AbstractUser):
     procesos=models.ManyToManyField(Proceso, blank=True, related_name="user_process")
     estado_trabajo=models.ManyToManyField(EstadoTrabajo,blank=True)
     user_modules=models.ManyToManyField(C6Modules,blank=True)
-    contrato= models.ForeignKey(Contrato, on_delete=models.PROTECT, blank=True,null=True)
-    unidad_territorial=models.ForeignKey(UnidadTerritorial, on_delete=models.PROTECT, blank=True, null=True)
+    unidades_territoriales = models.ManyToManyField(UnidadTerritorial, blank=True)
+    contratos = models.ManyToManyField(Contrato, blank=True)
     cargo=models.CharField(max_length=150, blank=True, null=True)
+    lider_hse = models.BooleanField(blank=True, null=True)
+    es_enel = models.BooleanField(blank=True, null=True)
 
     USERNAME_FIELD='username'
     REQUIRED_FIELDS=[]
