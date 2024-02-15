@@ -82,7 +82,7 @@ class Nodo( models.Model ):
     norma_codensa_punto_inicial = models.CharField( max_length = 10, null=True, blank=True )
     norma_codensa_punto_final = models.CharField( max_length = 10, null=True, blank=True )
     tipo_nodo = models.CharField( max_length = 1,choices=TIPONODO, null=True, blank=True )
-    tipo_instalacion = models.CharField( max_length = 1,choices=TIPOINSTALACION, null=True, blank=True )
+    tipo_instalacion = models.CharField( max_length = 1,choices=TIPOINSTALACION, null=True, blank=True ) # Estandarizar el tipo de instalación
     nivel_tension = models.ForeignKey( NivelTension, on_delete=models.PROTECT, null=True, blank=True )
     tramo = models.CharField( max_length = 200, null=True, blank=True )
     cod_seccion = models.CharField( max_length = 125, null=True, blank=True )

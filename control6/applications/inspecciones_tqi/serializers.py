@@ -1,16 +1,16 @@
 from rest_framework import serializers, pagination
-from .models import PdlTqi, Asignaciones, MetasTQI, MetasInspectores, Maniobras
+from .models import ManiobrasTqi, MetasTQI, MetasInspectores
 from ..users.models import User
-
 from ..users.serializers import UserSerializer
+from ..static_data.serializers.contrato_serializer import ContratoSerializer
 
 
-# proceso (Deuda técnica, optimizar los campos que requiero por vista)
+class ManiobrasTqiSerializer(serializers.ModelSerializer):
 
-class PdlTqiSerializer(serializers.ModelSerializer):
+    inspector_asingado = UserSerializer()
     
     class Meta:
-        model = PdlTqi
+        model = ManiobrasTqi
         fields = (
             'codigo',
             'tipo',
@@ -20,41 +20,31 @@ class PdlTqiSerializer(serializers.ModelSerializer):
             'fecha_fin',
             'hora_inicio',
             'hora_fin',
-            'circuito',
-            'unidad_territorial',
-            'unidad',
-            'causal',
             'pdl_asociado',
             'fecha_actualizacion',
+            'unidad_territorial',
+            'subestacion',
+            'circuito',
+            'unidad_ejecutora',
+            'causal',
             'contrato',
             'municipio',
             'vereda_localidad',
             'direccion',
             'estado_tqi',
             'criticidad_maniobra',
+            'cuadrilla_responsable',
+            'telefono_cuadrilla_responsable',
+            'inspector_asingado',
+            'inspeccion_ejecutada',
         )
 
-
-class AsignacionesSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Asignaciones
-        fields = (
-            'id_asignacion',
-            'pdl_tqi',
-            'cedula_inspector',
-            'estado_stweb',
-            'cedula_responsable_asignacion',
-            'fecha_asignacion',
-            'ejecutado',
-        )
 
 class MetasTQISerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MetasTQI
         fields = (
-            'unidad_territorial',
             'contrato',
             'anio',
             'mes',
@@ -64,6 +54,14 @@ class MetasTQISerializer(serializers.ModelSerializer):
             'fecha_actualizacion',
             'responsable_actualizacion',
         )
+
+
+class MetasTQIContratoSerializer(serializers.Serializer):
+
+    contrato = ContratoSerializer()
+    total_meta = serializers.IntegerField()
+    total_programada = serializers.IntegerField()
+    total_ejecutada = serializers.IntegerField()
 
 
 class MetasInspectoresSerializer(serializers.ModelSerializer):
@@ -83,35 +81,15 @@ class MetasInspectoresSerializer(serializers.ModelSerializer):
             'responsable_actualizacion',
         )
 
+class MetasInspectoresTotalesSerializer(serializers.Serializer):
+
+    inspector = UserSerializer()
+    total_meta = serializers.IntegerField()
+    total_programada = serializers.IntegerField()
+    total_ejecutada = serializers.IntegerField()
+
+   
+
 class PdlTqiPagination(pagination.PageNumberPagination):
     page_size = 20
     max_page_size = 100
-
-
-class ManiobraSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Maniobras
-        fields = (
-            'codigo',
-            'tipo',
-            'fecha_trabajo_inicio',
-            'hora_trabajo_inicio',
-            'fecha_trabajo_fin',
-            'hora_trabajo_fin',
-            'fecha_programacion',
-            'estado',
-            'pdl_asociado',
-            'circuito',
-            'causal',
-            'descripcion',
-            'unidad_territorial',
-            'unidad_territorial_std',
-            'fecha_actualizacion',
-            'ubicacion',
-            'localidad_municipio',
-            'nombre_responsable',
-            'unidad_responsable',
-            'telefono_reponsable',
-            'firma',
-            'co'
-        )

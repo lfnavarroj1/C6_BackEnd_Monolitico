@@ -7,21 +7,29 @@ from rest_framework.exceptions import AuthenticationFailed
 import jwt, json
 from ..static_data.serializers.unidad_territorial_serializer import UnidadTerritorialSerializer, UnidadTerritorial
 from .serializers import (
-    PdlTqiSerializer,
-    AsignacionesSerializer,
+    ManiobrasTqiSerializer,
     MetasTQISerializer,
     MetasInspectoresSerializer,
     PdlTqiPagination,
-    ManiobraSerializer
+    MetasInspectoresTotalesSerializer,
+    MetasTQIContratoSerializer,
 )
 
+from ..users.serializers import UserSerializer
+
 from .models import(
-    PdlTqi,
-    Asignaciones,
+    ManiobrasTqi,
     MetasTQI,
     MetasInspectores,
-    Maniobras,
+
 )
+
+from ..static_data.models.municipio import Municipio
+from ..static_data.models.circuito import Circuito
+from ..static_data.models.subestacion import Subestacion
+from ..static_data.models.unidad_territorial import UnidadTerritorial
+from ..static_data.models.contrato import Contrato
+
 
 from django.utils import timezone
 
@@ -36,8 +44,10 @@ import requests, datetime
 
 from ..users.views import ValidateUser
 
+from django.db.models import Sum
+
 class ListarPdlTqi(generics.ListAPIView):
-    serializer_class = PdlTqiSerializer
+    serializer_class = ManiobrasTqiSerializer
     # pagination_class = PdlTqiPagination
     def get_queryset(self):
         token = self.request.COOKIES.get('jwt')
@@ -48,14 +58,23 @@ class ListarPdlTqi(generics.ListAPIView):
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Unauthenticated!")
         
-        # vp1           = self.request.query_params.get('vp' , '')
-        # ve1           = self.request.query_params.get('ve' , '')
-        # kword         = self.request.query_params.get('kw' , '')
-        # vect_procesos = vp1.split( ',' )
-        # vect_estados  = ve1.split( ',' )
+        vector_uno = self.request.query_params.get('vector_unidades_territoriales' , '')
+        vector_dos = self.request.query_params.get('vector_contratos' , '')
+        vector_tres = self.request.query_params.get('vector_estados' , '')
+        vector_cuatro = self.request.query_params.get('vector_anio' , '')
+        vector_cinco = self.request.query_params.get('vector_mes' , '')
+
+        vector_unidades_territoriales = vector_uno.split( ',' )
+        vector_contratos = vector_dos.split( ',' )
+        vector_estados = vector_tres.split( ',' )
+        vector_anio = vector_cuatro.split( ',' )
+        vector_meses = vector_cinco.split( ',' )
+        kword = self.request.query_params.get('kw' , '')
         
-        # response = PdlTqi.objects.filtrar_trabajos( vect_procesos, vect_estados, kword )
-        response = PdlTqi.objects.all()
+        print(vector_unidades_territoriales)
+        
+        response = ManiobrasTqi.objects.filtrar_maniobras( vector_unidades_territoriales, vector_contratos, vector_estados, vector_anio, vector_meses, kword )
+        # response = ManiobrasTqi.objects.all()
         return response
 
 class ListarContratosPorUnidadesTerritoriales(generics.ListAPIView):
@@ -73,52 +92,63 @@ class ListarContratosPorUnidadesTerritoriales(generics.ListAPIView):
         response = UnidadTerritorial.objects.all()
         return response
 
-class ListarInspectoresPorUnidadesTerritoriales(generics.ListAPIView):
-    serializer_class = MetasInspectoresSerializer
+class ListarInspectores(generics.ListAPIView):
+    serializer_class = MetasInspectoresTotalesSerializer
     def get_queryset(self):
-        token = self.request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload = jwt.decode(token, 'secret', algorithms = ['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-        
-        usuario=User.objects.get(username=payload['username'])
+        usuario=ValidateUser(self.request)
 
-        print(payload['username'])
+        vector_cuatro = self.request.query_params.get('vector_anio' , '')
+        vector_cinco = self.request.query_params.get('vector_mes' , '')
+
+        vector_anio = vector_cuatro.split( ',' )
+        vector_meses = vector_cinco.split( ',' )
 
         if usuario.lider_hse:
-            response = MetasInspectores.objects.all()
-            for inspector in response:
-                inspector.inspector = User.objects.get(username=inspector.inspector)   
+            # response = MetasInspectores.objects.filtrar_inspectores(vector_anio, vector_meses)
+            # response = MetasInspectores.objects.values('inspector').annotate(total_meta=Sum('cantidad_meta'), total_programada=Sum('cantidad_programada'), total_ejecutada=Sum('cantidad_ejecutada')).filter(anio__in = vector_anio, mes__in = vector_meses)
+            if vector_anio and vector_meses:
+                # Si ambos vectores tienen elementos, realiza la consulta normalmente
+                response = MetasInspectores.objects.values('inspector').annotate(
+                    total_meta=Sum('cantidad_meta'),
+                    total_programada=Sum('cantidad_programada'),
+                    total_ejecutada=Sum('cantidad_ejecutada')
+                ).filter(
+                    anio__in=vector_anio,
+                    mes__in=vector_meses
+                )
+            else:
+                # Si alguno de los vectores está vacío, asigna un arreglo vacío a la variable response
+                response = []
+            
+            for elemento in response:
+                inspector_id = elemento['inspector']
+                inspector = User.objects.get(username=inspector_id)
+                elemento['inspector'] = inspector
+
         else:
             print("Al menos entra aquí?")
-            response = MetasInspectores.objects.filter(inspector=payload['username']).all()
+            response = MetasInspectores.objects.filter(inspector=usuario).all()
             for inspector in response:
                 inspector.inspector = User.objects.get(username=inspector.inspector)  
             
-        
-        # vp1           = self.request.query_params.get('vp' , '')
-        # ve1           = self.request.query_params.get('ve' , '')
-        # kword         = self.request.query_params.get('kw' , '')
-        # vect_procesos = vp1.split( ',' )
-        # vect_estados  = ve1.split( ',' )
-        
-        # response = PdlTqi.objects.filtrar_trabajos( vect_procesos, vect_estados, kword )
-        # response = MetasInspectores.objects.all()
-        # for inspector in response:
-        #     inspector.inspector = User.objects.get(username=inspector.inspector)
+        return response
+
+class ListarInspectoresParaAsignacion(generics.ListAPIView):
+    serializer_class = UserSerializer
+    def get_queryset(self):
+        usuario=ValidateUser(self.request)
+
+        pk = self.kwargs.get('pk')
+        datos_maniobra = ManiobrasTqi.objects.filter(codigo=pk).first()
+
+        inspectores = MetasInspectores.objects.filter(anio=datos_maniobra.anio, mes=datos_maniobra.mes).all()
+        response = [inspector.inspector for inspector in inspectores if datos_maniobra.unidad_ejecutora in inspector.inspector.unidades_territoriales.all()]
             
         return response
 
 class ActualizacionDatosManiobrasTQI(APIView):
     def post(self, request, *args, **kwargs):
-        # token = request.COOKIES.get('jwt')
-        # usuario = ValidateUser(self.request)
-
-        # fecha_inicio = '2024-01-20'
-        # fecha_fin = '2024-01-31'
+        usuario = ValidateUser(self.request)
         
         fecha_inicio = timezone.now().date()
         fecha_fin = fecha_inicio + datetime.timedelta(days=30)
@@ -140,161 +170,235 @@ class ActualizacionDatosManiobrasTQI(APIView):
         )
 
         lista_respuesta = listado_maniobras.json()
-        
-        print(lista_respuesta)
-
         maniobras_aprobadas = [maniobra for maniobra in lista_respuesta if maniobra['estado'] == 'Aprobado' or maniobra['estado'] == 'En ejecución']
 
-        # Update 8:00 pm y 8:00 am
-        # 
-
         for maniobra in maniobras_aprobadas:
-            print(maniobra['codigo'])
-
             try:
-                Maniobras.objects.get(codigo = maniobra['codigo'])
-                print("Actualizar")
+                ManiobrasTqi.objects.get(codigo = maniobra['codigo'])
+                print("Actualizar {}".format(maniobra['codigo']))
             except ObjectDoesNotExist:
-                print("Agregando")
+                nueva_maniobra = {}
+                nueva_maniobra["codigo"] = maniobra["codigo"]
 
-                maniobra["fecha_trabajo_inicio"] = datetime.datetime.strptime(maniobra["fecha_trabajo_inicio"], '%Y-%m-%d').date()
-                maniobra["hora_trabajo_inicio"] = datetime.datetime.strptime(maniobra["hora_trabajo_inicio"], '%H:%M:%S').time()
-                maniobra["fecha_trabajo_fin"] = datetime.datetime.strptime(maniobra["fecha_trabajo_fin"], '%Y-%m-%d').date()
-                maniobra["hora_trabajo_fin"] = datetime.datetime.strptime(maniobra["hora_trabajo_fin"], '%H:%M:%S').time()
-                maniobra["fecha_programacion"] = datetime.datetime.strptime(maniobra["fecha_programacion"], '%Y-%m-%d').date()
-                maniobra["fecha_actualizacion"] = timezone.now()
+                tipo_maniobra = ManiobrasTqi.obtener_valor_tipo_maniobra(maniobra["tipo"])
+                if tipo_maniobra:
+                    nueva_maniobra["tipo"] = tipo_maniobra
+                else:
+                     nueva_maniobra["tipo"] = ""
+
+                nueva_maniobra["descripcion"] = maniobra["descripcion"]
+                estado_maniobra =  ManiobrasTqi.obtener_valor_estado_stweb(maniobra["estado"])
+                if estado_maniobra:
+                   nueva_maniobra["estado_stweb"] = estado_maniobra
+                else:
+                    nueva_maniobra["estado_stweb"] = ""
+
+                nueva_maniobra["fecha_inicio"] = datetime.datetime.strptime(maniobra["fecha_trabajo_inicio"], '%Y-%m-%d').date()
+                nueva_maniobra["hora_inicio"] = datetime.datetime.strptime(maniobra["hora_trabajo_inicio"], '%H:%M:%S').time()
+                nueva_maniobra["fecha_fin"] = datetime.datetime.strptime(maniobra["fecha_trabajo_fin"], '%Y-%m-%d').date()
+                nueva_maniobra["hora_fin"] = datetime.datetime.strptime(maniobra["hora_trabajo_fin"], '%H:%M:%S').time()
+                nueva_maniobra["pdl_asociado"] = maniobra["pdl_asociado"]
+                nueva_maniobra["fecha_actualizacion"] = timezone.now()                
+                nueva_maniobra["direccion"] = maniobra["ubicacion"]
+
+                cadena = maniobra["circuito"]
+
+                indice_corchete_abierto = cadena.find('[')
+                if indice_corchete_abierto != -1:
+                    indice_espacio_anterior_corchete = cadena.rfind(' ', 0, indice_corchete_abierto)
+
+                    if indice_espacio_anterior_corchete + 1 == indice_corchete_abierto:
+                        indice_espacio_anterior_corchete = 0
+
+                    if indice_corchete_abierto != -1 and indice_espacio_anterior_corchete != -1:
+                        resultado = cadena[indice_espacio_anterior_corchete:indice_corchete_abierto-1]
+
+                circuito = Circuito.objects.filter(nombre__icontains = resultado).first()
+
+                if circuito:
+                    nueva_maniobra["circuito"] = circuito.codigo_circuito
+                    subestacion = Subestacion.objects.filter(codigo=circuito.subestacion.codigo).first() #cambiar por la del circuito
+                    if subestacion:
+                        nueva_maniobra["subestacion"] = subestacion.codigo
+                        for unit in subestacion.unidades_territoriales.all():
+                            unidad_general = unit
+                        if unidad_general:
+                            nueva_maniobra["unidad_territorial"] = unidad_general.numero
+                            nueva_maniobra["unidad_ejecutora"] = unidad_general.numero
+                        else:
+                            nueva_maniobra["unidad_territorial"] = ""
+                            nueva_maniobra["unidad_ejecutora"] = ""
+
+                    else:
+                        nueva_maniobra["subestacion"] = ""
+                else:
+                    nueva_maniobra["circuito"] = ""
+                    nueva_maniobra["subestacion"] = ""
+                    nueva_maniobra["unidad_territorial"] = ""
+                    nueva_maniobra["unidad_ejecutora"] = ""
+
+                tipo_causa = ManiobrasTqi.obtener_valor_tipo_causa(maniobra["causal"])
+                if tipo_causa:
+                     nueva_maniobra["causal"] = tipo_causa
+                else:
+                     nueva_maniobra["tipo"] = ""
+
+                nueva_maniobra["estado_tqi"] = "0"
+                nueva_maniobra["criticidad_maniobra"] = ""
+                nueva_maniobra["cuadrilla_responsable"] = maniobra["nombre_responsable"]
+                nueva_maniobra["telefono_cuadrilla_responsable"] = maniobra["telefono_reponsable"]
+                nueva_maniobra["inspector_asingado"] = ""
+
+                unidad_entera = maniobra["unidad_responsable"]
+                unidad_opcion = unidad_entera[0:4]
+
+                contrato_maniobra = Contrato.objects.filter(nombre__icontains=unidad_opcion, gestoria =  nueva_maniobra["unidad_territorial"]).first()
+
+                if contrato_maniobra:
+                    nueva_maniobra["contrato"] = contrato_maniobra.numero_contrato
+                else:
+                     nueva_maniobra["contrato"] = ""
 
 
+                # nueva_maniobra["contrato"] = ""
 
-                print(type(maniobra["fecha_actualizacion"]))
-                serializando = ManiobraSerializer(data=maniobra)
+                nueva_maniobra["municipio"] = ""
+                nueva_maniobra["vereda_localidad"] = ""
+
+                serializando = ManiobrasTqiSerializer(data=nueva_maniobra)
                 if serializando.is_valid():
-                    print("QQQQQQQQQQQQQ")
                     serializando.save()
-
                 else:
                     print("errores", serializando.errors)
-                
-        # print(lista_respuesta)
 
         return Response(maniobras_aprobadas)
 
-
-        # return Response({'token': "Hola mundo"})
-
 class ObtenerManiobra(generics.RetrieveAPIView):
-    serializer_class = PdlTqiSerializer
-
+    serializer_class = ManiobrasTqiSerializer
     def get_queryset(self):
-        token = self.request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-
-        # Obtiene el parámetro de la URL 'pk' para buscar el trabajo específico
+        usuario = ValidateUser(self.request)
         pk = self.kwargs.get('pk')
-        queryset = PdlTqi.objects.filter(codigo=pk)
+
+        queryset = ManiobrasTqi.objects.filter(codigo=pk)
         return queryset
 
 class AsignarInspeccion(generics.CreateAPIView):
-    serializer_class = AsignacionesSerializer
+    serializer_class = ManiobrasTqiSerializer
     def post(self, request):
-        token=request.COOKIES.get( 'jwt' )
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-        
-        usuario=User.objects.get(username=payload['username'])
+        usuario = ValidateUser(request)
 
-        datos_asignacion = {}
+        print(request.data)
 
-        datos_asignacion["pdl_tqi"] = request.data["pdl_tqi"]
-        datos_asignacion["cedula_inspector"] = request.data["cedula_inspector"]
+        maniobra_actualizar = ManiobrasTqi.objects.filter(codigo = request.data["codigo"]).first()
 
-        print(datos_asignacion)
-        print(datos_asignacion["pdl_tqi"])
+        if maniobra_actualizar:
+            if maniobra_actualizar.estado_tqi == "2":
+                return Response({ "mesage":"Maniobra ya está asignada" })
+            else:
+                maniobra_actualizar.inspector_asingado =  User.objects.filter(username=request.data["cedula_inspector"]).first()
+                maniobra_actualizar.estado_tqi = 2
+                maniobra_actualizar.save()
 
-        datos_asignacion["cedula_responsable_asignacion"] = usuario.username
-        datos_asignacion["fecha_asignacion"] = timezone.now()
-        datos_asignacion["ejecutado"] = False
+                ajuste_programacion = MetasInspectores.objects.filter(inspector=maniobra_actualizar.inspector_asingado, anio=maniobra_actualizar.anio, mes=maniobra_actualizar.mes).first()
+                print(ajuste_programacion)
+                ajuste_programacion.cantidad_programada = ajuste_programacion.cantidad_programada + 1
+                ajuste_programacion.save()
 
-        man = PdlTqi.objects.filter(codigo=datos_asignacion["pdl_tqi"]).first()
-
-        datos_asignacion["estado_stweb"] = man.estado_stweb
-
-        print(man)
-
-        if man.estado_tqi == "2":
-            return Response({ "mesage":"Maniobra ya está asignada" })
-
-        serializer = AsignacionesSerializer(data=datos_asignacion)
-
-        if serializer.is_valid():
-            man.estado_tqi = 2
-            man.save()
-            serializer.save()
-
-        # Cambiar el estado de la maniobra a 2
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response({ "mesage":"Maniobra asignada" })
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({ "mesage":"Maniobra no existe" })
 
+class CalcularCantidadesGenerales(APIView):
+    def post(self, request, *args, **kwargs):
+        # Por cada inspector TQI, contar las cantidades ejecutadas y las cantidades programada
+        # por anio y por mes
+        inspectores_anio_mes = MetasInspectores.objects.all()
+        for caso in inspectores_anio_mes:
+            print(caso)
 
-
-
-            # pdl_tqi
-            # cedula_inspector
-            # estado_stweb
-            # cedula_responsable_asignacion
-            # fecha_asignacion
-            # ejecutado
-        
-        # try:
-        #     response=Trabajo.objects.crear_trabajo(request.data)
-        #     datos={}
-        #     datos["trabajo"]=response.id_control
-        #     datos["comentario_trazabilidad"]=f"Trabajo {response.id_control} creado en estado {response.ruta_proceso.estado.nombre}"
-        #     Trazabilidad.objects.registrar_trazabilidad(datos, usuario)
-        #     return Response({'message': f'Trabajo {response.id_control} creado exitosamente'}, status=201)
-        # except CampoRequeridoError as e:
-        #     mensaje = str(e)
-        #     status_code = e.status_code
-        #     return Response({'error': mensaje}, status=status_code)
+    
+        return Response({ "mesage":"Calculos y ajustes realizados" })
 
 class EliminarUnaAsignacion(APIView):
     def delete(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
+        pk = self.kwargs.get('pk')
 
-        maniobra = kwargs.get('pk')
-        asignacion = Asignaciones.objects.filter(pdl_tqi=maniobra)
-        asignacion.delete()
+        maniobra_actualizar = ManiobrasTqi.objects.filter(codigo = pk).first()
 
-        maniobra = PdlTqi.objects.filter(codigo=maniobra).first()
-        maniobra.estado_tqi = 0
-        maniobra.save()
+        if maniobra_actualizar:
+            if maniobra_actualizar.estado_tqi !="0":
 
-        return Response({ "mesaage": "Asignación eliminada" })
+                print(maniobra_actualizar)
+                print(maniobra_actualizar.inspector_asingado)
 
+                ajuste_programacion = MetasInspectores.objects.filter(inspector=maniobra_actualizar.inspector_asingado, anio=maniobra_actualizar.anio, mes=maniobra_actualizar.mes).first()
+                print(ajuste_programacion)
+                ajuste_programacion.cantidad_programada = ajuste_programacion.cantidad_programada - 1
+                ajuste_programacion.save()
+
+                maniobra_actualizar.inspctor_asingado =  ""
+                maniobra_actualizar.estado_tqi = 0
+                maniobra_actualizar.save()
+                return Response({ "mesage":"Asingacion eliminada" })
+            else:               
+                return Response({"mesage":"Maniobra está sin asignar"})
+        else:
+            return Response({ "mesage":"Maniobra no existe" })
+      
 class CreateManiobraTqi(APIView):
     def post(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
 
-        datos = request.data
+        datos = {}
+        datos = request.data.copy()
 
-        print(datos)
+        datos['estado_tqi'] = "0"
+        datos['inspector_asingado'] = ""
 
-        serializar = PdlTqiSerializer(data=datos)
-
+        serializar = ManiobrasTqiSerializer(data=datos)
         if serializar.is_valid():
             serializar.save()
             return Response({ "Mesagge": "Masniobra creada" })
         else:
             return Response({"Error": serializar.errors})
+        
+
+class ObtenerMetasTqi (generics.ListAPIView):
+    serializer_class = MetasTQIContratoSerializer
+    def get_queryset(self):
+        usuario = ValidateUser(self.request)
+
+        vector_dos = self.request.query_params.get('vector_contratos' , '')
+        vector_cuatro = self.request.query_params.get('vector_anio' , '')
+        vector_cinco = self.request.query_params.get('vector_mes' , '')
+
+        vector_contratos = vector_dos.split( ',' )
+        vector_anio = vector_cuatro.split( ',' )
+        vector_meses = vector_cinco.split( ',' )
+
+        print(vector_contratos)
+        print(vector_anio)
+        print(vector_meses)
+
+        if vector_anio and vector_meses and vector_contratos:
+            # Si ambos vectores tienen elementos, realiza la consulta normalmente
+            response = MetasTQI.objects.values('contrato').annotate(
+                total_meta=Sum('cantidad_meta'),
+                total_programada=Sum('cantidad_programada'),
+                total_ejecutada=Sum('cantidad_ejecutada')
+            ).filter(
+                contrato__in = vector_contratos,
+                anio__in=vector_anio,
+                mes__in=vector_meses
+            )
+        else:
+            # Si alguno de los vectores está vacío, asigna un arreglo vacío a la variable response
+            response = []
+        
+        for elemento in response:
+            contrato_num = elemento['contrato']
+            contrato = Contrato.objects.get(numero_contrato=contrato_num)
+            elemento['contrato'] = contrato
+
+        return response

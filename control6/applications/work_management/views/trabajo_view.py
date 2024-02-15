@@ -93,15 +93,18 @@ class CrearTrabajo(CreateAPIView):
 # 3. ACTUALIZAR UN TRABAJO -----------------------------------------------
 class ActualizarTrabajo(UpdateAPIView):
     def put(self, request, pk):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
 
-        usuario=User.objects.get(username=payload['username'])
+        # token=request.COOKIES.get('jwt')
+        # if not token:
+        #     raise AuthenticationFailed("Unauthenticated!")
+        # try:
+        #     payload=jwt.decode(token,'secret', algorithms=['HS256'])
+        # except jwt.ExpiredSignatureError:
+        #     raise AuthenticationFailed("Unauthenticated!")
+
+        # usuario=User.objects.get(username=payload['username'])}
+
+        usuario = ValidateUser(request)
         pk = self.kwargs.get('pk')
 
         try:
@@ -112,8 +115,8 @@ class ActualizarTrabajo(UpdateAPIView):
                 campos_actualizados=campos_actualizados +", "+campo
             
             datos={}
-            datos["trabajo"]=response.id_control
-            datos["comentario_trazabilidad"]=f"Se actualizaron los campos {campos_actualizados} del trabajo {response.id_control}"
+            datos["trabajo"] = response.id_control
+            datos["comentario_trazabilidad"] = f"Se actualizaron los campos {campos_actualizados} del trabajo {response.id_control}"
             Trazabilidad.objects.registrar_trazabilidad(datos, usuario)
             return Response({'message':  datos["comentario_trazabilidad"]}, status=201)
         except CampoRequeridoError as e:
@@ -522,14 +525,17 @@ class ObtenerTrabajo(RetrieveAPIView):
     serializer_class = TrabajoSerializer
 
     def get_queryset(self):
-        token = self.request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
 
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        # token = self.request.COOKIES.get('jwt')
+        # if not token:
+        #     raise AuthenticationFailed("Unauthenticated!")
+
+        # try:
+        #     payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        # except jwt.ExpiredSignatureError:
+        #     raise AuthenticationFailed("Unauthenticated!")
+        
+        usuario = ValidateUser(self.request)
 
         # Obtiene el parámetro de la URL 'pk' para buscar el trabajo específico
         pk = self.kwargs.get('pk')

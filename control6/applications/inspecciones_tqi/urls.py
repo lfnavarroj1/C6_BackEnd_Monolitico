@@ -5,12 +5,15 @@ from django.conf.urls.static import static
 from .views import (
     ListarPdlTqi,
     ListarContratosPorUnidadesTerritoriales,
-    ListarInspectoresPorUnidadesTerritoriales,
+    ListarInspectores,
     ActualizacionDatosManiobrasTQI,
     ObtenerManiobra,
     AsignarInspeccion,
     EliminarUnaAsignacion,
-    CreateManiobraTqi
+    CreateManiobraTqi,
+    CalcularCantidadesGenerales,
+    ListarInspectoresParaAsignacion,
+    ObtenerMetasTqi
 )
 
 
@@ -19,12 +22,15 @@ urlpatterns = [
     # Trabajos
     path('lista/', ListarPdlTqi.as_view(), name="'pdl-list" ),
     path('lista-contratos/', ListarContratosPorUnidadesTerritoriales.as_view(), name="'lista-contratos"),
-    path('lista-inspector/', ListarInspectoresPorUnidadesTerritoriales.as_view(), name="'lista-inspector"),
+    path('lista-inspector/', ListarInspectores.as_view(), name="'lista-inspector"),
+    path('lista-inspector-asignacion/<pk>', ListarInspectoresParaAsignacion.as_view(), name="'lista-inspector-asinacion"),
     path('actualizar-data/', ActualizacionDatosManiobrasTQI.as_view(), name="actualizar-data"),
     path('detalle-maniobra/<pk>', ObtenerManiobra.as_view(), name="detalle-maniobra"),
     path('asignacion/', AsignarInspeccion.as_view(), name="asignacion"),
     path('eliminar/<pk>', EliminarUnaAsignacion.as_view(), name="eliminar"),
     path('crear-maniobra/', CreateManiobraTqi.as_view(), name="crear-maniobra"),
+    path('calcular/', CalcularCantidadesGenerales.as_view(), name="calculos-tqi"),
+    path('obtener-metas-tqi/', ObtenerMetasTqi.as_view(), name="obtener-metas-tqi"),
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 

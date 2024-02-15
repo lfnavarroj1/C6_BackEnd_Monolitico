@@ -43,17 +43,18 @@ class NivelTensionAdmin(ImportExportModelAdmin):
 class SubestacionResource(resources.ModelResource):
     class Meta:
         import_id_fields = ('codigo',)
-        model=Subestacion
-        fields=(
+        model = Subestacion
+        fields = (
             'codigo',
             'nombre',
-            'nivel_tension'
+            'nivel_tension',
+            'unidades_territoriales'
         )
 
 @admin.register(Subestacion)
 class SubestacionAdmin(ImportExportModelAdmin):
     resource_class=SubestacionResource
-    list_display=(
+    list_display = (
         'codigo',
         'nombre',
         'nivel_tension'
@@ -64,8 +65,8 @@ class SubestacionAdmin(ImportExportModelAdmin):
 class CircuitoResource(resources.ModelResource):
     class Meta:
         import_id_fields = ('codigo_circuito',)
-        model=Circuito
-        fields=(
+        model = Circuito
+        fields = (
             'codigo_circuito',
             'ubicacion_tecnica',
             'nombre',
@@ -73,18 +74,18 @@ class CircuitoResource(resources.ModelResource):
             'tesniones_nominales',
             'longitud_aerea_mt',
             'logitud_subterranea_mt',
-            'cantidad_clientes'
+            'cantidad_clientes',
+            'cantidad_trafos',
         )
 
 @admin.register(Circuito)
 class CircuitoAdmin(ImportExportModelAdmin):
-    resource_class=CircuitoResource
-    list_display=(
+    resource_class = CircuitoResource
+    list_display = (
         'codigo_circuito',
         'ubicacion_tecnica',
         'nombre',
         'subestacion',
-        # 'tesniones_nominales',
         'longitud_aerea_mt',
         'logitud_subterranea_mt',
         'cantidad_clientes'
@@ -276,21 +277,25 @@ class CuadrillaAdmin(ImportExportModelAdmin):
 class ContratoResource(resources.ModelResource):
     class Meta:
         import_id_fields = ('numero_contrato',)
-        model=Contrato
-        fields=(
+        model = Contrato
+        fields = (
             'numero_contrato',
             'nombre',
             'objeto',
             'unidades_territoriales',
+            'gestoria',
+            'activo',
         )
 
 @admin.register(Contrato)
 class ContratoAdmin(ImportExportModelAdmin):
-    resource_class=ContratoResource
-    list_display=(
+    resource_class = ContratoResource
+    list_display = (
             'numero_contrato',
             'nombre',
             'objeto',
+            'gestoria',
+            'activo',
     )
 
 

@@ -22,17 +22,12 @@ class LoginUser(APIView):
         username = request.data['username']
         password = request.data['password']
 
-        print(username)
-        print(password)
-
         user = User.objects.filter(username = username).first()
         if user is None:
-            print("Error de usuario")
             raise AuthenticationFailed("Usuario no encontrado")
         if not user.check_password(password):
-            print("Error de password")
             raise AuthenticationFailed("Contraseña incorrecta")
-        
+
         payload = {
             "username": user.username,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours = 8),
@@ -41,13 +36,9 @@ class LoginUser(APIView):
         token = jwt.encode(payload, 'secret', algorithm = "HS256")
         response = Response()
 
-        print("Token Generado")
-        print(token)
-
         response.set_cookie(key = 'jwt', value = token, httponly = True)
         response.data = {'jwt': token}
 
-        print(response)
         return response
 
 class GetUser(APIView):
@@ -85,20 +76,8 @@ class DeleteUser(APIView):
     def delete():
         pass
 
-
-class ValidateUser(APIView):
- def get(self, request):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Usuario no autenticado")
-        try:
-            payload = jwt.decode(token,'secret', algorithms = ['HS256'])
-
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Usuario no autenticado")
-
-
 def ValidateUser(request):
+        
         token = request.COOKIES.get('jwt')
 
         if not token:
