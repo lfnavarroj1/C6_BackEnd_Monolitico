@@ -5,7 +5,7 @@ upstream control6_app {
 server {
 
     listen   80;
-    server_name 159.65.246.228;
+    server_name 137.184.112.56; 
 
     access_log /webapps/back-c6/logs/nginx-access.log;
     error_log /webapps/back-c6/logs/nginx-error.log;
