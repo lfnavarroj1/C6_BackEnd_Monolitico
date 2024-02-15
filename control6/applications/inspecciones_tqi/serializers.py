@@ -7,7 +7,7 @@ from ..static_data.serializers.contrato_serializer import ContratoSerializer
 
 class ManiobrasTqiSerializer(serializers.ModelSerializer):
 
-    inspector_asingado = UserSerializer(allow_null=True, required=False)
+    inspector_asingado = UserSerializer(required=False)
     
     class Meta:
         model = ManiobrasTqi

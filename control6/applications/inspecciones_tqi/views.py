@@ -172,6 +172,7 @@ class ActualizacionDatosManiobrasTQI(APIView):
         lista_respuesta = listado_maniobras.json()
         maniobras_aprobadas = [maniobra for maniobra in lista_respuesta if maniobra['estado'] == 'Aprobado' or maniobra['estado'] == 'En ejecución']
 
+
         for maniobra in maniobras_aprobadas:
             try:
                 ManiobrasTqi.objects.get(codigo = maniobra['codigo'])
@@ -247,7 +248,7 @@ class ActualizacionDatosManiobrasTQI(APIView):
                 nueva_maniobra["criticidad_maniobra"] = ""
                 nueva_maniobra["cuadrilla_responsable"] = maniobra["nombre_responsable"]
                 nueva_maniobra["telefono_cuadrilla_responsable"] = maniobra["telefono_reponsable"]
-                nueva_maniobra["inspector_asingado"] = ""
+                # nueva_maniobra["inspector_asingado"] = ""
 
                 unidad_entera = maniobra["unidad_responsable"]
                 unidad_opcion = unidad_entera[0:4]
