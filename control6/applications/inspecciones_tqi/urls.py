@@ -13,7 +13,8 @@ from .views import (
     CreateManiobraTqi,
     CalcularCantidadesGenerales,
     ListarInspectoresParaAsignacion,
-    ObtenerMetasTqi
+    ObtenerMetasTqi,
+    ConfirmarInspeccion
 )
 
 
@@ -31,6 +32,7 @@ urlpatterns = [
     path('crear-maniobra/', CreateManiobraTqi.as_view(), name="crear-maniobra"),
     path('calcular/', CalcularCantidadesGenerales.as_view(), name="calculos-tqi"),
     path('obtener-metas-tqi/', ObtenerMetasTqi.as_view(), name="obtener-metas-tqi"),
+    path('confirmar-inspeccion/', ConfirmarInspeccion.as_view(), name="confirmar-inspeccion"),
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 

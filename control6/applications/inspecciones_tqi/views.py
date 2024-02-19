@@ -48,33 +48,37 @@ from django.db.models import Sum
 
 class ListarPdlTqi(generics.ListAPIView):
     serializer_class = ManiobrasTqiSerializer
-    # pagination_class = PdlTqiPagination
     def get_queryset(self):
-        token = self.request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload = jwt.decode(token, 'secret', algorithms = ['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        usuario = ValidateUser(self.request)
         
         vector_uno = self.request.query_params.get('vector_unidades_territoriales' , '')
         vector_dos = self.request.query_params.get('vector_contratos' , '')
         vector_tres = self.request.query_params.get('vector_estados' , '')
         vector_cuatro = self.request.query_params.get('vector_anio' , '')
         vector_cinco = self.request.query_params.get('vector_mes' , '')
+        vector_seis = self.request.query_params.get('vector_estados_inspecciones' , '')
+
+        
 
         vector_unidades_territoriales = vector_uno.split( ',' )
         vector_contratos = vector_dos.split( ',' )
         vector_estados = vector_tres.split( ',' )
         vector_anio = vector_cuatro.split( ',' )
         vector_meses = vector_cinco.split( ',' )
+        vector_estados_inspecciones = vector_seis.split( ',' )
         kword = self.request.query_params.get('kw' , '')
         
-        print(vector_unidades_territoriales)
+        if usuario.lider_hse:
+            response = ManiobrasTqi.objects.filtrar_maniobras( vector_unidades_territoriales, vector_contratos, vector_estados, vector_anio, vector_meses, kword )
         
-        response = ManiobrasTqi.objects.filtrar_maniobras( vector_unidades_territoriales, vector_contratos, vector_estados, vector_anio, vector_meses, kword )
-        # response = ManiobrasTqi.objects.all()
+        else:
+            response = ManiobrasTqi.objects.filter(
+                                                    anio__in = vector_anio, 
+                                                    mes__in = vector_meses,
+                                                    inspector_asingado = usuario,
+                                                    codigo__icontains = kword,
+                                                ).all()
+        
         return response
 
 class ListarContratosPorUnidadesTerritoriales(generics.ListAPIView):
@@ -288,37 +292,47 @@ class AsignarInspeccion(generics.CreateAPIView):
     def post(self, request):
         usuario = ValidateUser(request)
 
-        print(request.data)
-
         maniobra_actualizar = ManiobrasTqi.objects.filter(codigo = request.data["codigo"]).first()
 
         if maniobra_actualizar:
             if maniobra_actualizar.estado_tqi == "2":
-                return Response({ "mesage":"Maniobra ya está asignada" })
+                return Response({ "message":"Maniobra ya está asignada" })
             else:
                 maniobra_actualizar.inspector_asingado =  User.objects.filter(username=request.data["cedula_inspector"]).first()
                 maniobra_actualizar.estado_tqi = 2
                 maniobra_actualizar.save()
 
-                ajuste_programacion = MetasInspectores.objects.filter(inspector=maniobra_actualizar.inspector_asingado, anio=maniobra_actualizar.anio, mes=maniobra_actualizar.mes).first()
-                print(ajuste_programacion)
-                ajuste_programacion.cantidad_programada = ajuste_programacion.cantidad_programada + 1
-                ajuste_programacion.save()
+                ajuste_programacion = MetasInspectores.objects.filter(
+                                                                        inspector=maniobra_actualizar.inspector_asingado, 
+                                                                        anio=maniobra_actualizar.anio, 
+                                                                        mes=maniobra_actualizar.mes
+                                                                    ).first()
+                if ajuste_programacion:
+                    ajuste_programacion.cantidad_programada = ajuste_programacion.cantidad_programada + 1
+                    ajuste_programacion.save()
 
-                return Response({ "mesage":"Maniobra asignada" })
+                ajuste_meta_empresa = MetasTQI.objects.filter(
+                                                                contrato=maniobra_actualizar.contrato, 
+                                                                anio=maniobra_actualizar.anio, 
+                                                                mes=maniobra_actualizar.mes
+                                                             ).first()
+                
+                if ajuste_meta_empresa:
+                    ajuste_meta_empresa.cantidad_programada = ajuste_meta_empresa.cantidad_programada + 1
+                    ajuste_meta_empresa.save()
+
+                return Response({ "message":"Maniobra asignada" })
         else:
-            return Response({ "mesage":"Maniobra no existe" })
+            return Response({ "message":"Maniobra no existe" })
 
 class CalcularCantidadesGenerales(APIView):
     def post(self, request, *args, **kwargs):
-        # Por cada inspector TQI, contar las cantidades ejecutadas y las cantidades programada
-        # por anio y por mes
         inspectores_anio_mes = MetasInspectores.objects.all()
         for caso in inspectores_anio_mes:
             print(caso)
 
     
-        return Response({ "mesage":"Calculos y ajustes realizados" })
+        return Response({ "message":"Calculos y ajustes realizados" })
 
 class EliminarUnaAsignacion(APIView):
     def delete(self, request, *args, **kwargs):
@@ -330,22 +344,33 @@ class EliminarUnaAsignacion(APIView):
         if maniobra_actualizar:
             if maniobra_actualizar.estado_tqi !="0":
 
-                print(maniobra_actualizar)
-                print(maniobra_actualizar.inspector_asingado)
+                ajuste_programacion = MetasInspectores.objects.filter(
+                                                                        inspector=maniobra_actualizar.inspector_asingado, 
+                                                                        anio=maniobra_actualizar.anio, 
+                                                                        mes=maniobra_actualizar.mes
+                                                                    ).first()
+                if ajuste_programacion:
+                    ajuste_programacion.cantidad_programada = ajuste_programacion.cantidad_programada - 1
+                    ajuste_programacion.save()
 
-                ajuste_programacion = MetasInspectores.objects.filter(inspector=maniobra_actualizar.inspector_asingado, anio=maniobra_actualizar.anio, mes=maniobra_actualizar.mes).first()
-                print(ajuste_programacion)
-                ajuste_programacion.cantidad_programada = ajuste_programacion.cantidad_programada - 1
-                ajuste_programacion.save()
+                ajuste_meta_empresa = MetasTQI.objects.filter(
+                                                                contrato=maniobra_actualizar.contrato, 
+                                                                anio=maniobra_actualizar.anio, 
+                                                                mes=maniobra_actualizar.mes
+                                                             ).first()
+                if ajuste_meta_empresa:
+                    ajuste_meta_empresa.cantidad_programada = ajuste_meta_empresa.cantidad_programada - 1
+                    ajuste_meta_empresa.save()
 
                 maniobra_actualizar.inspctor_asingado =  ""
                 maniobra_actualizar.estado_tqi = 0
                 maniobra_actualizar.save()
-                return Response({ "mesage":"Asingacion eliminada" })
+
+                return Response({ "message":"Asingacion eliminada" })
             else:               
-                return Response({"mesage":"Maniobra está sin asignar"})
+                return Response({"message":"Maniobra está sin asignar"})
         else:
-            return Response({ "mesage":"Maniobra no existe" })
+            return Response({ "message":"Maniobra no existe" })
       
 class CreateManiobraTqi(APIView):
     def post(self, request, *args, **kwargs):
@@ -364,7 +389,6 @@ class CreateManiobraTqi(APIView):
         else:
             return Response({"Error": serializar.errors})
         
-
 class ObtenerMetasTqi (generics.ListAPIView):
     serializer_class = MetasTQIContratoSerializer
     def get_queryset(self):
@@ -403,3 +427,41 @@ class ObtenerMetasTqi (generics.ListAPIView):
             elemento['contrato'] = contrato
 
         return response
+
+class ConfirmarInspeccion(APIView):
+    def post(self, request, *args, **kwargs):
+        usuario = ValidateUser(request)
+        pk = self.kwargs.get('pk')
+
+
+        maniobra_actualizar = ManiobrasTqi.objects.filter(codigo = pk).first()
+
+        if maniobra_actualizar:
+            if maniobra_actualizar.estado_tqi !="0":
+
+                ajuste_ejecucion = MetasInspectores.objects.filter(
+                                                                        inspector=maniobra_actualizar.inspector_asingado, 
+                                                                        anio=maniobra_actualizar.anio, 
+                                                                        mes=maniobra_actualizar.mes
+                                                                    ).first()
+                if ajuste_ejecucion:
+                    ajuste_ejecucion.cantidad_ejecutada = ajuste_ejecucion.cantidad_ejecutada + 1
+                    ajuste_ejecucion.save()
+
+                ajuste_ejecucion_empresa = MetasTQI.objects.filter(
+                                                                contrato=maniobra_actualizar.contrato, 
+                                                                anio=maniobra_actualizar.anio, 
+                                                                mes=maniobra_actualizar.mes
+                                                             ).first()
+                if ajuste_ejecucion_empresa:
+                    ajuste_ejecucion_empresa.cantidad_ejecutada = ajuste_ejecucion_empresa.cantidad_ejecutada + 1
+                    ajuste_ejecucion_empresa.save()
+
+                maniobra_actualizar.inspeccion_ejecutada = True
+                maniobra_actualizar.save()
+
+                return Response({ "message":"Inspeccion confirmada" })
+            else:               
+                return Response({"message":"No se puede confirmar inspección"})
+        else:
+            return Response({ "message":"Maniobra no existe" })
