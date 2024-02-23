@@ -443,7 +443,7 @@ class ConfirmarInspeccion(APIView):
                                                                         inspector=maniobra_actualizar.inspector_asingado, 
                                                                         anio=maniobra_actualizar.anio, 
                                                                         mes=maniobra_actualizar.mes
-                                                                    ).first()
+                                                                  ).first()
                 if ajuste_ejecucion:
                     ajuste_ejecucion.cantidad_ejecutada = ajuste_ejecucion.cantidad_ejecutada + 1
                     ajuste_ejecucion.save()

@@ -17,43 +17,23 @@ from ...users.models import User
 
 from django.http import FileResponse, HttpResponse
 from django.conf import settings
-
-# import magic
+from ...users.views import ValidateUser
 import mimetypes
 
-# 1. SUBIR SOPORTES INICIALES ASOCIADOS A UN TRABAJO
 class SubirArchivoView(APIView):
     def post(self, request, *args, **kwargs):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        user = ValidateUser(request)
+        # archivo = request.data.get('archivo')
         
-        usuario=User.objects.get(username=payload['username'])
-        archivo = request.data.get('archivo')  # Asegúrate de que 'archivo' sea el nombre del campo en tu solicitud POST
-
-        # Crear una instancia del modelo SoportesIniciales con el archivo
-        
-        data=request.data
-        id_trabajo=data['trabajo']
-        data['trabajo']=Trabajo.objects.get(pk=id_trabajo)
-        print(data['trabajo'])
-
+        data = request.data
+        id_trabajo = data['trabajo']
+        data['trabajo'] = Trabajo.objects.get(pk=id_trabajo)
         serializer = CrearSoportesInciales(data=request.data)
 
-        print(serializer)
-
         if serializer.is_valid():
-            # Guardar el archivo en el modelo SoportesIniciales
             serializer.save()
-
-            # Devolver una respuesta de éxito
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            # Si hay errores de validación, devolver una respuesta con los errores
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 # 2. ELIMINAR SOPORTE INICIAL

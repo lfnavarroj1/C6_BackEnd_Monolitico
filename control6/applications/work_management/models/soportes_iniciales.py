@@ -1,16 +1,14 @@
 from django.db import models
 from django.utils import timezone
 from ...work_management.models.trabajo import Trabajo
-# Create your models here.
 
 
 class SoportesIniciales(models.Model):
-
-    id_soporte=models.CharField(primary_key=True, max_length=23, unique=True, default="N/A", editable=False)
+    id_soporte = models.CharField(primary_key=True, max_length=23, unique=True, default="N/A", editable=False)
     trabajo = models.ForeignKey(Trabajo, on_delete=models.PROTECT)
-    nombre=models.CharField(max_length=50)
-    descripcion=models.TextField()
-    archivo=models.FileField(upload_to='soportes_iniciales',blank=True, null=True)
+    nombre = models.CharField(max_length=50)
+    descripcion = models.TextField()
+    archivo = models.FileField(upload_to='soportes_iniciales',blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.id_soporte == "N/A":
@@ -23,10 +21,8 @@ class SoportesIniciales(models.Model):
                 next_id = 1
             self.id_soporte = f'SP-{current_year}-{str(next_id).zfill(8)}'
 
-        # Generar la ruta de subida del archivo
         ruta_archivo = f'{self.trabajo}/{self.id_soporte}/{self.archivo.name}'
 
-        # Asignar la ruta de subida al campo 'archivo'
         self.archivo.name = ruta_archivo
 
         super(SoportesIniciales, self).save(*args, **kwargs)

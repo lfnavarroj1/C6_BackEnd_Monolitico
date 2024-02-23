@@ -9,10 +9,7 @@ from ...static_data.models.subestacion import Subestacion
 from ...static_data.models.circuito import Circuito
 from ...static_data.models.contrato import Contrato
 from ..errores import CampoRequeridoError
-
 from django.db.models import Q
-# from ...users.models import User
-# from ..serializers.trabajo_serializer import TrabajoSerializer
 
 
 
@@ -25,9 +22,9 @@ class TrabajoManager(models.Manager):
     
     def crear_trabajo(self, trabajo_data):
         campos = [
-            "pms_quotation", # No requerido
-            "pms_need", # No requerido
-            "proceso", # requerido
+            "pms_quotation",
+            "pms_need",
+            "proceso",
             "caso_radicado",
             'ruta_proceso',
             "alcance",
@@ -49,8 +46,6 @@ class TrabajoManager(models.Manager):
             else:
                  trabajo_data[campo]=""
 
-        
-        # CAMPOS OBLIGATORIOS
         campos_obligatorios=["proceso", "alcance", "unidad_territorial", "municipio","direccion", "vereda", "subestacion", "circuito", "contrato"]
         for campo in campos_obligatorios:
             if trabajo_data[campo] == "":
@@ -77,27 +72,18 @@ class TrabajoManager(models.Manager):
         uni_id=trabajo_data["contrato"]
         trabajo_data["contrato"]=Contrato.objects.get(pk=uni_id)
 
-        # CAMPO REFERENCIAL OPCIONAL
         if trabajo_data["estructura_presupuestal"]!="":
             uni_id=trabajo_data["estructura_presupuestal"]
             trabajo_data["estructura_presupuestal"]=EstructuraPresupuestal.objects.get(pk=uni_id)
         else:
             trabajo_data["estructura_presupuestal"]=None
 
-        # 2. Asignar lo valores por defecto de la creación
         trabajo_data["ruta_proceso"]=RutaProceso.objects.filter(proceso=trabajo_data["proceso"], paso="1").first()
-
-        # 3. Crear el trabajo con los datos suministrados
         nuevo_trabajo=self.create(**trabajo_data)
-
-        # 5. Devolver el resultado de la creación.
         return nuevo_trabajo
     
-    def actualizar_trabajo(self, trabajo_data,id_control):
-        # ACTUALIZAR UN TRABAJO
-
-        # 2. FILTRAR EL TRABAJO A MODIFICAR
-        trabajo_actualizado=self.get(pk=id_control)
+    def actualizar_trabajo(self, trabajo_data, id_control):
+        trabajo_actualizado = self.get(pk=id_control)
 
         campos_actualizables=[
             "pms_quotation",
@@ -151,27 +137,20 @@ class TrabajoManager(models.Manager):
         return trabajo_actualizado
 
 
-    # Filtrar Trabajos
-    def filtrar_trabajos( self, vprocesos, vestados, kword ):
+
+    def filtrar_trabajos(self, vprocesos, vestados, kword, user):
         result = self.filter(
-            Q( proceso__in = vprocesos ),
-            Q( ruta_proceso__estado__id_estado__in = vestados ),
-            Q( id_control__icontains = kword ) | Q( caso_radicado__icontains = kword ) | Q( ticket__icontains = kword ),
+            Q(proceso__in = vprocesos),
+            Q(unidad_territorial__in = user.unidades_territoriales.all()),
+            Q(ruta_proceso__estado__id_estado__in = vestados),
+            Q(id_control__icontains = kword ) | Q( caso_radicado__icontains = kword ) | Q( ticket__icontains = kword ),
         )
-        return result
-        
-    # Contar trabajos por procesos
-    def contar_trabajos_procesos(self,vprocesos,vestados,kword):
+        return result        
 
-        # filtro = Q(proceso__in=vprocesos) & Q(ruta_proceso__estado__id_estado__in=vestados)
-        # if kword:
-        #     filtro &= (Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword))
-
-        # arreglo = self.filter(filtro)
-
-        # Obtener la lista de los nombres de los procesos
+    def contar_trabajos_procesos(self, vprocesos, vestados, kword, user):
         result=self.filter(
         Q(proceso__in=vprocesos),
+        Q(unidad_territorial__in = user.unidades_territoriales.all()),
         Q(ruta_proceso__estado__id_estado__in=vestados),
         Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword),
         )

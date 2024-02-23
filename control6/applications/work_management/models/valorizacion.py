@@ -9,7 +9,7 @@ import os
 
 class Valorizacion( models.Model ):
 
-    ESTADO_CHOICES = (
+    ESTADOS_VALORIZACION = (
         ('0', 'Revisión'),
         ('1', 'Rechazado'),
         ('2', 'Aprobado'),
@@ -22,7 +22,7 @@ class Valorizacion( models.Model ):
     monto_mano_obra = models.FloatField()
     monto_materiales = models.FloatField()
     fecha_valorizacion = models.DateTimeField(auto_now=False, auto_now_add=False,blank=True, null=True)
-    estado = models.CharField(max_length=1,choices=ESTADO_CHOICES)
+    estado = models.CharField(max_length=1,choices=ESTADOS_VALORIZACION)
     nivel_tension = models.ForeignKey(NivelTension, on_delete=models.PROTECT)
     presupuesto = models.FileField(upload_to='presupuesto',blank=True, null=True)
 
@@ -39,14 +39,10 @@ class Valorizacion( models.Model ):
                 next_id = 1
             self.id_valorizacion = f'VL-{current_year}-{str(next_id).zfill(8)}'
 
-        # Generar la ruta de subida del archivo
-        # print(self.presupuesto.field.has_changed(self.presupuesto, self.presupuesto.name))
-
         if bool(self.presupuesto) and not os.path.exists(self.presupuesto.path):
             ruta_archivo = f'{self.trabajo}/{self.id_valorizacion}/{self.presupuesto.name}'
             self.presupuesto.name = ruta_archivo
 
-        
         super(Valorizacion, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -54,7 +50,7 @@ class Valorizacion( models.Model ):
 
 
 class Nodo( models.Model ):
-    TIPONODO = (
+    TIPO_NODO = (
         ("0" , "Nodo red"),
         ("1" , "Tramo red"),
         ("2" , "Equipo"),
@@ -65,7 +61,7 @@ class Nodo( models.Model ):
         ("7" , "Cercha"),
     )
 
-    TIPOINSTALACION = (
+    TIPO_INSTALACION = (
         ("0" , "Aéreo"),
         ("1" , "Subterráneo"),
     )
@@ -81,8 +77,8 @@ class Nodo( models.Model ):
     punto_fisico_inicial = models.CharField( max_length = 10, null=True, blank=True )
     norma_codensa_punto_inicial = models.CharField( max_length = 10, null=True, blank=True )
     norma_codensa_punto_final = models.CharField( max_length = 10, null=True, blank=True )
-    tipo_nodo = models.CharField( max_length = 1,choices=TIPONODO, null=True, blank=True )
-    tipo_instalacion = models.CharField( max_length = 1,choices=TIPOINSTALACION, null=True, blank=True ) # Estandarizar el tipo de instalación
+    tipo_nodo = models.CharField( max_length = 1,choices=TIPO_NODO, null=True, blank=True )
+    tipo_instalacion = models.CharField( max_length = 1,choices=TIPO_INSTALACION, null=True, blank=True )
     nivel_tension = models.ForeignKey( NivelTension, on_delete=models.PROTECT, null=True, blank=True )
     tramo = models.CharField( max_length = 200, null=True, blank=True )
     cod_seccion = models.CharField( max_length = 125, null=True, blank=True )

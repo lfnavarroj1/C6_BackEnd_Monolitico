@@ -10,8 +10,8 @@ from ..models.valorizacion import (
 
 class ValorizacionSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Valorizacion
-        fields=(
+        model = Valorizacion
+        fields = (
             "id_valorizacion",
             "trabajo",
             "monto_mano_obra",
