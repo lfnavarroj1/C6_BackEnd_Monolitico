@@ -136,12 +136,3 @@ CORS_ALLOW_CREDENTIALS = True
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-
-CELERY_BEAT_SCHEDULE = {
-    'tarea-cada-10-minutos': {
-        'task': 'control6.tasks.actualizar_maniobras',  # Cambia 'ruta.a.tu.tarea' con la ubicación real de tu tarea
-        'schedule': timedelta(minutes=5),
-    },
-}
-
-CELERY_APP = 'control6.settings.celery.app'
