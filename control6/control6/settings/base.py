@@ -144,3 +144,4 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+CELERY_APP = 'control6.settings.celery.app'
