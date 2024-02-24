@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta 
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,6 +37,7 @@ THIRD_APP=(
     'rest_framework',
     'corsheaders',
     'import_export',
+    "django_celery_results",
 )
 LOCAL_APP=(
     'applications.users',     
@@ -136,3 +138,10 @@ CORS_ALLOW_CREDENTIALS = True
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULE = {
+    'Actualizar_Maniobras': {
+        'task': 'applications.inspecciones_tqi.tasks.actualizar_maniobras',  # Ruta a la tarea
+        # 'schedule': crontab(minute=0, hour='*/8'),  # Programa la tarea para que se ejecute cada hora
+        'schedule': crontab(minute='*/15'),  # Programa la tarea para que se ejecute cada hora
+    },
+}

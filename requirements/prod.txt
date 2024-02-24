@@ -7,3 +7,6 @@ django-import-export==3.3.1
 pandas
 requests
 celery
+redis
+django-celery-results
+django-celery-beat
