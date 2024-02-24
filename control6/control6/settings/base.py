@@ -142,6 +142,6 @@ CELERY_BEAT_SCHEDULE = {
     'Actualizar_Maniobras': {
         'task': 'applications.inspecciones_tqi.tasks.actualizar_maniobras',  # Ruta a la tarea
         # 'schedule': crontab(minute=0, hour='*/8'),  # Programa la tarea para que se ejecute cada hora
-        'schedule': crontab(minute='*/15'),  # Programa la tarea para que se ejecute cada hora
+        'schedule': crontab(minute='*/60'),  # Programa la tarea para que se ejecute cada hora
     },
 }

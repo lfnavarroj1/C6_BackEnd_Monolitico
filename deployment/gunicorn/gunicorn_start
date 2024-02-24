@@ -17,6 +17,11 @@ source ../../bin/activate
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH
 
+
+# Iniciar celery
+celery -A control6 worker --loglevel INFO --logfile=../../logs/worker.log &
+celery -A control6 beat -l info --logfile=../../logs/beat.log &
+
 # Create the run directory if it doesn't exist
 RUNDIR=$(dirname $SOCKFILE)
 test -d $RUNDIR || mkdir -p $RUNDIR
