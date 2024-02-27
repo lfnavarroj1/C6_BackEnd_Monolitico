@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.valorizacion_view import(
+from .views import(
     CargarValorizacionView,
     ListarValorizacion,
     ObtenerValorizacion,

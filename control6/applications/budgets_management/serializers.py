@@ -1,12 +1,11 @@
 from rest_framework import serializers
-from ..models.valorizacion import (
+from .models import (
     Valorizacion, 
     Nodo, 
     NodoMDO, 
     NodoMAT,
     EtlBudget
 )
-
 
 class ValorizacionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,21 +21,6 @@ class ValorizacionSerializer(serializers.ModelSerializer):
             "presupuesto",
         )
 
-# class CrearValorizacion(serializers.ModelSerializer):
-#     class Meta:
-#         model=Valorizacion
-#         fields=(
-#             "id_valorizacion",
-#             "trabajo",
-#             "monto_mano_obra",
-#             "monto_materiales",
-#             "estado",
-#             "nivel_tension",
-#             "presupuesto",
-#         )
-
-
-# Crear un solo nodo para sealizar la creación
 class NodoSerializer( serializers.ModelSerializer ):
     class Meta:
         model = Nodo
@@ -65,8 +49,8 @@ class NodoSerializer( serializers.ModelSerializer ):
 
 class CrearNodoRG12Serializer(serializers.ModelSerializer):
     class Meta:
-        model=Nodo
-        fields=(
+        model = Nodo
+        fields = (
             "id_nodo",
             "valorizacion",
             "nodo",
@@ -83,8 +67,8 @@ class CrearNodoRG12Serializer(serializers.ModelSerializer):
 
 class CrearNodoRG10Serializer(serializers.ModelSerializer):
     class Meta:
-        model=Nodo
-        fields=(
+        model = Nodo
+        fields = (
             "id_nodo",
             "valorizacion",
             "nodo",
@@ -117,7 +101,6 @@ class NodoMATerializer( serializers.ModelSerializer ):
             "cantidad_facturada",
             "aportacion",
         )
-
 
 class EtlBudgetSerializer( serializers.ModelSerializer ):
     class Meta:

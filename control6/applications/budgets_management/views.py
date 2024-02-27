@@ -1,4 +1,3 @@
-from rest_framework import status
 from rest_framework import generics
 from rest_framework.generics import (
     ListAPIView,  
@@ -8,47 +7,38 @@ from rest_framework.generics import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from ..models.valorizacion import (
+from .models import (
     Valorizacion, Nodo
 )
-from ..serializers.valorizacion_serializer import ( 
-    # CrearValorizacion, 
+from .serializers import ( 
     ValorizacionSerializer, 
     NodoSerializer, 
     EtlBudgetSerializer,
     NodoMDOSerializer, 
     NodoMATerializer, 
-    # CrearNodoRG12Serializer, 
     CrearNodoRG10Serializer,
     NodoSerializer
 )
-from ..models.trabajo import Trabajo
+from ..work_management.models.trabajo import Trabajo
 from rest_framework.exceptions import AuthenticationFailed
-import jwt, json, os #, datetime
-# from ...users.models import User
-
+import jwt, os
 from django.utils import timezone
 
 from django.conf import settings
-from ..models.valorizacion import ( 
+from .models import ( 
     NodoMAT, 
     NodoMDO, 
     EtlBudget 
 )
-from ...prestaciones.models import Prestacion
-from ...materiales.models import Material
+from ..labour_management.models import Prestacion
+from ..materials_management.models import Material
 from ..models.lcl import Lcl
-
-# import magic
 import pandas as pd
 import functools
 from itertools import groupby
-
 from django.utils import timezone
-
-from ...users.views import ValidateUser
-
-from ..mixins import CargarFormatoReplanteoMixin, EliminarValorizacionMixin
+from ..users.views import ValidateUser
+from .mixins import CargarFormatoReplanteoMixin, EliminarValorizacionMixin
 
 class CargarValorizacionView(APIView, CargarFormatoReplanteoMixin, EliminarValorizacionMixin):
     def post(self, request, *args, **kwargs):

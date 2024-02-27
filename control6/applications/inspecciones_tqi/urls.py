@@ -17,8 +17,6 @@ from .views import (
     ConfirmarInspeccion
 )
 
-
-
 urlpatterns = [
     # Trabajos
     path('lista/', ListarPdlTqi.as_view(), name="'pdl-list" ),

@@ -1,17 +1,9 @@
-
 from celery import shared_task
 from django.utils import timezone
 import requests, datetime
 from django.core.exceptions import ObjectDoesNotExist
-
-from .serializers import (
-    ManiobrasTqiSerializer,
-)
-
-from .models import(
-    ManiobrasTqi,
-)
-
+from .serializers import ManiobrasTqiSerializer
+from .models import ManiobrasTqi
 from ..static_data.models.municipio import Municipio
 from ..static_data.models.circuito import Circuito
 from ..static_data.models.subestacion import Subestacion
@@ -41,7 +33,6 @@ def actualizar_maniobras():
 
     lista_respuesta = listado_maniobras.json()
     maniobras_aprobadas = [maniobra for maniobra in lista_respuesta if maniobra['estado'] == 'Aprobado' or maniobra['estado'] == 'En ejecución']
-
 
     for maniobra in maniobras_aprobadas:
         try:

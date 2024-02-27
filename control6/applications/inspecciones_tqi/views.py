@@ -1,49 +1,30 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from ..users.models import User
-from collections import Counter
+
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-import jwt, json
+import jwt
 from ..static_data.serializers.unidad_territorial_serializer import UnidadTerritorialSerializer, UnidadTerritorial
 from .serializers import (
     ManiobrasTqiSerializer,
-    MetasTQISerializer,
-    MetasInspectoresSerializer,
-    PdlTqiPagination,
     MetasInspectoresTotalesSerializer,
     MetasTQIContratoSerializer,
 )
-
 from ..users.serializers import UserSerializer
-
 from .models import(
     ManiobrasTqi,
     MetasTQI,
     MetasInspectores,
-
 )
-
-from ..static_data.models.municipio import Municipio
 from ..static_data.models.circuito import Circuito
 from ..static_data.models.subestacion import Subestacion
 from ..static_data.models.unidad_territorial import UnidadTerritorial
 from ..static_data.models.contrato import Contrato
-
-
 from django.utils import timezone
-
-from django.utils.dateparse import parse_date, parse_time
-
-
-from rest_framework import status
-
 from django.core.exceptions import ObjectDoesNotExist
-
 import requests, datetime
-
 from ..users.views import ValidateUser
-
 from django.db.models import Sum
 
 class ListarPdlTqi(generics.ListAPIView):
@@ -465,3 +446,7 @@ class ConfirmarInspeccion(APIView):
                 return Response({"message":"No se puede confirmar inspección"})
         else:
             return Response({ "message":"Maniobra no existe" })
+        
+class ActualizarEjecutadas(APIView):
+    def post(self, request, *args, **kwargs):
+        pass

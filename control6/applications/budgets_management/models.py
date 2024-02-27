@@ -1,13 +1,11 @@
 from django.db import models
 from django.utils import timezone
-
-from ...work_management.models.trabajo import Trabajo
-from ...static_data.models.nivel_tension import NivelTension
-from ..managers.valorizacion_manager import ValorizacionManager
-
+from ..work_management.models.trabajo import Trabajo
+from ..static_data.models.nivel_tension import NivelTension
+from .managers import ValorizacionManager
 import os
 
-class Valorizacion( models.Model ):
+class Valorizacion(models.Model):
 
     ESTADOS_VALORIZACION = (
         ('0', 'Revisión'),
@@ -28,7 +26,7 @@ class Valorizacion( models.Model ):
 
     objects = ValorizacionManager()
     
-    def save( self, *args, **kwargs ):
+    def save(self, *args, **kwargs):
         if self.id_valorizacion == "N/A":
             current_year = timezone.now().year
             last_instance = Valorizacion.objects.filter(id_valorizacion__startswith=f'VL-{current_year}-').order_by('-id_valorizacion').first()
