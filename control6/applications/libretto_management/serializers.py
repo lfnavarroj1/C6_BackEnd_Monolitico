@@ -1,15 +1,14 @@
-from import_export import resources
-from import_export.admin import ImportExportModelAdmin
-from django.contrib import admin
+from rest_framework import serializers
 from .models import Libreto
 
-# LIBRETOS
-class LibretoResource(resources.ModelResource):
+
+class LibretoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Libreto
         fields=(
             "id_libreto",
             "programacion",
+            "lcl",
             "numero_libreto",
             "valor_mod",
             "valor_mat",
@@ -21,12 +20,12 @@ class LibretoResource(resources.ModelResource):
             "trabajo",
         )
 
-@admin.register(Libreto)
-class LibretoAdmin(ImportExportModelAdmin):
-    resource_class=LibretoResource
-    list_display=(
-            "id_libreto",
+class CrearLibretoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Libreto
+        fields=(
             "programacion",
+            "lcl",
             "numero_libreto",
             "valor_mod",
             "valor_mat",
@@ -36,4 +35,4 @@ class LibretoAdmin(ImportExportModelAdmin):
             "estado_libreto",
             "es_ultimo_libreto",
             "trabajo",
-    )
+        )
