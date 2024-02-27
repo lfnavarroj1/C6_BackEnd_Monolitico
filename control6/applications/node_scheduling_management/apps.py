@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class DescargosConfig(AppConfig):
+class NodeSchedulingManagementConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'descargos'
+    name = 'node_scheduling_management'
