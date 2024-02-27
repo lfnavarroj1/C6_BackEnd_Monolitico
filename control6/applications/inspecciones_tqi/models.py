@@ -1,5 +1,4 @@
 from django.db import models
-# from django.utils import timezone
 from ..users.models import User
 from ..static_data.models.unidad_territorial import UnidadTerritorial
 from ..static_data.models.subestacion import Subestacion
@@ -7,10 +6,9 @@ from ..static_data.models.circuito import Circuito
 from ..static_data.models.contrato import Contrato
 from ..static_data.models.municipio import Municipio
 from ..static_data.models.vereda import Vereda
-
 from .managers import ManiobrasTQIManager, MetasInspectoresManager
-
 from datetime import datetime
+
 
 class ManiobrasTqi(models.Model):
 
@@ -104,6 +102,7 @@ class ManiobrasTqi(models.Model):
                 return valor
         return None
 
+
 class MetasTQI(models.Model):
     contrato = models.ForeignKey(Contrato,on_delete=models.PROTECT)
     anio = models.PositiveIntegerField()
@@ -126,28 +125,4 @@ class MetasInspectores(models.Model):
     responsable_actualizacion= models.CharField(max_length=11)
 
     objects = MetasInspectoresManager()
-
-
-
-
-
-
-# circuito
-# causal
-
-# localidad_municipio
-# unidad_responsable
-# firma
-# co
-
-
-
-
-# unidad_territorial
-
-# causal
-# contrato
-# municipio
-# vereda_localidad
-
 
