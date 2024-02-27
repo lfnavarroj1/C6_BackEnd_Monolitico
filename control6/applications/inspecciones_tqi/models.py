@@ -57,9 +57,9 @@ class ManiobrasTqi(models.Model):
     contrato = models.ForeignKey(Contrato, null=True, blank=True, on_delete=models.PROTECT, related_name="maniobra_contrato")
     municipio = models.ForeignKey(Municipio, null=True, blank=True, on_delete=models.PROTECT, related_name="maniobra_municipio")
     vereda_localidad = models.ForeignKey(Vereda, null=True, blank=True, on_delete=models.PROTECT, related_name="maniobra_vereda_localidad")
-    direccion = models.CharField(null=True, blank=True)
+    direccion = models.CharField(null=True, blank=True, max_length=200)
     estado_tqi = models.CharField(max_length = 1,choices=ESTADO_TQI)
-    criticidad_maniobra = models.CharField(null=True, blank=True)
+    criticidad_maniobra = models.CharField(null=True, blank=True, max_length=200)
     cuadrilla_responsable = models.CharField(max_length=120, null=True, blank=True)
     telefono_cuadrilla_responsable = models.CharField(max_length=120, null=True, blank=True)
     inspector_asingado = models.ForeignKey(User, null=True, blank=True, on_delete=models.PROTECT)
@@ -117,7 +117,7 @@ class MetasTQI(models.Model):
 
 class MetasInspectores(models.Model):
     inspector = models.ForeignKey(User, on_delete=models.PROTECT)
-    anio = models.CharField()
+    anio = models.CharField(max_length=200)
     mes = models.PositiveIntegerField()
     cantidad_meta = models.PositiveIntegerField()
     cantidad_programada = models.PositiveIntegerField()
