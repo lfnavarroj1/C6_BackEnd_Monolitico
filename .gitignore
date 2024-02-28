@@ -30,6 +30,31 @@ control6/applications/work_management/migrations/*
 # Created by https://www.toptal.com/developers/gitignore/api/django
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
 
+
+control6/applications/budgets_management/__pycache__/*
+control6/applications/external_systems_management/__pycache__/*
+control6/applications/labour_management/__pycache__/*
+control6/applications/lcl_management/__pycache__/*
+control6/applications/libretto_management/__pycache__/*
+control6/applications/maintenance_management/__pycache__/*
+control6/applications/maneuvers_management/__pycache__/*
+control6/applications/materials_management/__pycache__/*
+control6/applications/node_scheduling_management/__pycache__/*
+control6/applications/odm_management/__pycache__/*
+control6/applications/overtime_management/__pycache__/*
+control6/applications/penalities_management/__pycache__/*
+control6/applications/scheduling_management/__pycache__/*
+control6/applications/traceability_management/__pycache__/*
+control6/applications/external_system/__pycache__/*
+control6/applications/horas_extras/__pycache__/*
+control6/applications/inspecciones_tqi/__pycache__/*
+control6/applications/materiales/__pycache__/*
+control6/applications/prestaciones/__pycache__/*
+control6/applications/seguimiento_metas/__pycache__/*
+control6/applications/static_data/__pycache__/*
+control6/applications/users/__pycache__/*
+control6/applications/work_management/__pycache__/*
+
 ### Django ###
 *.log
 *.pot
@@ -160,14 +185,6 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
 # Spyder project settings
 .spyderproject
