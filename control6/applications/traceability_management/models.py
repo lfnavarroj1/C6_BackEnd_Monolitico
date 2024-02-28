@@ -1,5 +1,6 @@
 from django.db import models
-from ..work_management.models.trabajo import Trabajo
+from ..work_management.models import Trabajo
+from ..inspecciones_tqi.models import ManiobrasTqi
 from ..users.models import User
 from .managers import TrazabilidadTrabajoManager, TrazabilidadInspeccionesTqiManager
 
@@ -17,8 +18,8 @@ class TrazabilidadTrabajo(models.Model):
 
 
 class TrazabilidadInspeccionesTqi(models.Model):
-    maniobra = models.ForeignKey(Trabajo, on_delete=models.PROTECT, related_name="trazabilidad_trabajo")
-    usuario = models.ForeignKey(User, on_delete=models.PROTECT, related_name="trazabilidad_usuario")
+    maniobra = models.ForeignKey(ManiobrasTqi, on_delete=models.PROTECT, related_name="trazabilidad_maniobra")
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT, related_name="trazabilidad_usuario_maniobra")
     fecha_trazabilidad = models.DateTimeField(auto_now=False, auto_now_add=False)
     comentario_trazabilidad = models.TextField()
 

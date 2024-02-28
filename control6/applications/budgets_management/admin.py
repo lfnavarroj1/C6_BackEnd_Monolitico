@@ -4,7 +4,6 @@ from django.contrib import admin
 from .models import Valorizacion
 
 
-# VALORIZACIÓN
 class ValorizacionResource(resources.ModelResource):
     class Meta:
         model=Valorizacion

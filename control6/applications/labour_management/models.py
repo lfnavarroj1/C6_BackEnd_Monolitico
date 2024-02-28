@@ -22,5 +22,5 @@ class Prestacion(models.Model):
     factor_dispersion = models.CharField(max_length = 4)
     grupo_mercologico = models.CharField(max_length = 1, choices = GRUPO_MERCOLOGICO)
     precio_prestacion = models.FloatField()
-    contrato = models.ForeignKey(Contrato, on_delete=models.PROTECT)
+    contrato = models.ForeignKey(Contrato, on_delete=models.PROTECT, related_name='prestacions_contato')
 

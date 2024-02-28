@@ -19,7 +19,7 @@ from .serializers import (
     CrearNodoRG10Serializer,
     NodoSerializer
 )
-from ..work_management.models.trabajo import Trabajo
+from ..work_management.models import Trabajo
 from rest_framework.exceptions import AuthenticationFailed
 import jwt, os
 from django.utils import timezone
@@ -32,7 +32,7 @@ from .models import (
 )
 from ..labour_management.models import Prestacion
 from ..materials_management.models import Material
-from ..models.lcl import Lcl
+from ..lcl_management.models import Lcl
 import pandas as pd
 import functools
 from itertools import groupby

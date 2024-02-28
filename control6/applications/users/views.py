@@ -43,26 +43,16 @@ class LoginUser(APIView):
 
 class GetUser(APIView):
     def get(self, request):
-        # token = request.COOKIES.get('jwt')
-        # if not token:
-        #     raise AuthenticationFailed("Usuario no autenticado")
-        # try:
-        #     payload = jwt.decode(token,'secret', algorithms = ['HS256'])
-
-        # except jwt.ExpiredSignatureError:
-        #     raise AuthenticationFailed("Usuario no autenticado")
-        
-        # user = User.objects.get(username = payload['username'])
         user = ValidateUser (request)
         serializar = UserSerializer(user)
         return Response(serializar.data)
 
 
 class LogoutUser(APIView):
-    def post(self,request):
-        response=Response()
+    def post(self, request):
+        response = Response()
         response.delete_cookie('jwt')
-        response.data={
+        response.data = {
             "mesagge":"Success"
         }
         return response    
@@ -76,15 +66,13 @@ class DeleteUser(APIView):
     def delete():
         pass
 
-def ValidateUser(request):
-        
+def ValidateUser(request):       
         token = request.COOKIES.get('jwt')
-
         if not token:
             raise AuthenticationFailed("Usuario no autenticado")
+        
         try:
             payload = jwt.decode(token,'secret', algorithms = ['HS256'])
-
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Usuario no autenticado")
         user = User.objects.get(username=payload['username'])

@@ -1,10 +1,10 @@
 from django.db import models
 from django.utils import timezone
 
-from .lcl import Lcl
-from ..managers.programacion_manager import ProgramacionManager
-from ...static_data.models.cuadrilla import Cuadrilla
-from .trabajo import Trabajo
+from ..lcl_management.models import Lcl
+from ..scheduling_management.manager import ProgramacionManager
+from ..static_data.models.cuadrilla import Cuadrilla
+from ..work_management.models import Trabajo
 
 import os
 

@@ -1,5 +1,5 @@
 from django.db import models
-from budgets_management.models import Valorizacion
+from ..budgets_management.models import Valorizacion
 from .manager import OdmManager
 
 # Create your models here.

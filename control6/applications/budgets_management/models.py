@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from ..work_management.models.trabajo import Trabajo
+from ..work_management.models import Trabajo
 from ..static_data.models.nivel_tension import NivelTension
 from .managers import ValorizacionManager
 import os

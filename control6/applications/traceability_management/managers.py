@@ -1,7 +1,7 @@
 from django.db import models
 from rest_framework.response import Response
 from django.utils import timezone
-from ..work_management.models.trabajo import Trabajo
+from ..work_management.models import Trabajo
 
 class TrazabilidadTrabajoManager(models.Manager):
     def registrar_trazabilidad(self,req,usuario):

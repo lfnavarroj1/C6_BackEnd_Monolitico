@@ -3,7 +3,7 @@ from django.db import models
 # from ...users.models import User
 from rest_framework.response import Response
 # from django.utils import timezone
-from budgets_management.models import Valorizacion
+from ..budgets_management.models import Valorizacion
 
 class OdmManager(models.Manager):
     def registrar_odm(self,req):

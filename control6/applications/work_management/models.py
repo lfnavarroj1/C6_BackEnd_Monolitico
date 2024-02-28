@@ -1,15 +1,15 @@
 from django.db import models
 from django.utils import timezone
-from ..managers.trabajo_manager import TrabajoManager
-from ...static_data.models.proceso import Proceso
-from ...static_data.models.ruta_proceso import RutaProceso
-from ...static_data.models.estructura_presupuestal import EstructuraPresupuestal
-from ...static_data.models.unidad_territorial import UnidadTerritorial
-from ...static_data.models.municipio import Municipio
-from ...static_data.models.vereda import Vereda
-from ...static_data.models.subestacion import Subestacion
-from ...static_data.models.circuito import Circuito
-from ...static_data.models.contrato import Contrato
+from .managers import TrabajoManager
+from ..static_data.models.proceso import Proceso
+from ..static_data.models.ruta_proceso import RutaProceso
+from ..static_data.models.estructura_presupuestal import EstructuraPresupuestal
+from ..static_data.models.unidad_territorial import UnidadTerritorial
+from ..static_data.models.municipio import Municipio
+from ..static_data.models.vereda import Vereda
+from ..static_data.models.subestacion import Subestacion
+from ..static_data.models.circuito import Circuito
+from ..static_data.models.contrato import Contrato
 from datetime import datetime
 
 # Create your models here.
@@ -72,10 +72,6 @@ class Trabajo(models.Model):
 
             self.id_control = f'C6-{current_year}-{str(next_id).zfill(6)}'
 
-
-        print(self.priorizacion)
-        print(type(self.priorizacion))
-
         if isinstance(self.priorizacion, str):
             self.anio_meta = datetime.strptime(self.priorizacion, "%Y-%m-%d").year
             self.mes_meta = datetime.strptime(self.priorizacion, "%Y-%m-%d").month
@@ -84,24 +80,11 @@ class Trabajo(models.Model):
             self.anio_meta = self.priorizacion.month
         
 
-        
-        # if
-
-        # self.anio_meta = datetime.strptime(self.priorizacion, "%Y-%m-%d").year
-        # self.mes_meta = datetime.strptime(self.priorizacion, "%Y-%m-%d").month
-
-
-
         super(Trabajo, self).save(*args, **kwargs)
         return self
     
     def __str__(self):
         return self.id_control
-
-
-from django.db import models
-from django.utils import timezone
-from ...work_management.models.trabajo import Trabajo
 
 
 class SoportesIniciales(models.Model):

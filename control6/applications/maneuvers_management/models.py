@@ -1,8 +1,8 @@
 from django.db import models
 
 from django.db import models
-from .programacion import Programacion
-from ..managers.maniobra_manager import ManiobraManager
+from ..scheduling_management.models import Programacion
+from .managers import ManiobraManager
 
 class Maniobra(models.Model):
     TIPO_MANIOBRAS=(

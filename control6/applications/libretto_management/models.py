@@ -1,9 +1,9 @@
 from django.db import models
 from django.utils import timezone
-from scheduling_management.models import Programacion
-from ...work_management.models.lcl import Lcl
-from work_management.models.trabajo import Trabajo
-from users.models import User
+from ..scheduling_management.models import Programacion
+from ..lcl_management.models import Lcl
+from ..work_management.models import Trabajo
+from ..users.models import User
 from .manager import LibretoManager
 
 import os

@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from .models import Libreto
 from .serializers import CrearLibretoSerializer, LibretoSerializer
 from work_management.models.trabajo import Trabajo
-from ..models.lcl import Lcl
+from ..lcl_management.models import Lcl
 from scheduling_management.models import Programacion
 from rest_framework.exceptions import AuthenticationFailed
 import jwt,json, os #, datetime

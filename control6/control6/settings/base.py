@@ -39,7 +39,21 @@ THIRD_APP=(
     'import_export',
     "django_celery_results",
 )
-LOCAL_APP=(
+LOCAL_APP = (
+    'applications.budgets_management',
+    'applications.external_systems_management',
+    'applications.labour_management',
+    'applications.lcl_management', 
+    'applications.libretto_management',
+    'applications.maintenance_management',
+    'applications.maneuvers_management',
+    'applications.materials_management', 
+    'applications.node_scheduling_management', 
+    'applications.odm_management',
+    'applications.overtime_management',
+    'applications.penalities_management',
+    'applications.scheduling_management',
+    'applications.traceability_management',
     'applications.users',     
     'applications.static_data',
     'applications.work_management',
@@ -48,8 +62,6 @@ LOCAL_APP=(
     'applications.materiales',
     'applications.inspecciones_tqi',
     'applications.seguimiento_metas',
-
-
 )
 
 INSTALLED_APPS =DJANGO_APPS+THIRD_APP+LOCAL_APP

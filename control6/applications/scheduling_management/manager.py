@@ -1,7 +1,7 @@
 from django.db import models
 
-from ...static_data.models.cuadrilla import Cuadrilla
-from ..models.lcl import Lcl
+from ..static_data.models.cuadrilla import Cuadrilla
+from ..lcl_management.models import Lcl
 
 
 class ProgramacionManager( models.Manager ) :

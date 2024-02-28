@@ -1,7 +1,7 @@
 from django.db import models
 # from django.db.models import Q
-from ...users.models import User
-from ..models.odm import Odm
+from ..users.models import User
+from ..odm_management.models import Odm
 from rest_framework.response import Response
 from django.db.models import Q
 
@@ -62,38 +62,13 @@ class LclManager(models.Manager):
     def filtrar_lcl(self,vprocesos,vestados,kword):
 
         result=self.filter(
-            Q(odms__valorizacion__trabajo__proceso__in=vprocesos), ## odms__valorizacion__trabajo__id_control=id_control
+            Q(odms__valorizacion__trabajo__proceso__in=vprocesos),
             Q(estado_lcl__in=vestados),
             Q(lcl__icontains=kword),
             )
         return set(result)
-    
-#     # Listar procesos de un usuario
-#     def lista_procesos_usuario(self,user):
-#         procesos=User.objects.get(id=user.id).process.all()
-#         return procesos
-    
-#     def lista_estado_usuario(self,user):
-#         estados=User.objects.get(id=user.id).state_works.all()
-#         return estados
-
-# class TrazabilidadManager(models.Manager):
-
-#     def agregar_trazabilidad(self,mensaje):
-#         traza=self()
-#         traza.save()
-        
-    # Contar trabajos por procesos
 
     def contar_lcl_procesos(self,vprocesos,vestados,kword):
-
-        # filtro = Q(proceso__in=vprocesos) & Q(ruta_proceso__estado__id_estado__in=vestados)
-        # if kword:
-        #     filtro &= (Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword))
-
-        # arreglo = self.filter(filtro)
-
-        # Obtener la lista de los nombres de los procesos
         result=self.filter(
             
         Q(proceso__in=vprocesos),

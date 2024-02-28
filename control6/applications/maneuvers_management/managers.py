@@ -1,9 +1,9 @@
 from django.db import models
 # from django.db.models import Q
-from ...users.models import User
-from ..models.odm import Odm
+from ..users.models import User
+from ..odm_management.models import Odm
 from rest_framework.response import Response
-from ..models.programacion import Programacion
+from ..scheduling_management.models import Programacion
 
 
 class ManiobraManager(models.Manager):
