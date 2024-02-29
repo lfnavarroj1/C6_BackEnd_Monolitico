@@ -1,16 +1,25 @@
 from rest_framework import serializers
-from ..models.trazabilidad import Trazabilidad
-from ...users.serializers import UserSerializer
+from ..traceability_management.models import TrazabilidadTrabajo, TrazabilidadInspeccionesTqi
+from ..users.serializers import UserSerializer
 
-# proceso (Deuda técnica, optimizar los campos que requiero por vista)
-
-class TrazabilidadSerializer(serializers.ModelSerializer):
-    usuario=UserSerializer()
+class TrazabilidadTrabajoSerializer(serializers.ModelSerializer):
+    usuario = UserSerializer()
     class Meta:
-        model=Trazabilidad
-        fields=(
-            'trabajo',
-            'usuario',
-            'fecha_trazabilidad',
-            'comentario_trazabilidad',
+        model = TrazabilidadTrabajo
+        fields = (
+                'trabajo',
+                'usuario',
+                'fecha_trazabilidad',
+                'comentario_trazabilidad',
+            )
+        
+class TrazabilidadInspeccionesTqiSerializer(serializers.ModelSerializer):
+    usuario = UserSerializer()
+    class Meta:
+        model = TrazabilidadInspeccionesTqi
+        fields = (
+                'maniobra',
+                'usuario',
+                'fecha_trazabilidad',
+                'comentario_trazabilidad',
             )

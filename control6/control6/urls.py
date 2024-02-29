@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/admin/', admin.site.urls),
     path('api/users/', include('applications.users.urls')),
     path('api/trabajos/', include('applications.work_management.urls')),
+    path('api/trazabilidad/', include('applications.traceability_management.urls')),
     path('api/static-data/', include('applications.static_data.urls')),
     path('api/horas_extras/', include('applications.horas_extras.urls')),
     path('api/inspecciones-tqi/', include('applications.inspecciones_tqi.urls')),

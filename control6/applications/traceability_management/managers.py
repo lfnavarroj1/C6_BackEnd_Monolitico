@@ -4,9 +4,10 @@ from django.utils import timezone
 from ..work_management.models import Trabajo
 
 class TrazabilidadTrabajoManager(models.Manager):
-    def registrar_trazabilidad(self,req,usuario):
+    def registrar_trazabilidad(self, req, usuario):
         datos = {}
-        datos["trabajo"] = Trabajo.objects.get(pk=req["trabajo"])
+        # datos["trabajo"] = Trabajo.objects.get(pk=req["trabajo"])
+        datos["trabajo"] = req["trabajo"]
         datos["usuario"] = usuario
         datos["fecha_trazabilidad"] = timezone.now()
         datos["comentario_trazabilidad"] = req["comentario_trazabilidad"]

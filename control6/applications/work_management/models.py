@@ -12,7 +12,6 @@ from ..static_data.models.circuito import Circuito
 from ..static_data.models.contrato import Contrato
 from datetime import datetime
 
-# Create your models here.
 class Trabajo(models.Model):
 
     ESTADO_MARE = (
@@ -37,14 +36,14 @@ class Trabajo(models.Model):
     pms_need = models.CharField(max_length=50, null=True, blank=True)
     proceso = models.ForeignKey(Proceso,on_delete=models.PROTECT) # R1
     ruta_proceso = models.ForeignKey(RutaProceso, on_delete=models.PROTECT)
-    caso_radicado = models.CharField(max_length=50, null=True, blank=True)
+    caso_radicado = models.CharField(max_length=180, null=True, blank=True)
     alcance = models.TextField()
     estructura_presupuestal = models.ForeignKey(EstructuraPresupuestal, on_delete=models.PROTECT, null=True, blank=True)
     priorizacion = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     unidad_territorial=models.ForeignKey(UnidadTerritorial, on_delete=models.PROTECT)
     municipio = models.ForeignKey(Municipio, on_delete=models.PROTECT)
     vereda = models.ForeignKey(Vereda, on_delete=models.PROTECT)
-    direccion = models.CharField(max_length=160)
+    direccion = models.CharField(max_length=180)
     subestacion = models.ForeignKey(Subestacion, on_delete=models.PROTECT)
     circuito = models.ForeignKey(Circuito, on_delete=models.PROTECT)
     equipo_referencia = models.CharField(max_length=25, null=True, blank=True)

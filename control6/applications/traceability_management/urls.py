@@ -1,22 +1,15 @@
 from django.urls import path
-
-
-from .views.trazabilidad_view import(
-    CrearTrazabilidad,
-    ListarTrazabilidad
+from .views import(
+    CrearTrazabilidadTrabajo,
+    ListarTrazabilidadTrabajo,
+    CrearTrazabilidadInspeccionesTqi,
+    ListarTrazabilidadInspeccionesTqi,
 )
 
-
-
-
-
-from django.conf import settings
-from django.conf.urls.static import static
-
-
 urlpatterns = [
-    # Rutas trazabilidad
-    path('crear_traza/', CrearTrazabilidad.as_view(), name="'crear-traza" ),
-    path('trazabilidad/<pk>', ListarTrazabilidad.as_view(), name="trazabilidad-trabajo" ),
-]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+    path('crear_trazabilidad_trabajo/', CrearTrazabilidadTrabajo.as_view(), name="crear-traza" ),
+    path('listar_trazabilidad_trabajo/<pk>', ListarTrazabilidadTrabajo.as_view(), name="listar-trazabilidad" ),
+    path('crear_trazabilidad_inspeccion_tqi/', CrearTrazabilidadInspeccionesTqi.as_view(), name="crear-traza" ),
+    path('listar_trazabilidad_inspeccion_tqi/<pk>', ListarTrazabilidadInspeccionesTqi.as_view(), name="listar-trazabilidad" ),
+]
 
