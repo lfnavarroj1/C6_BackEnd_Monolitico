@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..traceability_management.models import TrazabilidadTrabajo, TrazabilidadInspeccionesTqi
+from .models import TrazabilidadTrabajo, TrazabilidadInspeccionesTqi
 from ..users.serializers import UserSerializer
 
 class TrazabilidadTrabajoSerializer(serializers.ModelSerializer):
