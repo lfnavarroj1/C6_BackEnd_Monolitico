@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from ..models.trazabilidad import Trazabilidad
-from ...users.serializers import UserSerializer
+from .models import TrazabilidadTrabajo
+from ..users.serializers import UserSerializer
 
 # proceso (Deuda técnica, optimizar los campos que requiero por vista)
 
 class TrazabilidadSerializer(serializers.ModelSerializer):
     usuario=UserSerializer()
     class Meta:
-        model=Trazabilidad
+        model=TrazabilidadTrabajo
         fields=(
             'trabajo',
             'usuario',

@@ -8,7 +8,7 @@ from rest_framework.generics import (
 from rest_framework.views import APIView
 from .models import Lcl
 from .serializers import LclSerializer, LclListaSerializer
-from users.models import User
+from ..users.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt 

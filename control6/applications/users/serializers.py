@@ -51,7 +51,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {'password':{'write_only':True}}
     
-    def create(self,validated_data):
+    def create(self, validated_data):
         password = validated_data.pop('password', None)
         instance=self.Meta.model(**validated_data)
         if password is not None:
@@ -60,3 +60,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)

@@ -6,9 +6,10 @@ from rest_framework.generics import (
     RetrieveAPIView
     )
 from rest_framework.views import APIView
-from ..models.trazabilidad import Trazabilidad
-from ..serializers.trazabilidad_serializer import TrazabilidadSerializer
-from ...users.models import User
+from .models import TrazabilidadTrabajo
+from .serializers import TrazabilidadSerializer
+from ..users.models import User
+from .managers import TrazabilidadTrabajoManager
 
 # from django.db.models import F
 # from django.urls import reverse_lazy
@@ -35,7 +36,7 @@ class CrearTrazabilidad(CreateAPIView):
             raise AuthenticationFailed("Unauthenticated!")
         
         usuario=User.objects.get(username=payload['username'])
-        response=Trazabilidad.objects.registrar_trazabilidad(request.data, usuario)
+        response=TrazabilidadTrabajo.objects.registrar_trazabilidad(request.data, usuario)
         return response
 # ---------------------------------------------------------------------
 
@@ -53,6 +54,6 @@ class ListarTrazabilidad(ListAPIView):
             raise AuthenticationFailed("Unauthenticated!")
 
         pk = self.kwargs.get('pk')
-        queryset=Trazabilidad.objects.obtener_trazabilidad(pk)
+        queryset=TrazabilidadTrabajo.objects.obtener_trazabilidad(pk)
         return queryset
 # ---------------------------------------------------------------------

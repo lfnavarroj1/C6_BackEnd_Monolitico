@@ -6,7 +6,7 @@ from ..scheduling_management.models import Programacion
 import pandas as pd
 import functools
 from itertools import groupby
-from ..work_management.serializers.valorizacion_serializer import ( 
+from .serializers import ( 
     # CrearValorizacion, 
     ValorizacionSerializer, 
     NodoSerializer, 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models.maniobra import Maniobra
+from .models import Maniobra
 
 
 class ManiobraSerializer(serializers.ModelSerializer):

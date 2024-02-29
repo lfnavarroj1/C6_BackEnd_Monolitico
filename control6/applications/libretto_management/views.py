@@ -10,17 +10,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Libreto
 from .serializers import CrearLibretoSerializer, LibretoSerializer
-from work_management.models.trabajo import Trabajo
+from ..work_management.models import Trabajo
 from ..lcl_management.models import Lcl
-from scheduling_management.models import Programacion
+from ..scheduling_management.models import Programacion
 from rest_framework.exceptions import AuthenticationFailed
 import jwt,json, os #, datetime
-from users.models import User
+from ..users.models import User
 
 from django.http import FileResponse, HttpResponse
 from django.conf import settings
-
-from work_management.exceptions.libreto_exceptions import LibretoNoEncontrado
 # import magic
 import mimetypes
 

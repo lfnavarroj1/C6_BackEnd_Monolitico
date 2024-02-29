@@ -6,10 +6,10 @@ from rest_framework.generics import (
     RetrieveAPIView
     )
 from rest_framework.views import APIView
-from ..models.maniobra import Maniobra
-from ..serializers.maniobra_serializer import ManiobraSerializer
-from ...users.models import User
-from ..models.trabajo import Trabajo
+from .models import Maniobra
+from .serializers import ManiobraSerializer
+from ..users.models import User
+from ..work_management.models import Trabajo
 
 # from django.db.models import F
 # from django.urls import reverse_lazy

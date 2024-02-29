@@ -1,7 +1,7 @@
 from django.urls import path
 
 
-from .views.trazabilidad_view import(
+from .views import(
     CrearTrazabilidad,
     ListarTrazabilidad
 )
