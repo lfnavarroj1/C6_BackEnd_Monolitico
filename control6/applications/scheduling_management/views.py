@@ -2,13 +2,13 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 
-from ..models.programacion import Programacion
-from ..serializers.programacion_serializer import ProgramacionSerializer
-from ...static_data.serializers.cuadrilla_serializer import CuadrillaSerializer
-from ...static_data.models.cuadrilla import Cuadrilla
-from ..models.trabajo import Trabajo
-from ..models.nodo_seguimiento import NodoSeguimiento
-from ..models.valorizacion import Nodo
+from .models import Programacion
+from .serializers import ProgramacionSerializer
+from ..static_data.serializers.cuadrilla_serializer import CuadrillaSerializer
+from ..static_data.models.cuadrilla import Cuadrilla
+from ..work_management.models import Trabajo
+from ..node_scheduling_management.models import NodoSeguimiento
+from ..budgets_management.models import Nodo
 
 import jwt, json
 

@@ -11,15 +11,7 @@ from ..static_data.models.contrato import Contrato
 from .errores import CampoRequeridoError
 from django.db.models import Q
 
-# El manager solo tiene lógica contra las consultas de base de datos
-# Debo desigar está lógica a otro campo por ejemplo, que no sea las consultas.
-
-
 class TrabajoManager(models.Manager):  
-    def lista_trabajos( self ):
-        result = self.all()
-        return result
-    
     def crear_trabajo(self, trabajo_data):
         campos = [
             "pms_quotation",
@@ -47,19 +39,16 @@ class TrabajoManager(models.Manager):
             else:
                  trabajo_data[campo] = ""
 
-
         campos_obligatorios = ["proceso", "alcance", "unidad_territorial", "municipio","direccion", "vereda", "subestacion", "circuito", "contrato", "priorizacion", "cantidad"]
         for campo in campos_obligatorios:
             if trabajo_data[campo] == "":
                 return {"message":'Los campo "proceso", "alcance", "unidad_territorial", "municipio", "direccion", "vereda", "subestacion", "circuito", "contrato" y "priorizacion" son obligatorios', "creado_exitosamente": False}
         
-
         proceso_id = trabajo_data["proceso"]
         trabajo_data["proceso"] = Proceso.objects.get(pk=proceso_id)
 
         uni_id=trabajo_data["unidad_territorial"]
         trabajo_data["unidad_territorial"] = UnidadTerritorial.objects.get(pk=uni_id)
-
 
         uni_id=trabajo_data["municipio"]
         trabajo_data["municipio"] = Municipio.objects.get(pk=uni_id)
@@ -67,18 +56,14 @@ class TrabajoManager(models.Manager):
         uni_id=trabajo_data["vereda"]
         trabajo_data["vereda"] = Vereda.objects.get(pk=uni_id)
 
-
         uni_id= trabajo_data["subestacion"]
         trabajo_data["subestacion"] = Subestacion.objects.get(pk=uni_id)
 
         uni_id=trabajo_data["circuito"]
         trabajo_data["circuito"] = Circuito.objects.get(pk=uni_id)
 
-
         uni_id=trabajo_data["contrato"]
         trabajo_data["contrato"] = Contrato.objects.get(pk=uni_id)
-
-
 
         if trabajo_data["estructura_presupuestal"]!="":
             uni_id = trabajo_data["estructura_presupuestal"]
@@ -93,8 +78,23 @@ class TrabajoManager(models.Manager):
         trabajo_data["ruta_proceso"] = RutaProceso.objects.filter(proceso=trabajo_data["proceso"], paso="1").first()
         nuevo_trabajo=self.create(**trabajo_data)
         return {"trabajo": nuevo_trabajo, "creado_exitosamente": True}
-        # return nuevo_trabajo
     
+
+    def filtrar_trabajos(self, vprocesos, vestados, kword, user):
+        result = self.filter(
+            Q(proceso__in=vprocesos),
+            Q(unidad_territorial__in = user.unidades_territoriales.all()),
+            Q(contrato__in = user.contratos.all()), 
+            Q(ruta_proceso__estado__id_estado__in=vestados),
+            Q(id_control__icontains = kword ) | Q( caso_radicado__icontains = kword ) | Q( ticket__icontains = kword ),
+        )
+        return result
+    
+
+    def obtener_detalle_trabajo(self, id_control):
+        return self.filter(id_control=id_control)
+
+
     def actualizar_trabajo(self, trabajo_data, id_control):
         trabajo_actualizado = self.filter(pk=id_control).first()
 
@@ -153,14 +153,9 @@ class TrabajoManager(models.Manager):
         return {"work_exist": False}
 
 
-    def filtrar_trabajos(self, vprocesos, vestados, kword, user):
-        result = self.filter(
-            Q(proceso__in=vprocesos),
-            Q(unidad_territorial__in = user.unidades_territoriales.all()),
-            Q(contrato__in = user.contratos.all()), 
-            Q(ruta_proceso__estado__id_estado__in=vestados),
-            Q(id_control__icontains = kword ) | Q( caso_radicado__icontains = kword ) | Q( ticket__icontains = kword ),
-        )
+    def lista_trabajos( self ):
+        result = self.all()
         return result
+    
     
     

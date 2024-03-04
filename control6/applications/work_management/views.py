@@ -1,10 +1,6 @@
-from rest_framework import generics
 from rest_framework.generics import (
-    ListAPIView, 
     CreateAPIView, 
-    UpdateAPIView,
     DestroyAPIView,
-    RetrieveAPIView
 )
 from rest_framework.views import APIView
 from .models import Trabajo, SoportesIniciales
@@ -22,73 +18,97 @@ from .errores import CampoRequeridoError
 from ..static_data.models.ruta_proceso import RutaProceso
 
 
-class ListarTrabajos(generics.ListAPIView):
-    serializer_class = TrabajoSerializer
-    def get_queryset(self):
-        user = ValidateUser(self.request)
+class CrearTrabajoView(CreateAPIView):
+    serializer_class = CrearTrabajoSerializer
+    def post(self, request):        
+        usuario = ValidateUser(request)
 
-        if user:
+        if usuario["valid_user"]:
+
+            try:
+                response = Trabajo.objects.crear_trabajo(request.data)
+
+                if response["creado_exitosamente"]:
+
+                    datos = {}
+                    trabajo = response["trabajo"]
+                    datos["trabajo"] = trabajo
+                    datos["comentario_trazabilidad"] = f"Trabajo {trabajo.id_control} creado en estado {trabajo.ruta_proceso.estado.nombre}"
+                    TrazabilidadTrabajo.objects.registrar_trazabilidad(datos, usuario["user"])
+                    return Response({'message': f'Trabajo {trabajo.id_control} creado exitosamente'}, status=201)
+
+                return Response(response,  status=200)            
+            except CampoRequeridoError as e:
+                mensaje = str(e)
+                status_code = e.status_code
+                return Response({'error': mensaje}, status=status_code)
+        
+        return usuario
+
+
+class ListarTrabajosView(APIView):
+    def get(self, request):
+        user = ValidateUser(request)
+
+        if user["valid_user"]:
             vp1 = self.request.query_params.get('vp', '')
             ve1 = self.request.query_params.get('ve', '')
             kword = self.request.query_params.get('kw', '')
             vect_procesos = vp1.split(',')
             vect_estados  = ve1.split(',')
         
-            response = Trabajo.objects.filtrar_trabajos(vect_procesos, vect_estados, kword, user)
-            return response
-        response = None
-        return response
+            response = Trabajo.objects.filtrar_trabajos(vect_procesos, vect_estados, kword, user["user"])
+            serializer = TrabajoSerializer(response, many=True)
 
-class CrearTrabajo(CreateAPIView):
-    serializer_class = CrearTrabajoSerializer
-    def post(self, request):        
+            return Response(serializer.data)
+        
+        return Response(user)
+
+
+class ObtenerDetalleTrabajoView(APIView):
+    def get(self, request, *args, **kwargs): 
         usuario = ValidateUser(request)
 
-        try:
-            response = Trabajo.objects.crear_trabajo(request.data)
+        if usuario["valid_user"]:
+            pk = self.kwargs.get('pk')
+            trabajo = Trabajo.objects.obtener_detalle_trabajo(pk)
+            serializer = TrabajoSerializer(trabajo, many=True)
+            return Response(serializer.data)
+        
+        return Response(usuario)
 
-            if response["creado_exitosamente"]:
 
-                datos = {}
-                trabajo = response["trabajo"]
-                datos["trabajo"] = trabajo
-                datos["comentario_trazabilidad"] = f"Trabajo {trabajo.id_control} creado en estado {trabajo.ruta_proceso.estado.nombre}"
-                TrazabilidadTrabajo.objects.registrar_trazabilidad(datos, usuario)
-                return Response({'message': f'Trabajo {trabajo.id_control} creado exitosamente'}, status=201)
-
-            return Response(response,  status=200)            
-        except CampoRequeridoError as e:
-            mensaje = str(e)
-            status_code = e.status_code
-            return Response({'error': mensaje}, status=status_code)
-
-class ActualizarTrabajo(UpdateAPIView):
-    def put(self, request, pk):
+class ActualizarTrabajoView(APIView):
+    def put(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
         pk = self.kwargs.get('pk')
 
-        try:
-            response = Trabajo.objects.actualizar_trabajo(request.data, pk)
-            trabajo = response["work"]
-            if response["work_exist"]:
-                dic = request.data
-                campos_actualizados = ""
-                for campo in dic.keys():
-                    campos_actualizados = campos_actualizados +", "+campo
+        if usuario["valid_user"]:
+            try:
+                response = Trabajo.objects.actualizar_trabajo(request.data, pk)
+                trabajo = response["work"]
+                if response["work_exist"]:
+                    dic = request.data
+                    campos_actualizados = ""
+                    for campo in dic.keys():
+                        campos_actualizados = campos_actualizados +", "+campo
+                    
+                    datos = {}
+                    datos["trabajo"] = trabajo
+                    datos["comentario_trazabilidad"] = f"Se actualizaron los campos {campos_actualizados} del trabajo {trabajo.id_control}"
+                    TrazabilidadTrabajo.objects.registrar_trazabilidad(datos, usuario["user"])
+                    return Response({'message':  datos["comentario_trazabilidad"]}, status=201)
                 
-                datos = {}
-                datos["trabajo"] = trabajo
-                datos["comentario_trazabilidad"] = f"Se actualizaron los campos {campos_actualizados} del trabajo {trabajo.id_control}"
-                TrazabilidadTrabajo.objects.registrar_trazabilidad(datos, usuario)
-                return Response({'message':  datos["comentario_trazabilidad"]}, status=201)
-            
-            return Response({'message':  "Trabajo no existe"}, status=200)
-        except CampoRequeridoError as e:
-            mensaje = str(e)
-            status_code = e.status_code
-            return Response({'error': mensaje}, status=status_code)
+                return Response({'message':  "Trabajo no existe"}, status=200)
+            except CampoRequeridoError as e:
+                mensaje = str(e)
+                status_code = e.status_code
+                return Response({'error': mensaje}, status=status_code)
+        
+        return Response(usuario)
 
-class EliminarTrabajo(DestroyAPIView):
+
+class EliminarTrabajoView(DestroyAPIView):
     def post(self, request):
         usuario = ValidateUser(request)
         
@@ -96,11 +116,12 @@ class EliminarTrabajo(DestroyAPIView):
         serializer_class = TrabajoSerializer
         lookup_field = 'pk'
 
-class SiguienteEstado(UpdateAPIView, CambioEstadoTrabajoMixin):
-    def put(self, request, pk):
+
+class SiguienteEstadoView(APIView, CambioEstadoTrabajoMixin):
+    def put(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
 
-        if usuario:
+        if usuario["valid_user"]:
             pk = self.kwargs.get('pk')
             trabajo = Trabajo.objects.get(id_control=pk)
             ruta = RutaProceso.objects.filter(proceso=trabajo.proceso)
@@ -128,18 +149,19 @@ class SiguienteEstado(UpdateAPIView, CambioEstadoTrabajoMixin):
             validacion = self.validar_cambio_estado(paso_siguiente, estado_actual, estado_siguiente, pk)
 
             if validacion["paso_validado"]:
-                response = self.pasar_siguiente_estado(trabajo, paso_siguiente, pk, usuario)
+                response = self.pasar_siguiente_estado(trabajo, paso_siguiente, pk, usuario["user"])
                 return Response(response)
             
             return Response(validacion, status=200)
         
-        return usuario
+        return Response(usuario)
        
-class AnteriorEstado(UpdateAPIView, CambioEstadoTrabajoMixin):
-    def put(self, request, pk):
+
+class AnteriorEstadoView(APIView, CambioEstadoTrabajoMixin):
+    def put(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
 
-        if usuario:
+        if usuario["valid_user"]:
             pk = self.kwargs.get('pk')
             comentario_devolucion = request.data["comentario_devolucion"]
             trabajo = Trabajo.objects.get(id_control=pk)
@@ -164,49 +186,38 @@ class AnteriorEstado(UpdateAPIView, CambioEstadoTrabajoMixin):
             validacion = self.validar_cambio_estado(paso_siguiente, estado_actual, estado_siguiente, pk)
 
             if validacion["paso_validado"]:
-                response = self.pasar_anerior_estado(trabajo, paso_siguiente, pk, usuario, comentario_devolucion)
+                response = self.pasar_anerior_estado(trabajo, paso_siguiente, pk, usuario["user"], comentario_devolucion)
                 return Response(response)
           
             return Response(validacion, status=200)
         
-        return usuario
+        return Response(usuario)
            
-class ObtenerTrabajo(RetrieveAPIView):
-    serializer_class = TrabajoSerializer
-    def get_queryset(self): 
-        usuario = ValidateUser(self.request)
 
-        if usuario:
-            pk = self.kwargs.get('pk')
-            queryset = Trabajo.objects.filter(id_control=pk)
-            return queryset
-        
-        return usuario
-
-class ContarTrabajosPorProcesos(APIView):
-    def get(self,request):
+class ContarTrabajosPorProcesosView(APIView):
+    def get(self, request):
         user = ValidateUser(request)
-        if user:    
+        if user["valid_user"]:    
             vp1 = self.request.query_params.get('vp','')
             ve1 = self.request.query_params.get('ve','')
             kword = self.request.query_params.get('kw','')
             vect_procesos = vp1.split(',')
             vect_estados = ve1.split(',')
 
-            # Lógica para contar trabajo por proceso (Pensar en dejar esta función estática de forma que solo sea consultar)
-            response = Trabajo.objects.filtrar_trabajos(vect_procesos, vect_estados, kword, user)
+            response = Trabajo.objects.filtrar_trabajos(vect_procesos, vect_estados, kword, user["user"])
             serializer = TrabajoSerializer(response, many=True)
             procesos = [proceso['proceso'] for proceso in serializer.data]
             nombre_procesos = [proc['nombre'] for proc in procesos]
             conteo_nombre_procesos = Counter(nombre_procesos)
             return Response(conteo_nombre_procesos, status=200)
         
-        return user
+        return Response(user)
 
-class ContarTrabajosPorEstado(APIView):
+
+class ContarTrabajosPorEstadoView(APIView):
      def get(self,request):
         user = ValidateUser(request)
-        if user:
+        if user["valid_user"]:
             vp1 = self.request.query_params.get('vp','')
             ve1 = self.request.query_params.get('ve','')
             kword = self.request.query_params.get('kw','')
@@ -214,7 +225,7 @@ class ContarTrabajosPorEstado(APIView):
             vect_estados = ve1.split(',')
 
             # Logica para contar los procesos (Pensar en dejar esto en un botón)
-            response = Trabajo.objects.filtrar_trabajos(vect_procesos, vect_estados, kword, user)
+            response = Trabajo.objects.filtrar_trabajos(vect_procesos, vect_estados, kword, user["user"])
             serializer = TrabajoSerializer(response,many=True)
             ruta = [rut['ruta_proceso'] for rut in serializer.data]
             estados = [est['estado'] for est in ruta]
@@ -222,13 +233,14 @@ class ContarTrabajosPorEstado(APIView):
             conteo_id_estado = Counter(id_estados)
             return Response(conteo_id_estado, status=200)
         
-        return user
+        return Response(user)
+
 
 class SubirArchivoView(APIView):
     def post(self, request, *args, **kwargs):
         user = ValidateUser(request)
 
-        if user:
+        if user["valid_user"]:
             data = request.data
             id_trabajo = data['trabajo']
             data['trabajo'] = Trabajo.objects.get(pk=id_trabajo)
@@ -240,37 +252,40 @@ class SubirArchivoView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        return user
-    
-class EliminarSoporteInicial(DestroyAPIView):
-    def post(self, request):
+        return Response(user)
+
+
+class EliminarSoporteInicialView(APIView):
+    def delete(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
-        if usuario:
-            queryset=SoportesIniciales.objects.all()
-            serializer_class = CrearSoportesInciales
-            lookup_field='pk'
+        if usuario["valid_user"]:
+            id_soporte = self.kwargs.get('pk')
+            file = SoportesIniciales.objects.filter(id_soporte=id_soporte).first()
 
-        return usuario
+            if file:
+                if bool(file.archivo):
+                    ruta_archivo = os.path.join(settings.MEDIA_ROOT, str(file.archivo))
+                    if os.path.exists(ruta_archivo):
+                        directorio=os.path.dirname(ruta_archivo)
+                        os.remove(ruta_archivo)
+                        os.rmdir(directorio)
+                file.delete()
+                return Response({"message":f"Archivo {id_soporte} eliminado."}, status=200)
+            
+            return Response({"message":"Nada que eliminar" }, status=200)
 
-    def perform_destroy(self, instance):
-        if bool(instance.archivo):
-            ruta_archivo=os.path.join(settings.MEDIA_ROOT, str(instance.archivo))
-            if os.path.exists(ruta_archivo):
-                directorio=os.path.dirname(ruta_archivo)
-                os.remove(ruta_archivo)
-                os.rmdir(directorio)
-        
-        instance.delete()
+        return Response(usuario)
 
-class ListarSoportesIniciales(ListAPIView):
-    serializer_class=SoportesIncialesSerializer
-    def get_queryset(self):
-        if usuario:
-            usuario = ValidateUser(self.request)
+
+class ListarSoportesInicialesView(APIView):
+    def get(self, request, *args, **kwargs):
+        usuario = ValidateUser(request)
+        if usuario["valid_user"]:
             id_control = self.kwargs.get('pk')
-            response=SoportesIniciales.objects.filter(trabajo__id_control=id_control).all()
-            return response
+            archivos = SoportesIniciales.objects.filter(trabajo__id_control=id_control).all()
+            serializer = SoportesIncialesSerializer(archivos, many=True)
+            return Response(serializer.data)
         
-        return usuario
+        return Response(usuario)
 
         

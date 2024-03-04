@@ -43,13 +43,13 @@ class CargarFormatoReplanteoMixin(object):
     def validar_rg(self, libro):
         hojas = pd.read_excel(libro, sheet_name = None)
         if hojas.get("RG10_SER") is not None:
-            return True 
+            return {"es_formato_rg":True, "formato":"RG10"} 
         elif hojas.get("RG11_node") is not None:
-            return True 
+            return {"es_formato_rg":True, "formato":"RG11"}
         elif hojas.get("RG12_defectos") is not None:
-            return True 
+            return {"es_formato_rg":True, "formato":"RG12"}
         else:
-            return False
+            return {"es_formato_rg":False}
 
     def cargar_rg10(self, libro, serializer):
         hoja_nodos = pd.read_excel(libro, sheet_name="NODOS", header=0)

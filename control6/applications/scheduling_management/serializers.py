@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models.programacion import Programacion
+from .models import Programacion
 
 class ProgramacionSerializer(serializers.ModelSerializer):
     class Meta:

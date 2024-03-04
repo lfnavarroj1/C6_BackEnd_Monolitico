@@ -2,17 +2,7 @@ from .serializers import UserSerializer, User,UserCreateSerializer,ChangePasswor
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import jwt, datetime
-<<<<<<< HEAD
 from rest_framework import status
-=======
-from django.contrib.auth.views import PasswordChangeView
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-# from django.contrib.auth.models import User
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import SetPasswordForm
-from ..static_data.models.contrato import Contrato
->>>>>>> Refactor/trazability/c6
 
 
 class RegisterUser(APIView):
@@ -23,16 +13,13 @@ class RegisterUser(APIView):
         serializer.save()
         return Response(serializer.data)
     
+
 class LoginUser(APIView):
     def post(self, request):
         username = request.data['username']
         password = request.data['password']
-
-        
-
         user = User.objects.filter(username=username).first()
 
-        print(user)
         if user is None:
             return Response({"message": "Usuario no encontrado","valid_user":False}, status=status.HTTP_200_OK)
         if not user.check_password(password):
@@ -51,14 +38,16 @@ class LoginUser(APIView):
 
         return response
 
+
 class GetUser(APIView):
     def get(self, request):
-        response = ValidateUser (request)
-        if response is None:
-            return Response({"message": "Usuario no autenticado","valid_user":False}, status=status.HTTP_200_OK)
+        response = ValidateUser(request)
+        if response["valid_user"]:
+            data = UserSerializer(response['user'])
+            return Response(data.data, status=status.HTTP_200_OK)
 
-        data = UserSerializer(response)
-        return Response({"user": data.data,"valid_user":True}, status=status.HTTP_200_OK)
+        return Response(response, status=status.HTTP_200_OK)
+
 
 class LogoutUser(APIView):
     def post(self, request):
@@ -69,9 +58,11 @@ class LogoutUser(APIView):
         }
         return response    
 
+
 class UpdateUser(APIView):
     def put(sefl, request):
         return Response({'message': 'Usuario actualizado correctamente'}, status=status.HTTP_200_OK)
+
 
 class DeleteUser(APIView):
     def delete():
@@ -98,15 +89,14 @@ class ChangePasswordUser(APIView):
 
 def ValidateUser(request):       
         token = request.COOKIES.get('jwt')
-        
         if not token:
-            return None
+            return {"user": "Usuario no autenticado", "valid_user": False}
         try:
             payload = jwt.decode(token,'secret', algorithms = ['HS256'])
         except jwt.ExpiredSignatureError:
-            return None
+            return {"user": "Usuario no autenticado", "valid_user" :False}
         response = User.objects.get(username=payload['username'])
-        return response
+        return {"user": response, "valid_user": True}
         
 
 

@@ -6,9 +6,11 @@ from rest_framework.generics import (
     RetrieveAPIView
     )
 
+from rest_framework.views import APIView
+
 from .models import Odm
 from .serializers import OdmSerializer
-from users.models import User
+from ..users.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt 
@@ -16,28 +18,23 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
-# from rest_framework.views import APIView
-#, datetime
-# from django.db.models import F
-# from django.urls import reverse_lazy
-# from ..models.trazabilidad import Trazabilidad
+from ..users.views import ValidateUser
 
-# 1. CREAR ODM ----------------------------------------
-class CrearOdm(CreateAPIView):
-    serializer_class=OdmSerializer
+
+
+
+class CrearOdm(APIView):
     def post(self, request):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
         
+        usuario = ValidateUser(request)
+
+        if usuario["valid_user"]:
         
-        response=Odm.objects.registrar_odm(request.data)
-        return response
-# ---------------------------------------------------------------------
+            response = Odm.objects.agregar_odm(request.data)
+            return response
+        
+        return Response(usuario)
+
 
 
 # 2. LISTAR ODM ASOCIADAS A UN TRABAJO --------------------------

@@ -5,27 +5,45 @@ from ..odm_management.models import Odm
 from rest_framework.response import Response
 from django.db.models import Q
 
-
 class LclManager(models.Manager):
-    def registrar_lcl(self,req,user):
-        datos={}
-        datos["lcl"]=req["lcl"]
-        datos["estado_lcl"]=req["estado_lcl"]
-        datos["indicador_impuesto"]=req["indicador_impuesto"]
-        datos["valor_mano_obra"]=req["valor_mano_obra"]
-        datos["valor_materiales"]=req["valor_materiales"]
-        datos["responsable_scm"]=user
-        datos["texto_scm"]="None"
-        datos["alcance"]=req["alcance"]
+    def agregar_lcl(self, req, user):
+        datos = {}
+        datos["lcl"] = req["lcl"]
+        datos["estado_lcl"] = req["estado_lcl"]
+        datos["indicador_impuesto"] = req["indicador_impuesto"]
+        datos["valor_mano_obra"] = req["valor_mano_obra"]
+        datos["valor_materiales"] = req["valor_materiales"]
+        datos["responsable_scm"] = user
+        datos["texto_scm"] = "None" # <-- Texto para SCM, crearlo.
+        datos["alcance"] = req["alcance"]
 
-        lcl=self.create(**datos) # Falta implementar manejo de excepciones
+        lcl = self.create(**datos) # Falta implementar manejo de excepciones
+
         lista_odm=list(map(int,req["odms"].split(',')))
-        
-
         lcl.odms.set(Odm.objects.filter(pk__in=lista_odm))
 
         return Response({'message': f'La {lcl} fue agregada con éxito'}, status=201)
-    
+
+    def filtrar_lcl(self,vprocesos,vestados,kword):
+
+        result=self.filter(
+            Q(odms__valorizacion__trabajo__proceso__in=vprocesos),
+            Q(estado_lcl__in=vestados),
+            Q(lcl__icontains=kword),
+            )
+        return set(result)
+
+    def contar_lcl_procesos(self,vprocesos,vestados,kword):
+        result=self.filter(
+            
+        Q(proceso__in=vprocesos),
+        Q(ruta_proceso__estado__id_estado__in=vestados),
+        Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword),
+        )
+        return result
+
+
+
     def obtener_lcls(self,id_control):
         result=self.filter(odms__valorizacion__trabajo__id_control=id_control).distinct()
         return result
@@ -59,20 +77,3 @@ class LclManager(models.Manager):
         return lcl_actual
     
 
-    def filtrar_lcl(self,vprocesos,vestados,kword):
-
-        result=self.filter(
-            Q(odms__valorizacion__trabajo__proceso__in=vprocesos),
-            Q(estado_lcl__in=vestados),
-            Q(lcl__icontains=kword),
-            )
-        return set(result)
-
-    def contar_lcl_procesos(self,vprocesos,vestados,kword):
-        result=self.filter(
-            
-        Q(proceso__in=vprocesos),
-        Q(ruta_proceso__estado__id_estado__in=vestados),
-        Q(id_control__icontains=kword) | Q(caso_radicado__icontains=kword) | Q(ticket__icontains=kword),
-        )
-        return result

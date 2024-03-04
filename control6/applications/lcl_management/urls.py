@@ -1,27 +1,23 @@
 from django.urls import path
 from .views import(
-    CrearLcl,
-    ListarLcl,
-    ObtenerLcl,
-    ActualizarLcl,
-    EliminarLcl,
-    ListarTodasLcl,
-    ContarLclPorProcesos,
-    ContarLclPorEstado,
+    AgregarLclView,
+    ListarLclView,
+    ListarLclTrabajoView,
+    ObtenerDetalleLclView,
+    ActualizarLclView,
+    EliminarLclView,
+    ContarLclPorProcesosView,
+    ContarLclPorEstadoView,
 )
-from django.conf import settings
-from django.conf.urls.static import static
-
 
 urlpatterns = [
-    # Lcl
-    path('cargar-lcl/', CrearLcl.as_view(), name="cargar-lcl" ),
-    path('listar-lcl/<pk>', ListarLcl.as_view(), name="listar-lcl" ),
-    path('detalle-lcl/<pk>', ObtenerLcl.as_view(), name="'detalle-lcl" ),
-    path('actualizar-lcl/<pk>', ActualizarLcl.as_view(), name="'actualizar-lcl" ),
-    path('eliminar-lcl/<pk>', EliminarLcl.as_view(), name="eliminar-lcl" ),
-    path('listartodolcl/', ListarTodasLcl.as_view(), name="listartodo-lcl" ),
-    path('contartodolcl/', ContarLclPorProcesos.as_view(), name="contartodo-lcl" ),
-    path('contarestadolcl/', ContarLclPorEstado.as_view(), name="contarestado-lcl" ),
-]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+    path('agregar-lcl/', AgregarLclView.as_view(), name="agregar-lcl" ),
+    path('listar-lcl-todas/', ListarLclView.as_view(), name="listar-lcl-todas" ),
+    path('listar-lcl-trabajo/<pk>', ListarLclTrabajoView.as_view(), name="listar-lcl-trabajo" ),
+    path('obtener-detalle-lcl/<pk>', ObtenerDetalleLclView.as_view(), name="'obtener-detalle-lcl" ),
+    path('actualizar-lcl/<pk>', ActualizarLclView.as_view(), name="'actualizar-lcl" ),
+    path('eliminar-lcl/<pk>', EliminarLclView.as_view(), name="eliminar-lcl" ),
+    path('contar-lcl-proceso/', ContarLclPorProcesosView.as_view(), name="contartodo-lcl" ),
+    path('contar-lcl-estado/', ContarLclPorEstadoView.as_view(), name="contarestado-lcl" ),
+]
 

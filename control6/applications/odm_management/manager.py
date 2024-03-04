@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from ..budgets_management.models import Valorizacion
 
 class OdmManager(models.Manager):
-    def registrar_odm(self,req):
+    def agregar_odm(self,req):
 
         datos={}
         datos["odm"]=req["odm"]
@@ -18,7 +18,7 @@ class OdmManager(models.Manager):
         return Response({'message': f'La ODM {odm} fue agregada'}, status=201)
     
     def obtener_odms(self,id_control):
-        result=self.filter(valorizacion__trabajo__id_control=id_control)
+        result=self.filter(valorizacion__trabajo__id_control=id_control).all()
         return result
     
 
