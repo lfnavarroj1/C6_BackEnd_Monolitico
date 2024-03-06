@@ -44,7 +44,7 @@ class GetUser(APIView):
         response = ValidateUser(request)
         if response["valid_user"]:
             data = UserSerializer(response['user'])
-            return Response(data.data, status=status.HTTP_200_OK)
+            return Response({"user": data.data, "valid_user":True}, status=status.HTTP_200_OK)
 
         return Response(response, status=status.HTTP_200_OK)
 

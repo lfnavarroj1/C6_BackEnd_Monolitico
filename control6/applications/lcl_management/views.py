@@ -143,6 +143,7 @@ class ContarLclPorProcesosView(APIView):
 
 
 class ContarLclPorEstadoView(APIView):
+    # 
     # serializer_class=ProcesoSerializer
     def get(self,request):
         token=request.COOKIES.get('jwt')

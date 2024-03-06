@@ -1,32 +1,34 @@
 from django.urls import path
 
 from .views import (
-    ListarPdlTqi,
+    ListarManiobrasTqiView,
+    ListarInspectoresView,
+    ListarInspectoresParaAsignacionView,
+    AsignarInspeccionView,
+    EliminarUnaAsignacionView,
+    ObtenerMetasTqiView,
+    CreateManiobraTqiView,
+
     ListarContratosPorUnidadesTerritoriales,
-    ListarInspectores,
     ActualizacionDatosManiobrasTQI,
-    ObtenerManiobra,
-    AsignarInspeccion,
-    EliminarUnaAsignacion,
-    CreateManiobraTqi,
+    ObtenerDetalleManiobraView,
     CalcularCantidadesGenerales,
-    ListarInspectoresParaAsignacion,
-    ObtenerMetasTqi,
     ConfirmarInspeccion
 )
 
 urlpatterns = [
-    path('listar/', ListarPdlTqi.as_view(), name="'pdl-list" ),
-    path('listar-contratos/', ListarContratosPorUnidadesTerritoriales.as_view(), name="'lista-contratos"),
-    path('listar-inspector/', ListarInspectores.as_view(), name="'lista-inspector"),
-    path('listar-inspector-asignacion/<pk>', ListarInspectoresParaAsignacion.as_view(), name="'lista-inspector-asinacion"),
+    path('listar-maniobras-tqi/', ListarManiobrasTqiView.as_view(), name="listar-maniobras-tqi" ),
+    path('listar-inspectores/', ListarInspectoresView.as_view(), name="listar-inspectores"),
+    path('listar-inspector-asignacion/<pk>', ListarInspectoresParaAsignacionView.as_view(), name="listar-inspector-asignacion"),
+    path('obtener-detalle-maniobra/<pk>', ObtenerDetalleManiobraView.as_view(), name="obtener-detalle-maniobra"),
+    path('asignar-inspeccion/', AsignarInspeccionView.as_view(), name="asignar-inspeccion"),
+    path('eliminar-asignacion/<pk>', EliminarUnaAsignacionView.as_view(), name="eliminar-asignacion"),
+    path('obtener-metas-tqi/', ObtenerMetasTqiView.as_view(), name="obtener-metas-tqi"),
+    path('crear-maniobra/', CreateManiobraTqiView.as_view(), name="crear-maniobra"),
+
+    # path('listar-contratos/', ListarContratosPorUnidadesTerritoriales.as_view(), name="'lista-contratos"),
     # path('actualizar-data/', ActualizacionDatosManiobrasTQI.as_view(), name="actualizar-data"),
-    path('detallar-maniobra/<pk>', ObtenerManiobra.as_view(), name="detalle-maniobra"),
-    path('asignar/', AsignarInspeccion.as_view(), name="asignacion"),
-    path('eliminar-asignacion/<pk>', EliminarUnaAsignacion.as_view(), name="eliminar"),
-    path('crear-maniobra/', CreateManiobraTqi.as_view(), name="crear-maniobra"),
     # path('calcular/', CalcularCantidadesGenerales.as_view(), name="calculos-tqi"),
-    path('obtener-metas-tqi/', ObtenerMetasTqi.as_view(), name="obtener-metas-tqi"),
     # path('confirmar-inspeccion/', ConfirmarInspeccion.as_view(), name="confirmar-inspeccion"),
 ]
 
