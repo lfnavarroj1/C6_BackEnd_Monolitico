@@ -16,152 +16,106 @@ from collections import Counter
 from ..users.views import ValidateUser
 
 
-class AgregarLclView(CreateAPIView):
-    serializer_class = LclSerializer
+class AgregarLclView(APIView):
     def post(self, request):
         usuario = ValidateUser(request)
-        
-        if usuario:
-            return  Lcl.objects.agregar_lcl(request.data, usuario)
-        return usuario
+        if usuario['valid_user']:
+            response = Lcl.objects.agregar_lcl(request.data)
+            return response
+        return Response(usuario)
 
 
-class ListarLclView(ListAPIView):
-    serializer_class = LclListaSerializer
-    def get_queryset(self):
-        usuario = ValidateUser(self.request)
+class ListarLclView(APIView):
+    def get(self, request):
+        usuario = ValidateUser(request)
         
-        if usuario:
+        if usuario['valid_user']:
             vp1=self.request.query_params.get('vp','')
             ve1=self.request.query_params.get('ve','')
             kword=self.request.query_params.get('kw','')
             vect_procesos=vp1.split(',')
             vect_estados=ve1.split(',')
 
-            # Indicar unidad territorial y contrato.
-
-            response=Lcl.objects.filtrar_lcl(vect_procesos,vect_estados,kword)
+            response=Lcl.objects.filtrar_lcl(request.data)
             return response
         
-        return usuario
+        return Response(usuario)
     
 
-class ListarLclTrabajoView(ListAPIView):
-    serializer_class = LclSerializer
-    def get_queryset(self):
-        usuario = ValidateUser(self.request)
+class ListarLclTrabajoView(APIView):
+    def get(self, request, *args,**kwargs):
+        usuario = ValidateUser(request)
 
-        if usuario:
+        if usuario['valid_user']:
             pk = self.kwargs.get('pk')
-            queryset = Lcl.objects.obtener_lcls(pk)
+            queryset = Lcl.objects.obtener_lcls(request.data ,pk)
             return queryset
         
-        return usuario
+        return Response(usuario)
 
 
-class ObtenerDetalleLclView(RetrieveAPIView):
-    serializer_class = LclSerializer
+class ObtenerDetalleLclView(APIView):
 
-    def get_queryset(self):
-        usuario = ValidateUser(self.request)
+    def get(self, request, *args,**kwargs):
+        usuario = ValidateUser(request)
 
-        if usuario:
+        if usuario['valid_user']:
             pk = self.kwargs.get('pk')
-            queryset = Lcl.objects.filter(lcl=pk)
+            queryset = Lcl.objects.filter(request.data , pk)
             return queryset
         
-        return usuario
+        return Response(usuario)
 
 
-class ActualizarLclView(UpdateAPIView):
+class ActualizarLclView(APIView):
     def put(self, request, pk):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        usuario = ValidateUser(request)
+        if usuario['valid_user']:
+            pk = self.kwargs.get('pk')
+            queryset = Lcl.objects.actualizar_lcl(request.data, pk)
+            return queryset
 
-        # usuario=User.objects.get(username=payload['username'])
-        pk = self.kwargs.get('pk')
-
-        try:
-            response=Lcl.objects.actualizar_lcl(request.data, pk)
-            # dic=request.data
-            # campos_actualizados=""
-            # for campo in dic.keys():
-            #     campos_actualizados=campos_actualizados +", "+campo
-            
-            # datos={}
-            # datos["trabajo"]=response.id_control
-            # datos["comentario_trazabilidad"]=f"Se actualizaron los campos {campos_actualizados} del trabajo {response.id_control}"
-            # Odm.objects.registrar_trazabilidad(datos, usuario)
-            return Response({'message': f"La {response} fue actualizada"}, status=201)
-        except Exception as e:
-            mensaje = str(e)
-            status_code = 400
-            return Response({'error': mensaje}, status=400)
+        return Response(usuario)
 
 
-class EliminarLclView(DestroyAPIView):
+class EliminarLclView(APIView):
     def post(self, request):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-    queryset=Lcl.objects.all()
-    serializer_class=LclSerializer
-    lookup_field='pk'
+        usuario = ValidateUser(request)
+        if usuario['valid_user']:
+            pk = self.kwargs.get('pk')
+            queryset=Lcl.objects.all(request.data, pk)
+            return queryset
+        
+        return Response(usuario)
+
 
 
 class ContarLclPorProcesosView(APIView):
-    # serializer_class=ProcesoSerializer
     def get(self,request):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        usuario = ValidateUser(request)
+        if usuario['valid_user']:
+            vp1=self.request.query_params.get('vp','')
+            ve1=self.request.query_params.get('ve','')
+            kword=self.request.query_params.get('kw','')
+            vect_procesos=vp1.split(',')
+            vect_estados=ve1.split(',')
         
-        vp1=self.request.query_params.get('vp','')
-        ve1=self.request.query_params.get('ve','')
-        kword=self.request.query_params.get('kw','')
-        vect_procesos=vp1.split(',')
-        vect_estados=ve1.split(',')
-        
-        response=Lcl.objects.filtrar_lcl(vect_procesos,vect_estados,kword)
-        serializer=LclListaSerializer(response,many=True)
-        procesos=[item for proceso in serializer.data for item in list(proceso['proceso'])]
-        conteo_nombre_procesos=Counter(procesos)
-        return Response(conteo_nombre_procesos, status=200)
+            response=Lcl.objects.filtrar_lcl(request.data ,vect_procesos,vect_estados,kword)
+            return response
+        return Response(usuario)
 
 
 class ContarLclPorEstadoView(APIView):
-    # 
-    # serializer_class=ProcesoSerializer
     def get(self,request):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        usuario = ValidateUser(request)
+        if usuario['valid_user']:
         
-        vp1=self.request.query_params.get('vp','')
-        ve1=self.request.query_params.get('ve','')
-        kword=self.request.query_params.get('kw','')
-        vect_procesos=vp1.split(',')
-        vect_estados=ve1.split(',')
-        
-        response=Lcl.objects.filtrar_lcl(vect_procesos,vect_estados,kword)
-        serializer=LclListaSerializer(response,many=True)
-        estado=[item['estado_lcl'] for item in serializer.data]
-        conteo_estado_lcl=Counter(estado)
-        return Response(conteo_estado_lcl, status=200)
+            vp1=self.request.query_params.get('vp','')
+            ve1=self.request.query_params.get('ve','')
+            kword=self.request.query_params.get('kw','')
+            vect_procesos=vp1.split(',')
+            vect_estados=ve1.split(',')
+            
+            response=Lcl.objects.filtrar_lcl(request.data ,vect_procesos,vect_estados,kword)
+            return response
+        return Response(usuario)
