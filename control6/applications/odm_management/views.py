@@ -38,88 +38,57 @@ class CrearOdm(APIView):
 
 
 # 2. LISTAR ODM ASOCIADAS A UN TRABAJO --------------------------
-class ListarOdm(ListAPIView):
-    serializer_class=OdmSerializer
-    def get_queryset(self):
-        token=self.request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+class ListarOdm(APIView):
+    def get(self, request, *args,**kwargs):
 
-        pk = self.kwargs.get('pk')
-        queryset=Odm.objects.obtener_odms(pk)
-        return queryset
+        usuario = ValidateUser(request)
+
+        if usuario['valid_user']:
+
+            pk = self.kwargs.get('pk')
+
+            queryset=Odm.objects.obtener_odms(pk)
+            response = Odm.objects.obtener_odms(request.data)
+            return queryset, response
+        return Response(usuario)
 # ---------------------------------------------------------------------
 
 
 # 3. OBTENER DETALLES DE UNA ODM ASOCIADAS A UN TRABAJO ---------------
-class ObtenerOdm(RetrieveAPIView):
-    serializer_class = OdmSerializer
+class ObtenerOdm(APIView):
+        def get(self, request, *args,**kwargs):
 
-    def get_queryset(self):
-        token = self.request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
+            usuario = ValidateUser(request)
+            if usuario['valid_user']:
 
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-
-        # Obtiene el parámetro de la URL 'pk' para buscar el trabajo específico
-        pk = self.kwargs.get('pk')
-        queryset = Odm.objects.filter(odm=pk)
-        return queryset
+                pk = self.kwargs.get('pk')
+                queryset = Odm.objects.filter(odm=pk)
+                response = Odm.objects.filter(request.data)
+                return queryset, response
+            return Response(usuario)
 # ---------------------------------------------------------------------
 
 
 # 4. ACTUALIZAR ODM ASOCIADAS A UN TRABAJO ----------------------------
-class ActualizarOdm(UpdateAPIView):
-    def put(self, request, pk):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-
-        # usuario=User.objects.get(username=payload['username'])
-        pk = self.kwargs.get('pk')
-
-        try:
-            response=Odm.objects.actualizar_odm(request.data, pk)
-            # dic=request.data
-            # campos_actualizados=""
-            # for campo in dic.keys():
-            #     campos_actualizados=campos_actualizados +", "+campo
-            
-            # datos={}
-            # datos["trabajo"]=response.id_control
-            # datos["comentario_trazabilidad"]=f"Se actualizaron los campos {campos_actualizados} del trabajo {response.id_control}"
-            # Odm.objects.registrar_trazabilidad(datos, usuario)
-            return Response({'message': f"La ODM {response} fue actualizada"}, status=201)
-        except Exception as e:
-            mensaje = str(e)
-            status_code = e.status_code
-            return Response({'error': mensaje}, status=status_code)
+class ActualizarOdm(APIView):
+        def put(self, request, pk):
+            usuario = ValidateUser(request)
+            if usuario['valid_user']:
+                pk = self.kwargs.get('pk')
+                response=Odm.objects.actualizar_odm(request.data, pk)
+                return response
+            return Response(usuario)
 # ---------------------------------------------------------------------
 
 
 # 5. ELIMINAR ODM ASOCIADAS A UN TRABAJO ------------------------------
-class EliminarOdm(DestroyAPIView):
-    def post(self, request):
-        token=request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        try:
-            payload=jwt.decode(token,'secret',algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-    queryset=Odm.objects.all()
-    serializer_class=OdmSerializer
-    lookup_field='pk'
+class EliminarOdm(APIView):
+    def post(self, request, *args,**kwargs):
+        usuario = ValidateUser(request)
+        if usuario['valid_user']:
+            pk = self.kwargs.get('pk')
+            queryset=Odm.objects.all(request.data, pk)
+            return queryset
+        return Response(usuario)
 # ---------------------------------------------------------------------
+
