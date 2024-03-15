@@ -54,6 +54,9 @@ class CargarFormatoReplanteoMixin(object):
     def cargar_rg10(self, libro, serializer):
         hoja_nodos = pd.read_excel(libro, sheet_name="NODOS", header=0)
         if hoja_nodos is not None:
+
+            print("1 - Primer punto de control")
+
             for index, row in hoja_nodos.iterrows():
 
                 if str(row["Latitud\n(Inicial)"])!="nan":
@@ -68,22 +71,34 @@ class CargarFormatoReplanteoMixin(object):
                     serializer_nodo = CrearNodoRG10Serializer(data=nodo)
                     if serializer_nodo.is_valid():
                         serializer_nodo.save()
-                    
-        hoja_presupuesto = pd.read_excel(libro, sheet_name="RG10_SER", header=2)
-        if hoja_presupuesto is not None:
-            for index, row in hoja_presupuesto.iterrows():
+
+        print("2 - Segundo punto de control")
+        errores ={}        
+        hoja_prestaciones = pd.read_excel(libro, sheet_name="RG10_SER", header=2)
+        
+        if hoja_prestaciones is None:
+            errores.append({ "Hoja 'RG10_SER': El Formato RG 10 cargado no tiene la hoja con las prestaciones RG10_SER"})
+
+        else:
+
+            for index, row in hoja_prestaciones.iterrows():
                 mdo = {}
                 nodo = CrearNodoRG10Serializer(Nodo.objects.filter(valorizacion=serializer.data["id_valorizacion"], nodo=str(int(row["NODO"]))).first())
-                mdo["nodo"]=nodo.data["id_nodo"]
-
-                if row["MOVIMIENTO "]=="Retiro":
-                    mdo["tipo_trabajo_mdo"]="0"
-                elif row["MOVIMIENTO "]=="Instalación":
-                    mdo["tipo_trabajo_mdo"]="1"
-                elif row["MOVIMIENTO "]=="Cambio":
-                    mdo["tipo_trabajo_mdo"]="2"
-                elif row["MOVIMIENTO "]=="Otro":
-                    mdo["tipo_trabajo_mdo"]="3"
+                
+                if nodo is None:
+                    errores.append({ "Hoja 'RG10_SER': error en la fila '{}'".format(index + 6) : "El nodo '{}' no se encuentra en la hoja de nodos 'NODOS'".format(str( row[ "id_mare" ]))})
+                    continue
+                
+                
+                mdo["nodo"] = nodo.data["id_nodo"]
+                if row["MOVIMIENTO "] == "Retiro":
+                    mdo["tipo_trabajo_mdo"] = "0"
+                elif row["MOVIMIENTO "] == "Instalación":
+                    mdo["tipo_trabajo_mdo"] = "1"
+                elif row["MOVIMIENTO "] == "Cambio":
+                    mdo["tipo_trabajo_mdo"] = "2"
+                elif row["MOVIMIENTO "] == "Otro":
+                    mdo["tipo_trabajo_mdo"] = "3"
 
                 mdo["codigo_mdo"] = str(row["PRESTACIÓN"])
                 mdo["cantidad_replanteada"] = str(row["CANTIDAD"])
@@ -91,11 +106,20 @@ class CargarFormatoReplanteoMixin(object):
                 if serializer_mdo.is_valid():
                     serializer_mdo.save()
 
-        hoja_presupuesto = pd.read_excel(libro, sheet_name="RG36_MAT", header=2)
-        if hoja_presupuesto is not None:
-            for index, row in hoja_presupuesto.iterrows():
+        hoja_materiales = pd.read_excel(libro, sheet_name="RG36_MAT", header=2)
+
+        if hoja_materiales is None:
+            errores.append({ "Hoja 'RG36_MAT': El Formato RG 10 cargado no tiene la hoja con las prestaciones RG36_MAT"})
+
+        else:
+            for index, row in hoja_materiales.iterrows():
                 mat = {}
                 nodo = CrearNodoRG10Serializer(Nodo.objects.filter(valorizacion=serializer.data["id_valorizacion"],nodo=str(int(row["NODO"]))).first())
+
+                if nodo is None:
+                    errores.append({ "Hoja 'RG36_MAT': error en la fila '{}'".format(index + 6) : "El nodo '{}' no se encuentra en la hoja de nodos 'NODOS'".format(str( row[ "id_mare" ]))})
+                    continue
+
                 mat["nodo"]=nodo.data["id_nodo"]
 
                 if row["MOVIMIENTO"] == "I N":
@@ -119,6 +143,12 @@ class CargarFormatoReplanteoMixin(object):
                 serializer_mat = NodoMATerializer(data=mat)
                 if serializer_mat.is_valid():
                     serializer_mat.save()
+
+        if errores != {}:
+            errores['eliminar'] = True
+            return errores
+        else:
+            return ({"eliminar":False,"id_valorizacion":serializer.data["id_valorizacion"]})
 
     def cargar_rg11(self, libro, serializer):
         hoja_nodos = pd.read_excel( libro, sheet_name = "RG11_node", header=5)      

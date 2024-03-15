@@ -44,41 +44,46 @@ class AgregarValorizacionView(APIView, CargarFormatoReplanteoMixin, EliminarValo
     def post(self, request, *args, **kwargs):
         usuario =  ValidateUser(request)
 
-        if usuario:
-        
+        if usuario["valid_user"]:
+
             data = request.data
             id_trabajo = data['trabajo']
-            data['trabajo'] = Trabajo.objects.get(pk=id_trabajo)
-            data["fecha_valorizacion"] = timezone.now()
+            data['trabajo'] = Trabajo.objects.filter(pk=id_trabajo).first()
 
-            es_formato_excel = self.validar_formato(data['presupuesto'])
-            if not es_formato_excel:
-                return Response ({"message": "El archivo no está en formato Excel", "error_formato":True})
+            if data["trabajo"]:
+
+                data["fecha_valorizacion"] = timezone.now()
+
+                es_formato_excel = self.validar_formato(data['presupuesto'])
+                if not es_formato_excel:
+                    return Response ({"message": "El archivo no está en formato Excel", "error_formato":True})
+                
+                es_formato_rg = self.validar_rg(data['presupuesto'])
+                if not es_formato_rg["es_formato_rg"]:
+                    return Response ({"message": "El archivo cargado no tiene el formato RG para presupuestos", "error_formato":True})
+
+                serializer = ValorizacionSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return Response({'message:': serializer.errors}, status=205)
             
-            es_formato_rg = self.validar_rg(data['presupuesto'])
-            if not es_formato_rg["es_formato_rg"]:
-                return Response ({"message": "El archivo cargado no tiene el formato RG para presupuestos", "error_formato":True})
+                if es_formato_rg["formato"] == "RG10":
+                    respuesta = self.cargar_rg10(data['presupuesto'], serializer) 
+                elif es_formato_rg["formato"] == "RG11":
+                    respuesta = self.cargar_rg11(data['presupuesto'], serializer)
+                elif es_formato_rg["formato"] == "RG12":
+                    respuesta = self.cargar_rg12(data['presupuesto'], serializer)
 
-            serializer = ValorizacionSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                return Response({'message:': serializer.errors}, status=205)
+                if respuesta['eliminar']:
+                    self.eliminarNodos(serializer.data["id_valorizacion"])
+                    self.eliminiarValorizacion(serializer.data["id_valorizacion"])
+
+                return Response(respuesta, status=201)
+            
+            return Response({"mesage":"El trabajo no existe"})
         
-            if es_formato_rg["formato"] == "RG10":
-                respuesta = self.cargar_rg10(data['presupuesto'], serializer) 
-            elif es_formato_rg["formato"] == "RG11":
-                respuesta = self.cargar_rg11(data['presupuesto'], serializer)
-            elif es_formato_rg["formato"] == "RG12":
-                respuesta = self.cargar_rg12(data['presupuesto'], serializer)
-
-            if respuesta['eliminar']:
-                self.eliminarNodos(serializer.data["id_valorizacion"])
-                self.eliminiarValorizacion(serializer.data["id_valorizacion"])
-
-            return Response(respuesta, status=201)
-        
-        return usuario
+        return Response(usuario)
 
 
 class ListarValorizacionTodoView(ListAPIView):

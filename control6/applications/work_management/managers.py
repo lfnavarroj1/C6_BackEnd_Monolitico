@@ -92,7 +92,7 @@ class TrabajoManager(models.Manager):
     
 
     def obtener_detalle_trabajo(self, id_control):
-        return self.filter(id_control=id_control)
+        return self.filter(id_control=id_control).first()
 
 
     def actualizar_trabajo(self, trabajo_data, id_control):

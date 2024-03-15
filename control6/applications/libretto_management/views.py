@@ -22,7 +22,7 @@ from django.conf import settings
 import mimetypes
 from ..users.views import ValidateUser
 # 1. SUBIR LIBRETOS A UN TRABAJO ----------------------------------------------------------------------------
-class CargarLibreto(APIView):
+class CrearLibretoView(APIView):
     def post(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
         if usuario['valid_user']:
@@ -33,7 +33,7 @@ class CargarLibreto(APIView):
 
 
 # 2. LISTAR LIBRETOS DE UN TRABAJO -------------------------------------------------------------------------
-class ListarLibreto(APIView):
+class ListarLibretosTrabajoView(APIView):
     def get(self, request,  *args, **kwargs):
         usuario = ValidateUser(request)
         if usuario['valid_user']:
@@ -45,7 +45,7 @@ class ListarLibreto(APIView):
 
 
 # 3. OBTENER EL DETALLE DE UN LIBRETO ----------------------------------------
-class ObtenerLibreto(APIView):
+class ObtenerDetalleLibretoView(APIView):
     def get(self, request, *args, **kwargs):
         usuario = ValidateUser(request)
         if usuario['valid_user']:
@@ -57,7 +57,7 @@ class ObtenerLibreto(APIView):
 
 
 # 4. ACTUALIZAR UN LIBRETO ------------------------------------------------------
-class ActualizarLibreto(APIView):
+class ActualizarLibretoView(APIView):
     def put(self, request, pk):
         usuario = ValidateUser(request)
         if usuario['valid_user']:
@@ -69,7 +69,7 @@ class ActualizarLibreto(APIView):
 # -------------------------------------------------------------------------------
 
 # 5.ELIMINAR UN LIBRETO
-class EliminarLibreto(APIView):
+class EliminarLibretoView(APIView):
     def put(self, request):
         token=request.COOKIES.get('jwt')
         if not token:

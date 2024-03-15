@@ -72,7 +72,7 @@ class ObtenerDetalleTrabajoView(APIView):
         if usuario["valid_user"]:
             pk = self.kwargs.get('pk')
             trabajo = Trabajo.objects.obtener_detalle_trabajo(pk)
-            serializer = TrabajoSerializer(trabajo, many=True)
+            serializer = TrabajoSerializer(trabajo)
             return Response(serializer.data)
         
         return Response(usuario)

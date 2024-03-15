@@ -62,6 +62,7 @@ LOCAL_APP = (
     'applications.materiales',
     'applications.inspecciones_tqi',
     'applications.seguimiento_metas',
+    'applications.customers_management',
 )
 
 INSTALLED_APPS =DJANGO_APPS+THIRD_APP+LOCAL_APP

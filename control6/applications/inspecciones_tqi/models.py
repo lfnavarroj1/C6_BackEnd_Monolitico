@@ -104,7 +104,7 @@ class ManiobrasTqi(models.Model):
 
 
 class MetasTQI(models.Model):
-    contrato = models.ForeignKey(Contrato,on_delete=models.PROTECT)
+    contrato = models.ForeignKey(Contrato,on_delete=models.PROTECT, null=True, blank=True)
     anio = models.PositiveIntegerField()
     mes = models.PositiveIntegerField()
     cantidad_meta = models.PositiveIntegerField()
@@ -115,7 +115,7 @@ class MetasTQI(models.Model):
 
 
 class MetasInspectores(models.Model):
-    inspector = models.ForeignKey(User, on_delete=models.PROTECT)
+    inspector = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
     anio = models.CharField(max_length=200)
     mes = models.PositiveIntegerField()
     cantidad_meta = models.PositiveIntegerField()
