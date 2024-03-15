@@ -43,4 +43,5 @@ urlpatterns = [
     path('api/users/', include('applications.users.urls')),
     path('api/trabajos/', include('applications.work_management.urls')),
     # path('api/seguimiento_metas/', include('applications.seguimiento_metas.urls')), 
+    path('api/customers_management/', include('applications.customers_management.urls')), 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,12 @@
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+
+from .views import (
+    CargarArchivosClientesView,
+)
+
+urlpatterns = [
+    path('upload-customers/', CargarArchivosClientesView.as_view(), name="upload-customers"),
+] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+
