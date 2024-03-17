@@ -53,6 +53,7 @@ control6/applications/materiales/__pycache__/
 control6/applications/prestaciones/__pycache__/
 control6/applications/seguimiento_metas/__pycache__/
 control6/applications/static_data/__pycache__/
+control6/applications/static_data/serializers/__pycache__/
 control6/applications/users/__pycache__/
 control6/applications/work_management/__pycache__/
 control6/applications/customers_management/__pycache__/
