@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from .managers import UsuarioManager
 from ..static_data.models.proceso import Proceso
 from ..static_data.models.estado_trabajo import EstadoTrabajo
 from ..static_data.models.contrato import Contrato
@@ -27,6 +27,8 @@ class User(AbstractUser):
     cargo = models.CharField(max_length=150, blank=True, null=True)
     lider_hse = models.BooleanField(blank=True, null=True)
     es_enel = models.BooleanField(blank=True, null=True)
+
+    # objects = UsuarioManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []

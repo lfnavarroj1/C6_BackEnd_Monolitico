@@ -1,8 +1,9 @@
-from .serializers import UserSerializer, User,UserCreateSerializer,ChangePasswordSerializer
+from .serializers import UserSerializer, User, UserCreateSerializer, ChangePasswordSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import jwt, datetime
 from rest_framework import status
+from django.db.models import Q
 
 
 class RegisterUser(APIView):
@@ -99,4 +100,28 @@ def ValidateUser(request):
         return {"user": response, "valid_user": True}
         
 
+class ListarUsuariosView(APIView):
+    def get(self, request):
+        usuario = ValidateUser(request)
+
+        if usuario["valid_user"]:
+        
+            vector_uno = self.request.query_params.get('vector_unidades_territoriales' , '')
+            vector_dos = self.request.query_params.get('vector_contratos' , '')
+            vector_unidades_territoriales = vector_uno.split(',')
+            vector_contratos = vector_dos.split(',')
+            kword = self.request.query_params.get('kw' , '')
+            
+           
+            response = User.objects.filter(
+                Q(unidades_territoriales__in = vector_unidades_territoriales),
+                Q(contratos__in = vector_contratos), 
+                Q(username__icontains = kword ) | Q( assigned__icontains = kword ) | Q( first_name__icontains = kword ) | Q( last_name__icontains = kword ),
+            ).distinct()
+            
+            serializer = UserSerializer(response, many=True)
+                
+            return Response(serializer.data)
+        
+        return Response(usuario)
 

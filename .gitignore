@@ -4,35 +4,36 @@ control6/control6/media/*
 
 # Ignorar las migraciones de Django
 control6/applications/budgets_management/migrations/*
+control6/applications/customers_management/migrations/*
 control6/applications/external_systems_management/migrations/*
+control6/applications/horas_extras/migrations/*
+control6/applications/inspecciones_tqi/migrations/*
 control6/applications/labour_management/migrations/*
 control6/applications/lcl_management/migrations/*
 control6/applications/libretto_management/migrations/*
 control6/applications/maintenance_management/migrations/*
 control6/applications/maneuvers_management/migrations/*
+control6/applications/materiales/migrations/*
 control6/applications/materials_management/migrations/*
 control6/applications/node_scheduling_management/migrations/*
 control6/applications/odm_management/migrations/*
 control6/applications/overtime_management/migrations/*
 control6/applications/penalities_management/migrations/*
 control6/applications/scheduling_management/migrations/*
-control6/applications/traceability_management/migrations/*
-control6/applications/external_system/migrations/*
-control6/applications/horas_extras/migrations/*
-control6/applications/inspecciones_tqi/migrations/*
-control6/applications/materiales/migrations/*
-control6/applications/prestaciones/migrations/*
 control6/applications/seguimiento_metas/migrations/*
+control6/applications/traceability_management/migrations/*
+control6/applications/prestaciones/migrations/*
 control6/applications/static_data/migrations/*
 control6/applications/users/migrations/*
 control6/applications/work_management/migrations/*
-control6/applications/customers_management/migrations/*
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
 
 
 control6/applications/budgets_management/__pycache__/*
+control6/applications/customers_management/__pycache__/*
 control6/applications/external_systems_management/__pycache__/*
 control6/applications/labour_management/__pycache__/*
 control6/applications/lcl_management/__pycache__/*
@@ -46,7 +47,6 @@ control6/applications/overtime_management/__pycache__/*
 control6/applications/penalities_management/__pycache__/*
 control6/applications/scheduling_management/__pycache__/*
 control6/applications/traceability_management/__pycache__/*
-control6/applications/external_system/__pycache__/*
 control6/applications/horas_extras/__pycache__/*
 control6/applications/inspecciones_tqi/__pycache__/*
 control6/applications/materiales/__pycache__/*
