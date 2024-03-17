@@ -57,6 +57,11 @@ control6/applications/static_data/serializers/__pycache__/
 control6/applications/users/__pycache__/
 control6/applications/work_management/__pycache__/
 control6/applications/customers_management/__pycache__/
+control6/applications/static_data/managers/__pycache__/
+control6/applications/static_data/models/__pycache__/
+control6/control6/__pycache__/
+control6/control6/settings/__pycache__/
+control6/control6/staticfiles/admin/
 
 ### Django ###
 *.log
