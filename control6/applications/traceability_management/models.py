@@ -1,7 +1,7 @@
 from django.db import models
 from ..work_management.models import Trabajo
 from ..inspecciones_tqi.models import ManiobrasTqi
-from ..users.models import User
+from ..users_management.models import User
 from .managers import TrazabilidadTrabajoManager, TrazabilidadInspeccionesTqiManager
 
 

@@ -8,7 +8,7 @@ from rest_framework.generics import (
 from rest_framework.views import APIView
 from .models import Maniobra
 from .serializers import ManiobraSerializer
-from ..users.models import User
+from ..users_management.models import User
 from ..work_management.models import Trabajo
 
 # from django.db.models import F

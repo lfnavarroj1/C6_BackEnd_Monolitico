@@ -55,6 +55,7 @@ class MetasTQIResource(resources.ModelResource):
         # import_id_fields = ('codigo',)
         model = MetasTQI
         fields = (
+            'id',
             'contrato',
             'anio',
             'mes',

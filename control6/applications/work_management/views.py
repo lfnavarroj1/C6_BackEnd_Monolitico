@@ -13,7 +13,7 @@ from rest_framework import status
 from .serializers import CrearSoportesInciales, SoportesIncialesSerializer 
 import os 
 from django.conf import settings
-from ..users.views import ValidateUser
+from ..users_management.views import ValidateUser
 from .errores import CampoRequeridoError
 from ..static_data.models.ruta_proceso import RutaProceso
 

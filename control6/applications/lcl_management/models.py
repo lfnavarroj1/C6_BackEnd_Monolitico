@@ -1,6 +1,6 @@
 from django.db import models
 from ..odm_management.models import Odm
-from ..users.models import User
+from ..users_management.models import User
 from .manager import LclManager
 
 class Lcl(models.Model):

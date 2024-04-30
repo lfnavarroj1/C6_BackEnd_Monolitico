@@ -6,6 +6,7 @@ control6/control6/media/*
 control6/applications/budgets_management/migrations/
 control6/applications/customers_management/migrations/
 control6/applications/external_systems_management/migrations/
+control6/applications/genesis_board_management/migrations/
 control6/applications/horas_extras/migrations/
 control6/applications/inspecciones_tqi/migrations/
 control6/applications/labour_management/migrations/
@@ -56,6 +57,7 @@ control6/applications/static_data/__pycache__/
 control6/applications/static_data/serializers/__pycache__/
 control6/applications/users/__pycache__/
 control6/applications/work_management/__pycache__/
+control6/applications/genesis_board_management/__pycache__/
 control6/applications/customers_management/__pycache__/
 control6/applications/static_data/managers/__pycache__/
 control6/applications/static_data/models/__pycache__/

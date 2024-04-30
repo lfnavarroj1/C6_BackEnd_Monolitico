@@ -13,7 +13,7 @@ from rest_framework.exceptions import AuthenticationFailed
 import jwt 
 from rest_framework.response import Response
 from collections import Counter
-from ..users.views import ValidateUser
+from ..users_management.views import ValidateUser
 
 
 class AgregarLclView(APIView):

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import TrazabilidadTrabajo, TrazabilidadInspeccionesTqi
-from ..users.serializers import UserSerializer
+from ..users_management.serializers import UserSerializer
 
 class TrazabilidadTrabajoSerializer(serializers.ModelSerializer):
     usuario = UserSerializer()

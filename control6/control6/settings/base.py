@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^8ve2qyvy3(&m7f(_n0mx7z6=@t)frp(*e2!cgqh+qlis%-ms6'
 
 # Application definition
-DJANGO_APPS=(
+DJANGO_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,39 +33,42 @@ DJANGO_APPS=(
     'django.contrib.messages',
     'django.contrib.staticfiles',
 )
-THIRD_APP=(
+THIRD_APP = (
     'rest_framework',
     'corsheaders',
     'import_export',
     "django_celery_results",
 )
 LOCAL_APP = (
-    'applications.budgets_management',
-    'applications.external_systems_management',
-    'applications.labour_management',
-    'applications.lcl_management', 
-    'applications.libretto_management',
-    'applications.maintenance_management',
-    'applications.maneuvers_management',
-    'applications.materials_management', 
-    'applications.node_scheduling_management', 
-    'applications.odm_management',
-    'applications.overtime_management',
-    'applications.penalities_management',
-    'applications.scheduling_management',
-    'applications.traceability_management',
-    'applications.users',     
-    'applications.static_data',
-    'applications.work_management',
-    'applications.horas_extras',
-    'applications.prestaciones',
-    'applications.materiales',
-    'applications.inspecciones_tqi',
-    'applications.seguimiento_metas',
-    'applications.customers_management',
+    # 'applications.budgets_management',
+    'applications.contracts_management',
+    # 'applications.external_systems_management',
+    # 'applications.labour_management',
+    # 'applications.lcl_management', 
+    # 'applications.libretto_management',
+    'applications.location_management',
+    # 'applications.maintenance_management',
+    # 'applications.maneuvers_management',
+    # 'applications.materials_management', 
+    # 'applications.node_scheduling_management', 
+    # 'applications.odm_management',
+    # 'applications.overtime_management',
+    # 'applications.penalities_management',
+    'applications.process_management',
+    # 'applications.scheduling_management',
+    # 'applications.traceability_management',
+    'applications.users_management',     
+    # 'applications.static_data',
+    # 'applications.work_management',
+    # 'applications.horas_extras',
+    # 'applications.prestaciones',
+    # 'applications.materiales',
+    # 'applications.inspecciones_tqi',
+    # 'applications.seguimiento_metas',
+    # 'applications.customers_management',
 )
 
-INSTALLED_APPS =DJANGO_APPS+THIRD_APP+LOCAL_APP
+INSTALLED_APPS = DJANGO_APPS + THIRD_APP + LOCAL_APP
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -136,7 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Vadating user using user model
 
-AUTH_USER_MODEL='users.User'
+AUTH_USER_MODEL='users_management.User'
 
 # Variables Cors
 CORS_ORIGIN_ALLOW_ALL = True

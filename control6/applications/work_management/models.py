@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils import timezone
 from .managers import TrabajoManager
+
 from ..static_data.models.proceso import Proceso
 from ..static_data.models.ruta_proceso import RutaProceso
+
 from ..static_data.models.estructura_presupuestal import EstructuraPresupuestal
 from ..static_data.models.unidad_territorial import UnidadTerritorial
 from ..static_data.models.municipio import Municipio
@@ -112,3 +114,4 @@ class SoportesIniciales(models.Model):
 
     def __str__(self):
         return self.id_soporte
+

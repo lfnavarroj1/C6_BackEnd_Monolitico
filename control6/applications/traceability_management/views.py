@@ -4,7 +4,7 @@ from rest_framework.generics import (
     )
 from .models import TrazabilidadTrabajo, TrazabilidadInspeccionesTqi
 from .serializers import TrazabilidadTrabajoSerializer, TrazabilidadInspeccionesTqiSerializer
-from ..users.views import ValidateUser
+from ..users_management.views import ValidateUser
 
 
 class CrearTrazabilidadTrabajo(CreateAPIView):

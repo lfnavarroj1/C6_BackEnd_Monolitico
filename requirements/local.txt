@@ -9,6 +9,5 @@ requests
 celery
 redis
 django-celery-results
-django-celery-beat
 # python-magic
 # python-magic-bin

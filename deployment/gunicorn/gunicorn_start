@@ -17,6 +17,9 @@ source ../../bin/activate
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH
 
+# Detener los procesos Celery existentes si hay alguno
+pkill -f 'celery -A control6'
+
 
 # Iniciar celery
 celery -A control6 worker --loglevel INFO --logfile=../../logs/worker.log &

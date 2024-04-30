@@ -15,12 +15,12 @@ from ..lcl_management.models import Lcl
 from ..scheduling_management.models import Programacion
 from rest_framework.exceptions import AuthenticationFailed
 import jwt,json, os #, datetime
-from ..users.models import User
+from ..users_management.models import User
 
 from django.http import FileResponse, HttpResponse
 from django.conf import settings
 import mimetypes
-from ..users.views import ValidateUser
+from ..users_management.views import ValidateUser
 # 1. SUBIR LIBRETOS A UN TRABAJO ----------------------------------------------------------------------------
 class CrearLibretoView(APIView):
     def post(self, request, *args, **kwargs):

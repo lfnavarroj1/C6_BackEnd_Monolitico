@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from .models import Odm
 from .serializers import OdmSerializer
-from ..users.models import User
+from ..users_management.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt 
@@ -18,7 +18,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
-from ..users.views import ValidateUser
+from ..users_management.views import ValidateUser
 
 
 

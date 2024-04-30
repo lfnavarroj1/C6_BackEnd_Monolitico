@@ -1,7 +1,7 @@
 from rest_framework import serializers, pagination
 from .models import ManiobrasTqi, MetasTQI, MetasInspectores
-from ..users.models import User
-from ..users.serializers import UserSerializer
+from ..users_management.models import User
+from ..users_management.serializers import UserSerializer
 from ..static_data.serializers.contrato_serializer import ContratoSerializer
 
 

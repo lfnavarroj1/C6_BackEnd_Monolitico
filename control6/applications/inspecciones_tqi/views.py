@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework.views import APIView
-from ..users.models import User
+from ..users_management.models import User
 
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -11,7 +11,7 @@ from .serializers import (
     MetasInspectoresTotalesSerializer,
     MetasTQIContratoSerializer,
 )
-from ..users.serializers import UserSerializer
+from ..users_management.serializers import UserSerializer
 from .models import(
     ManiobrasTqi,
     MetasTQI,
@@ -24,7 +24,7 @@ from ..static_data.models.contrato import Contrato
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 import requests, datetime
-from ..users.views import ValidateUser
+from ..users_management.views import ValidateUser
 from django.db.models import Sum
 
 

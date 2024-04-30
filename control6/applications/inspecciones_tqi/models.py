@@ -1,5 +1,5 @@
 from django.db import models
-from ..users.models import User
+from ..users_management.models import User
 from ..static_data.models.unidad_territorial import UnidadTerritorial
 from ..static_data.models.subestacion import Subestacion
 from ..static_data.models.circuito import Circuito
